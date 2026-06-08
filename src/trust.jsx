@@ -476,6 +476,25 @@ function TrustSubNav({ section, activeSlug }) {
   );
 }
 
+function TrustProcessTimeline({ steps }) {
+  return (
+    <div className="tsx-timeline">
+      {steps.map((step, i) => (
+        <div className="tsx-tl-step" key={step.step}>
+          <div className="tsx-tl-left">
+            <div className={`tsx-tl-badge ${i === 0 ? 'first' : 'rest'}`}>{step.step}</div>
+            {i < steps.length - 1 && <div className="tsx-tl-line" />}
+          </div>
+          <div className="tsx-tl-content">
+            <p className="tsx-tl-title">{step.title}</p>
+            <p className="tsx-tl-body">{step.body}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function TrustDeliverableRows({ rows }) {
   return (
     <div className="tsx-del-rows">
@@ -536,15 +555,7 @@ function TrustSectionOverview({ section }) {
 
         <div className="tsx-process">
           <h2 className="tsx-section-heading" style={{marginBottom:'24px'}}>How it works</h2>
-          <ol className="tsx-process-list">
-            {section.process.map(step => (
-              <li className="tsx-process-item" key={step.step}>
-                <span className="tsx-process-num">{step.step}</span>
-                <strong>{step.title}</strong>
-                <p>{step.body}</p>
-              </li>
-            ))}
-          </ol>
+          <TrustProcessTimeline steps={section.process} />
         </div>
 
         <div className="tsx-packages">

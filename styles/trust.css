@@ -1289,3 +1289,15 @@
 .trust .tsx-del-chip{font-size:11px;color:#334155;background:#f8fafc;border:1px solid var(--line);border-radius:4px;padding:3px 9px}
 .trust .tsx-del-outcome{font-size:11px;font-weight:700;color:var(--tsx-accent);background:var(--tsx-accent-fg);border:1px solid rgba(15,76,129,.2);border-radius:4px;padding:4px 10px;white-space:nowrap;flex-shrink:0}
 @media(max-width:700px){.trust .tsx-del-row{grid-template-columns:1fr;gap:8px}.trust .tsx-del-outcome{align-self:flex-start}}
+
+/* ── Connector Timeline ──────────────────────────────────────────── */
+.trust .tsx-timeline{display:flex;flex-direction:column;gap:0}
+.trust .tsx-tl-step{display:grid;grid-template-columns:48px 1fr;gap:0}
+.trust .tsx-tl-left{display:flex;flex-direction:column;align-items:center}
+.trust .tsx-tl-badge{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Libre Baskerville',Georgia,serif;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.trust .tsx-tl-badge.first{background:var(--tsx-accent)}
+.trust .tsx-tl-badge.rest{background:#0f172a}
+.trust .tsx-tl-line{width:1px;flex:1;background:var(--line);margin:5px 0;min-height:18px}
+.trust .tsx-tl-content{padding:0 0 22px 14px}
+.trust .tsx-tl-title{font-family:'Poppins','Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin:6px 0 4px;letter-spacing:-.01em}
+.trust .tsx-tl-body{font-size:13px;color:var(--muted);line-height:1.6;margin:0}
