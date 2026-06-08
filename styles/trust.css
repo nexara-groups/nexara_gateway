@@ -1272,3 +1272,7 @@
 .trust .tsx-matrix-detail{padding:10px 20px 14px 80px;background:#fafbff;border-top:1px solid #f1f5f9;display:flex;gap:6px;flex-wrap:wrap}
 .trust .tsx-matrix-chip{font-size:11px;color:#334155;background:#fff;border:1px solid var(--line);border-radius:4px;padding:4px 10px}
 @media(max-width:640px){.trust .tsx-matrix-main{grid-template-columns:32px 1fr}.trust .tsx-matrix-tags{display:none}.trust .tsx-matrix-detail{padding-left:48px}}
+
+/* ── Market Context upgrade ──────────────────────────────────────── */
+.trust .tsx-market-left-rule{border-left:3px solid var(--tsx-accent);padding-left:18px}
+.trust .tsx-city-primary{background:#0f172a !important;color:#fff !important;border-color:#0f172a !important}

@@ -343,18 +343,20 @@ function TrustMarketContext() {
   return (
     <section className="tsx-market-context" aria-labelledby="tsx-market-h">
       <div className="tsx-section-inner tsx-market-grid">
-        <div>
+        <div className="tsx-market-left-rule">
           <p className="tsx-section-eyebrow">Operating region</p>
           <h2 className="tsx-section-heading" id="tsx-market-h">{DATA.market.title.trust}</h2>
           <p className="tsx-section-lede">{DATA.market.body.trust}</p>
           <div className="tsx-city-grid">
-            {DATA.market.cities.map(city => <span key={city}>{city}</span>)}
+            {DATA.market.cities.map((city, i) => (
+              <span key={city} className={i === 0 ? 'tsx-city-primary' : ''}>{city}</span>
+            ))}
           </div>
         </div>
         <div className="tsx-assumption-panel">
           <span className="tsx-panel-title">Planning assumptions</span>
           {DATA.market.assumptions.map((assumption, index) => (
-            <p key={assumption}><strong>{String(index + 1).padStart(2, "0")}</strong>{assumption}</p>
+            <p key={assumption}><strong>{String(index + 1).padStart(2, '0')}</strong>{assumption}</p>
           ))}
         </div>
       </div>
