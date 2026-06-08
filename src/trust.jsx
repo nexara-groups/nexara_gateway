@@ -476,6 +476,27 @@ function TrustSubNav({ section, activeSlug }) {
   );
 }
 
+function TrustDeliverableRows({ rows }) {
+  return (
+    <div className="tsx-del-rows">
+      {rows.map(row => (
+        <div className="tsx-del-row" key={row.title}>
+          <div>
+            <p className="tsx-del-area-label">Area</p>
+            <p className="tsx-del-area-name">{row.title}</p>
+          </div>
+          <div className="tsx-del-chips">
+            {row.deliverables.map(d => (
+              <span className="tsx-del-chip" key={d}>{d}</span>
+            ))}
+          </div>
+          <span className="tsx-del-outcome">{row.outcome}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function TrustSectionOverview({ section }) {
   return (
     <div className="tsx-overview">
@@ -510,20 +531,7 @@ function TrustSectionOverview({ section }) {
 
         <div className="tsx-deliverables">
           <h2 className="tsx-section-heading" style={{marginBottom:'24px'}}>What we deliver</h2>
-          <table className="tsx-del-table">
-            <thead>
-              <tr><th>Area</th><th>Deliverables</th><th>Outcome</th></tr>
-            </thead>
-            <tbody>
-              {section.stackDetails.map(row => (
-                <tr key={row.title}>
-                  <td><strong>{row.title}</strong></td>
-                  <td>{row.deliverables.join(' · ')}</td>
-                  <td><span className="tsx-outcome">{row.outcome}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <TrustDeliverableRows rows={section.stackDetails} />
         </div>
 
         <div className="tsx-process">

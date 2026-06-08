@@ -1276,3 +1276,16 @@
 /* ── Market Context upgrade ──────────────────────────────────────── */
 .trust .tsx-market-left-rule{border-left:3px solid var(--tsx-accent);padding-left:18px}
 .trust .tsx-city-primary{background:#0f172a !important;color:#fff !important;border-color:#0f172a !important}
+
+/* ── Deliverable Card Rows ───────────────────────────────────────── */
+.trust .tsx-del-rows{border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 4px 12px rgba(15,23,42,.05)}
+.trust .tsx-del-row{padding:14px 18px;display:grid;grid-template-columns:130px 1fr auto;gap:16px;align-items:center;border-bottom:1px solid var(--line);background:#fff;transition:background .15s}
+.trust .tsx-del-row:last-child{border-bottom:none}
+.trust .tsx-del-row:nth-child(even){background:#fafbff}
+.trust .tsx-del-row:hover{background:#f0f7ff}
+.trust .tsx-del-area-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--tsx-accent);margin-bottom:3px}
+.trust .tsx-del-area-name{font-size:13px;font-weight:700;color:var(--text)}
+.trust .tsx-del-chips{display:flex;gap:5px;flex-wrap:wrap}
+.trust .tsx-del-chip{font-size:11px;color:#334155;background:#f8fafc;border:1px solid var(--line);border-radius:4px;padding:3px 9px}
+.trust .tsx-del-outcome{font-size:11px;font-weight:700;color:var(--tsx-accent);background:var(--tsx-accent-fg);border:1px solid rgba(15,76,129,.2);border-radius:4px;padding:4px 10px;white-space:nowrap;flex-shrink:0}
+@media(max-width:700px){.trust .tsx-del-row{grid-template-columns:1fr;gap:8px}.trust .tsx-del-outcome{align-self:flex-start}}
