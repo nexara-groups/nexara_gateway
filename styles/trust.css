@@ -1242,3 +1242,18 @@
 .trust .tsx-stat-num.accent{color:var(--tsx-accent)}
 .trust .tsx-stat-sublabel{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#94a3b8;margin-top:6px;display:block}
 @media(max-width:640px){.trust .tsx-stat-band-inner{grid-template-columns:repeat(2,1fr)}.trust .tsx-stat-cell:nth-child(2){border-right:none}.trust .tsx-stat-cell:nth-child(3){border-right:1px solid var(--line)}}
+
+/* ── Numbered Governance Cards ───────────────────────────────────── */
+.trust .tsx-gov-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:40px;box-shadow:0 4px 16px rgba(15,23,42,.06)}
+.trust .tsx-gov-card{background:#fff;display:flex;flex-direction:column;transition:background .2s}
+.trust .tsx-gov-card:hover{background:#fafbff}
+.trust .tsx-gov-header{padding:18px 22px 14px;display:flex;align-items:baseline;gap:10px}
+.trust .tsx-gov-header.navy{background:var(--tsx-accent)}
+.trust .tsx-gov-header.dark{background:#0f172a}
+.trust .tsx-gov-num{font-family:'Libre Baskerville',Georgia,serif;font-size:28px;font-weight:700;color:rgba(255,255,255,.22);line-height:1;flex-shrink:0}
+.trust .tsx-gov-cat{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65)}
+.trust .tsx-gov-body{padding:16px 22px 22px;flex:1}
+.trust .tsx-gov-title{font-family:'Poppins','Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin:0 0 8px;letter-spacing:-.01em}
+.trust .tsx-gov-desc{font-size:13px;color:var(--muted);line-height:1.65;margin:0}
+@media(max-width:900px){.trust .tsx-gov-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.trust .tsx-gov-grid{grid-template-columns:1fr}}

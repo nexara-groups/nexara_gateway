@@ -223,6 +223,8 @@ const TSX_SOLUTIONS = [
   },
 ];
 
+const TSX_GOV_CATEGORIES = ['Integrity', 'Scoping', 'Governance', 'Reporting'];
+
 const TSX_FEATURES = [
   {
     title: 'Brief-driven delivery',
@@ -281,13 +283,18 @@ function TrustFeatureStrip() {
     <section className="tsx-features" aria-labelledby="tsx-feat-h">
       <div className="tsx-section-inner">
         <p className="tsx-section-eyebrow tsx-fade">Governance model</p>
-        <h2 className="tsx-section-heading tsx-fade" id="tsx-feat-h">Traditional IT delivery controls</h2>
-        <div className="tsx-features-grid">
+        <h2 className="tsx-section-heading tsx-fade" id="tsx-feat-h">Four delivery standards, no exceptions.</h2>
+        <div className="tsx-gov-grid">
           {DATA.company.standards.map((standard, i) => (
-            <div className={`tsx-feature tsx-fade tsx-fade-d${i + 1}`} key={standard.title}>
-              <div className="tsx-feature-icon" aria-hidden="true">{TSX_FEATURES[i]?.icon}</div>
-              <h3 className="tsx-feature-title">{standard.title}</h3>
-              <p className="tsx-feature-desc">{standard.body}</p>
+            <div className={`tsx-gov-card tsx-fade tsx-fade-d${i + 1}`} key={standard.title}>
+              <div className={`tsx-gov-header ${i % 2 === 0 ? 'navy' : 'dark'}`}>
+                <span className="tsx-gov-num">{String(i + 1).padStart(2, '0')}</span>
+                <span className="tsx-gov-cat">{TSX_GOV_CATEGORIES[i]}</span>
+              </div>
+              <div className="tsx-gov-body">
+                <h3 className="tsx-gov-title">{standard.title}</h3>
+                <p className="tsx-gov-desc">{standard.body}</p>
+              </div>
             </div>
           ))}
         </div>
