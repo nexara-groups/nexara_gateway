@@ -136,7 +136,7 @@ function TrustNav({ page, detail }) {
         </nav>
         <div className="tsx-nav-right">
           <button className="tsx-nav-switch" onClick={() => routeTo('neo', page, detail)}>Neo ↗</button>
-          <button className="tsx-nav-cta" onClick={() => routeTo('trust', 'contact')}>Submit Brief</button>
+          <button className="tsx-nav-cta" onClick={() => routeTo('trust', 'contact')}>Start a Project</button>
         </div>
       </div>
       <nav className="tsx-mobile-nav-scroll" aria-label="Primary mobile">
@@ -161,8 +161,8 @@ function TrustHeroFlat() {
         <h1 className="tsx-h1">{copy.title}<br /><span>{copy.accent}</span></h1>
         <p className="tsx-hero-sub">{copy.body}</p>
         <div className="tsx-hero-actions">
-          <button className="tsx-btn-primary" onClick={() => routeTo('trust', 'contact')}>Submit Enterprise Brief</button>
-          <button className="tsx-btn-ghost" onClick={() => routeTo('trust', 'academy')}>Review Solution Lines</button>
+          <button className="tsx-btn-primary" onClick={() => routeTo('trust', 'contact')}>Plan an Engagement</button>
+          <button className="tsx-btn-ghost" onClick={() => routeTo('trust', 'academy')}>Explore Solutions</button>
         </div>
       </div>
       <div className="tsx-hero-card" role="complementary" aria-label="Nexara at a glance">
@@ -186,10 +186,10 @@ function TrustHeroFlat() {
 
 function TrustProofStrip() {
   const stats = [
-    { num: '3',     label: 'Solution Lines',     accent: false },
-    { num: '9',     label: 'Capability Modules',  accent: false },
-    { num: 'Brief', label: 'Driven Delivery',     accent: true  },
-    { num: '1',     label: 'Partner, All Areas',  accent: false },
+    { num: '3', label: 'Solution Lines',       accent: false },
+    { num: '9', label: 'Capability Modules',   accent: false },
+    { num: '4', label: 'Delivery Standards',   accent: true  },
+    { num: '1', label: 'Partner, All Areas',   accent: false },
   ];
   return (
     <div className="tsx-stat-band" aria-label="Key figures">
@@ -227,8 +227,8 @@ const TSX_GOV_CATEGORIES = ['Integrity', 'Scoping', 'Governance', 'Reporting'];
 
 const TSX_FEATURES = [
   {
-    title: 'Brief-driven delivery',
-    desc: 'Every engagement starts with a scoped brief. No open-ended retainers without defined deliverables and success criteria.',
+    title: 'Scope-driven delivery',
+    desc: 'Every engagement starts with a scoped project plan. No open-ended retainers without defined deliverables and success criteria.',
     icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>,
   },
   {
@@ -370,9 +370,9 @@ function TrustCTABand() {
       <div className="tsx-section-inner">
         <div className="tsx-cta-inner tsx-fade">
           <p className="tsx-cta-eyebrow">Enterprise intake</p>
-          <h2 className="tsx-cta-heading" id="tsx-cta-h">Start with a scoped Nexara brief.</h2>
-          <p className="tsx-cta-sub">Select the same capability area visible on Neo, then submit the corporate brief format for Trust.</p>
-          <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'contact')}>Submit Enterprise Brief</button>
+          <h2 className="tsx-cta-heading" id="tsx-cta-h">Ready to work with Nexara?</h2>
+          <p className="tsx-cta-sub">Pick a solution line and open an engagement. Nexara confirms fit and next steps within one business day.</p>
+          <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'contact')}>Start a Project</button>
         </div>
       </div>
     </section>
@@ -545,7 +545,7 @@ function TrustPackageCards({ packages }) {
             </div>
             <div className={`tsx-tier-foot${featured ? ' featured-foot' : ''}`}>
               <p className={`tsx-tier-cta${featured ? ' featured-cta' : ''}`}>
-                {featured ? 'Submit a brief →' : 'Submit a brief to enquire'}
+                {featured ? 'Start here →' : 'Get in touch'}
               </p>
             </div>
           </div>
@@ -594,6 +594,12 @@ function TrustDeliverableRows({ rows }) {
     </div>
   );
 }
+
+const TRUST_SECTION_CTA = {
+  academy:   'Plan a Talent Programme',
+  marketing: 'Scope a Digital Project',
+  labs:      'Scope an AI System',
+};
 
 function TrustSectionOverview({ section }) {
   return (
@@ -657,7 +663,7 @@ function TrustSectionOverview({ section }) {
             <p className="tsx-intake-heading">{section.intake.primary}</p>
             <p className="tsx-intake-sub">{section.intake.secondary}</p>
           </div>
-          <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'contact')}>Start with a brief</button>
+          <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'contact')}>{TRUST_SECTION_CTA[section.id] || 'Start a Project'}</button>
         </div>
       </div>
     </div>
@@ -684,7 +690,7 @@ function TrustSubpageDetail({ section, page }) {
             <p className="tsx-intake-heading">{section.intake.primary}</p>
             <p className="tsx-intake-sub">{section.intake.secondary}</p>
           </div>
-          <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'contact')}>Start with a brief</button>
+          <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'contact')}>{TRUST_SECTION_CTA[section.id] || 'Start a Project'}</button>
         </div>
       </div>
     </div>
@@ -754,9 +760,9 @@ function TrustCustomers({ detail }) {
         <div className="tsx-intake-band" style={{marginTop: "48px"}}>
           <div>
             <p className="tsx-intake-heading">Start a scoped engagement</p>
-            <p className="tsx-intake-sub">Submit a brief. Nexara maps the appropriate next step.</p>
+            <p className="tsx-intake-sub">Tell us what you need. Nexara maps the right next step.</p>
           </div>
-          <button className="tsx-btn-cta" onClick={() => routeTo("trust", "contact")}>Submit a brief</button>
+          <button className="tsx-btn-cta" onClick={() => routeTo("trust", "contact")}>Start a Project</button>
         </div>
       </section>
     </main>
@@ -817,9 +823,9 @@ function TrustCompany() {
         <div className="tsx-intake-band" style={{marginTop: "48px"}}>
           <div>
             <p className="tsx-intake-heading">Work with Nexara</p>
-            <p className="tsx-intake-sub">Start with a scoped brief for any of the three sections.</p>
+            <p className="tsx-intake-sub">Pick a solution line and open an engagement.</p>
           </div>
-          <button className="tsx-btn-cta" onClick={() => routeTo("trust", "contact")}>Submit a brief</button>
+          <button className="tsx-btn-cta" onClick={() => routeTo("trust", "contact")}>Start a Project</button>
         </div>
       </section>
     </main>
@@ -870,8 +876,8 @@ function TrustContact({ detail }) {
         {showSuccess ? (
           <div className="tsx-intake-band">
             <div>
-              <p className="tsx-intake-heading">Brief prepared. Your mail client will open shortly.</p>
-              <p className="tsx-intake-sub">If it does not open, use the email link on this page and include the brief details manually.</p>
+              <p className="tsx-intake-heading">Enquiry prepared. Your mail client will open shortly.</p>
+              <p className="tsx-intake-sub">If it does not open, use the email link on this page and include the project details manually.</p>
             </div>
           </div>
         ) : (
@@ -913,7 +919,7 @@ function TrustContact({ detail }) {
               <button className="tsx-btn-cta tsx-brief-submit" type="submit">{DATA.contact.enquiry.label}</button>
             </form>
             <aside className="tsx-checklist-panel">
-              <span>Your brief should include</span>
+              <span>Your enquiry should cover</span>
               <ul>
                 {DATA.contact.checklist.map(item => <li key={item}>{item}</li>)}
               </ul>

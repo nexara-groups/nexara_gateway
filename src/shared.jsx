@@ -57,7 +57,7 @@ function getBriefSections() {
 }
 
 function buildBriefText(sections, formData) {
-  return `NEXARA PROJECT BRIEF
+  return `NEXARA PROJECT SCOPE
 --------------------------------------------------
 Engagement Section: ${sections.find(s => s.id === formData.section)?.name || formData.section}
 Target City: ${formData.city}
@@ -72,7 +72,7 @@ Generated on: ${new Date().toLocaleDateString()}`;
 }
 
 function buildBriefMailto(sections, formData, briefText) {
-  const mailtoSubject = encodeURIComponent(`Nexara Project Brief - ${sections.find(s => s.id === formData.section)?.name} (${formData.city})`);
+  const mailtoSubject = encodeURIComponent(`Nexara Project Enquiry - ${sections.find(s => s.id === formData.section)?.name} (${formData.city})`);
   const mailtoBody = encodeURIComponent(briefText);
   return `${DATA.contact.enquiry.href}?subject=${mailtoSubject}&body=${mailtoBody}`;
 }

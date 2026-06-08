@@ -83,7 +83,7 @@ function InfiniteMarquee() {
 function LabsStatsStrip() {
   const stats = [
     ["Cohort-based", "talent pipeline"],
-    ["Project-led", "live briefs"],
+    ["Project-led", "live projects"],
     ["Open-source", "by default"],
     ["Shipping", "daily cadence"]
   ];
@@ -655,7 +655,7 @@ function NeoGuide() {
             label: "intake action",
             line: rotateLine("intake-btn", [
               "click it. launch sequence.",
-              "brief incoming. start building.",
+              "project incoming. start building.",
               "stop talking. let's build.",
               "push the button. deploy."
             ], "intake-btn")
@@ -860,7 +860,7 @@ function NeoGuide() {
               "all three sections at once.",
               "the combo play.",
               "squad move.",
-              "three engines. one brief."
+              "three engines. one team."
             ], "super-skills")
           };
         }
@@ -1900,12 +1900,12 @@ function AcademyHero({ theme, section }) {
     },
     {
       id: "internships",
-      label: theme === "neo" ? "03 / Briefs" : "3. Managed internships",
-      title: "Internships & Briefs",
-      desc: theme === "neo" ? "Real briefs, mentor pressure, actual ship cycles." : "Brief scoping, task delivery, and portfolio creation.",
+      label: theme === "neo" ? "03 / Projects" : "3. Managed internships",
+      title: "Internships & Projects",
+      desc: theme === "neo" ? "Real projects, mentor pressure, actual ship cycles." : "Project scoping, task delivery, and portfolio creation.",
       color: "var(--unbox-marketing)",
       sub: "4 stages",
-      details: ["Real client briefs", "Sprint delivery", "Junior workflows", "Deliverables code"]
+      details: ["Real client projects", "Sprint delivery", "Junior workflows", "Deliverables code"]
     },
     {
       id: "placements",
@@ -2189,11 +2189,11 @@ function AcademyHero({ theme, section }) {
                   {/* Visual 3: Internships (Briefs & Internships) */}
                   <div ref={el => { contentRefs.current[2] = el; }} className="stage-graphics internships-graphics" style={{ "--face-color": pillars[2].color }}>
                     <div className="brief-card sheet-1">
-                      <span>BRIEF #29</span>
+                      <span>PROJECT #29</span>
                       <small>STATUS: ACTIVE</small>
                     </div>
                     <div className="brief-sheet sheet-2">
-                      <span>BRIEF #34</span>
+                      <span>PROJECT #34</span>
                       <small>STATUS: SHIPPED</small>
                     </div>
                   </div>
@@ -2253,7 +2253,7 @@ function AcademyHero({ theme, section }) {
 }
 
 function HeroBanner({ theme, eyebrow, title, accent, body, section, compact = false }) {
-  const stats = section ? section.stats : [["3", "equal sections"], ["2", "presentations"], ["1", "incorporated company"], ["4", "brief routes"]];
+  const stats = section ? section.stats : [["3", "equal sections"], ["2", "presentations"], ["1", "incorporated company"], ["4", "intake routes"]];
   return (
     <section className={"hero-banner" + (compact ? " compact" : "")}>
       <div className="hero-bg">
@@ -2571,7 +2571,7 @@ function SuperSkills({ theme }) {
         <div className="super-skills-intro">
           <div>
             <p className="eyebrow">{theme === "neo" ? "Super skills" : "Integrated capability plays"}</p>
-            <h2>{theme === "neo" ? "Stack the engines into plays that ship." : "Integrated growth plays, mapped from brief to operating system."}</h2>
+            <h2>{theme === "neo" ? "Stack the engines into plays that ship." : "Integrated growth plays across talent, digital and AI."}</h2>
           </div>
           <p>{calloutBody}</p>
         </div>
@@ -2766,7 +2766,7 @@ function CardVisual({ title, theme }) {
     );
   }
 
-  if (normTitle.includes("internship") || normTitle.includes("mentor") || normTitle.includes("review") || normTitle.includes("kanban") || normTitle.includes("briefs")) {
+  if (normTitle.includes("internship") || normTitle.includes("mentor") || normTitle.includes("review") || normTitle.includes("kanban") || normTitle.includes("briefs") || normTitle.includes("projects")) {
     return (
       <div className="card-visual visual-kanban">
         <div className="kanban-col">
@@ -2970,7 +2970,7 @@ const MODULE_DETAILS = {
   },
   "Internship Engine": {
     neo: {
-      offer: "Live development briefs, mentor-driven code reviews, and fast-paced delivery schedules that simulate startup engineering.",
+      offer: "Live development projects, mentor-driven code reviews, and fast-paced delivery schedules that simulate startup engineering.",
       better: "Real tickets and production codebases. Candidates learn how to ship features, read telemetry, and operate under pressure from week one."
     },
     trust: {
@@ -2984,7 +2984,7 @@ const MODULE_DETAILS = {
       better: "We connect candidates directly with engineering leads who care about shipped code, cutting out generic HR filters entirely."
     },
     trust: {
-      offer: "Employer partnership briefs, pre-screened talent shortlists, interview readiness prep, and comprehensive hiring support.",
+      offer: "Employer partnership requirements, pre-screened talent shortlists, interview readiness prep, and comprehensive hiring support.",
       better: "An evidence-based screening process that reduces candidate evaluation time by presenting audited project histories."
     }
   },
@@ -3716,12 +3716,12 @@ function HomeProof({ theme, category }) {
 function HomeIntakeCTA({ theme, type }) {
   const isLearner = type === "learner";
   const title = isLearner 
-    ? (theme === "neo" ? "Ready to start? Fill your brief." : "Begin your learning path.")
-    : (theme === "neo" ? "Ready to build? Open your brief." : "Schedule a business consultation.");
+    ? (theme === "neo" ? "Ready to start? Let's go." : "Begin your learning path.")
+    : (theme === "neo" ? "Ready to ship? Let's build." : "Schedule a business consultation.");
   const body = isLearner
     ? (theme === "neo" ? "Our tracks accept direct intakes. Start your journey today." : "Register for an upcoming cohort or placement screening.")
-    : (theme === "neo" ? "Labs and Marketing sections are open for briefs. Let's build." : "Connect with a partner to scope your web platform or AI system.");
-  const buttonText = theme === "neo" ? "Start the brief" : "Begin enquiry";
+    : (theme === "neo" ? "Labs and Marketing sections are live. Come build with us." : "Connect with a partner to scope your web platform or AI system.");
+  const buttonText = theme === "neo" ? "Get in" : "Begin enquiry";
 
   return (
     <section className="intake-cta">
@@ -3821,7 +3821,7 @@ function IntakeCTA({ theme, section }) {
         <h2>{section.intake.primary}</h2>
         <p>{section.intake.secondary}</p>
       </div>
-      <button onClick={() => routeTo(theme, "contact", section.id)}>{theme === "neo" ? "Start the brief" : "Request a consultation"}</button>
+      <button onClick={() => routeTo(theme, "contact", section.id)}>{theme === "neo" ? "Let's build" : "Request a consultation"}</button>
     </section>
   );
 }
@@ -3952,12 +3952,12 @@ function Contact({ theme, detail }) {
       <section className="contact-layout brief-planner-grid">
         {/* Left Column: The Form */}
         <div className="brief-form-panel">
-          <p className="eyebrow">{theme === "neo" ? "01 / BRIEF BUILDER" : "Step 1: Project Parameters"}</p>
-          <h2 className="planner-title">{theme === "neo" ? "Build your brief." : "Define the engagement scope."}</h2>
+          <p className="eyebrow">{theme === "neo" ? "01 / YOUR PROJECT" : "Step 1: Project Parameters"}</p>
+          <h2 className="planner-title">{theme === "neo" ? "Tell us what you're building." : "Define the engagement scope."}</h2>
           <p className="planner-subtitle">
             {theme === "neo"
               ? "Six fields. One email. We read every one."
-              : "Complete each field below. Your responses generate a formatted brief sent directly to our intake team."}
+              : "Complete each field below. Your responses generate a formatted message sent directly to our intake team."}
           </p>
 
           <div className="brief-form-group">
@@ -4082,18 +4082,18 @@ function Contact({ theme, detail }) {
 
         {/* Right Column: Live Brief Preview */}
         <div className="brief-preview-panel glass-panel">
-          <p className="eyebrow">{theme === "neo" ? "02 / YOUR BRIEF" : "Step 2: Brief Preview"}</p>
+          <p className="eyebrow">{theme === "neo" ? "02 / YOUR SCOPE" : "Step 2: Project Summary"}</p>
           <div className="brief-preview-container">
             <pre className="brief-preview-text">{briefText}</pre>
           </div>
           <div className="brief-preview-actions">
             <a href={mailtoUrl} className="brief-submit-btn">
-              {theme === "neo" ? "Send brief to Nexara" : "Submit brief via email"}
+              {theme === "neo" ? "Send it →" : "Submit via email"}
             </a>
             <p className="brief-disclaimer">
               {theme === "neo"
-                ? "Opens your email client with the brief pre-filled to info@nexaragroups.com."
-                : "Selecting this opens your email application with all brief details addressed to info@nexaragroups.com."}
+                ? "Opens your email client with your project details sent to info@nexaragroups.com."
+                : "Selecting this opens your email application with your project scope addressed to info@nexaragroups.com."}
             </p>
           </div>
         </div>
@@ -4104,8 +4104,8 @@ function Contact({ theme, detail }) {
         <p className="eyebrow">{theme === "neo" ? "PICK YOUR LANE" : "Engagement Lanes"}</p>
         <h2>{theme === "neo" ? "Not sure where to start?" : "Select the section that matches your project."}</h2>
         <p>{theme === "neo"
-          ? "Each card pre-fills the brief for that section. Pick the one that fits."
-          : "Choosing a lane pre-populates the brief fields for the relevant section scope."}</p>
+          ? "Each card pre-fills the form for that section. Pick the one that fits."
+          : "Choosing a lane pre-populates the form fields for the relevant section scope."}</p>
       </section>
 
       <section className="module-grid compact">
