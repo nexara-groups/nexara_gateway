@@ -476,6 +476,35 @@ function TrustSubNav({ section, activeSlug }) {
   );
 }
 
+function TrustFaqAccordion({ faqs }) {
+  const [openIndex, setOpenIndex] = React.useState(null);
+  return (
+    <div className="tsx-faq-acc">
+      {faqs.map(([q, a], i) => {
+        const isOpen = openIndex === i;
+        return (
+          <div className={`tsx-faq-item${isOpen ? ' open' : ''}`} key={i}>
+            <button
+              className="tsx-faq-trigger"
+              onClick={() => setOpenIndex(isOpen ? null : i)}
+              aria-expanded={isOpen}
+            >
+              <span className="tsx-faq-counter">{String(i + 1).padStart(2, '0')}</span>
+              <span className="tsx-faq-q">{q}</span>
+              <span className="tsx-faq-indicator" aria-hidden="true">{isOpen ? '−' : '+'}</span>
+            </button>
+            {isOpen && (
+              <div className="tsx-faq-panel">
+                <p className="tsx-faq-a">{a}</p>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function TrustProofStrips({ items }) {
   return (
     <div className="tsx-proof-strips">
@@ -620,14 +649,7 @@ function TrustSectionOverview({ section }) {
 
         <div className="tsx-faq">
           <h2 className="tsx-section-heading" style={{marginBottom:'24px'}}>Common questions</h2>
-          <div className="tsx-faq-list">
-            {section.faqs.map(([q, a], i) => (
-              <details className="tsx-faq-item" key={i}>
-                <summary className="tsx-faq-q">{q}</summary>
-                <p className="tsx-faq-a">{a}</p>
-              </details>
-            ))}
-          </div>
+          <TrustFaqAccordion faqs={section.faqs} />
         </div>
 
         <div className="tsx-intake-band">
