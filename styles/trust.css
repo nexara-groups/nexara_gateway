@@ -1257,3 +1257,18 @@
 .trust .tsx-gov-desc{font-size:13px;color:var(--muted);line-height:1.65;margin:0}
 @media(max-width:900px){.trust .tsx-gov-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:540px){.trust .tsx-gov-grid{grid-template-columns:1fr}}
+
+/* ── Capability Matrix ───────────────────────────────────────────── */
+.trust .tsx-matrix{border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(15,23,42,.06)}
+.trust .tsx-matrix-row{border-bottom:1px solid var(--line);background:#fff;transition:background .15s}
+.trust .tsx-matrix-row:last-child{border-bottom:none}
+.trust .tsx-matrix-row:hover{background:#fafbff}
+.trust .tsx-matrix-main{padding:16px 20px;display:grid;grid-template-columns:44px 1fr auto;gap:16px;align-items:center}
+.trust .tsx-matrix-num{font-family:'Libre Baskerville',Georgia,serif;font-size:20px;font-weight:700;color:#e2e8f0;line-height:1;flex-shrink:0}
+.trust .tsx-matrix-title{font-family:'Poppins','Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin:0 0 3px;letter-spacing:-.01em}
+.trust .tsx-matrix-desc{font-size:12px;color:var(--muted);margin:0;line-height:1.4}
+.trust .tsx-matrix-tags{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+.trust .tsx-matrix-tag{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tsx-accent);background:var(--tsx-accent-fg);border:1px solid rgba(15,76,129,.18);border-radius:4px;padding:3px 8px;white-space:nowrap}
+.trust .tsx-matrix-detail{padding:10px 20px 14px 80px;background:#fafbff;border-top:1px solid #f1f5f9;display:flex;gap:6px;flex-wrap:wrap}
+.trust .tsx-matrix-chip{font-size:11px;color:#334155;background:#fff;border:1px solid var(--line);border-radius:4px;padding:4px 10px}
+@media(max-width:640px){.trust .tsx-matrix-main{grid-template-columns:32px 1fr}.trust .tsx-matrix-tags{display:none}.trust .tsx-matrix-detail{padding-left:48px}}

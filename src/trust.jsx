@@ -307,21 +307,31 @@ function TrustEnterpriseStacks() {
   return (
     <section className="tsx-enterprise-stacks" aria-labelledby="tsx-stack-h">
       <div className="tsx-section-inner">
-        <p className="tsx-section-eyebrow">Stacked enterprise modules</p>
+        <p className="tsx-section-eyebrow">Capability stacks</p>
         <h2 className="tsx-section-heading" id="tsx-stack-h">Integrated stacks built from the same Nexara capabilities.</h2>
-        <div className="tsx-stack-grid">
+        <div className="tsx-matrix">
           {DATA.superSkills.map((item, index) => (
-            <article className="tsx-stack-card" key={item.title}>
-              <span className="tsx-stack-index">{String(index + 1).padStart(2, "0")}</span>
-              <h3>{item.title}</h3>
-              <p>{item.trust}</p>
-              <div className="tsx-stack-tags">
-                {item.sections.map(section => <span key={section}>{section}</span>)}
+            <div className="tsx-matrix-row" key={item.title}>
+              <div className="tsx-matrix-main">
+                <span className="tsx-matrix-num">{String(index + 1).padStart(2, '0')}</span>
+                <div>
+                  <p className="tsx-matrix-title">{item.title}</p>
+                  <p className="tsx-matrix-desc">{item.trust}</p>
+                </div>
+                <div className="tsx-matrix-tags">
+                  {item.sections.map(s => (
+                    <span className="tsx-matrix-tag" key={s}>{s}</span>
+                  ))}
+                </div>
               </div>
-              <ul>
-                {item.stack.map(module => <li key={module}>{module}</li>)}
-              </ul>
-            </article>
+              {index === 0 && (
+                <div className="tsx-matrix-detail">
+                  {item.stack.map(module => (
+                    <span className="tsx-matrix-chip" key={module}>{module}</span>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>
