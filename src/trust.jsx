@@ -476,6 +476,36 @@ function TrustSubNav({ section, activeSlug }) {
   );
 }
 
+function TrustPackageCards({ packages }) {
+  return (
+    <div className="tsx-tier-grid">
+      {packages.map((pkg, i) => {
+        const featured = i === 1;
+        return (
+          <div className={`tsx-tier-card${featured ? ' featured' : ''}`} key={pkg.name}>
+            {featured && <span className="tsx-tier-badge">Most Common</span>}
+            <div className={`tsx-tier-head${featured ? ' featured-head' : ''}`}>
+              <span className="tsx-tier-fit">{pkg.fit}</span>
+              <p className="tsx-tier-name">{pkg.name}</p>
+              <span className="tsx-tier-duration">{pkg.duration}</span>
+            </div>
+            <div className="tsx-tier-body">
+              <ul className="tsx-tier-list">
+                {pkg.includes.map(item => <li key={item}>{item}</li>)}
+              </ul>
+            </div>
+            <div className={`tsx-tier-foot${featured ? ' featured-foot' : ''}`}>
+              <p className={`tsx-tier-cta${featured ? ' featured-cta' : ''}`}>
+                {featured ? 'Submit a brief →' : 'Submit a brief to enquire'}
+              </p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function TrustProcessTimeline({ steps }) {
   return (
     <div className="tsx-timeline">
@@ -560,21 +590,7 @@ function TrustSectionOverview({ section }) {
 
         <div className="tsx-packages">
           <h2 className="tsx-section-heading" style={{marginBottom:'24px'}}>Engagement packages</h2>
-          <div className="tsx-packages-grid">
-            {section.packages.map(pkg => (
-              <div className="tsx-package-card" key={pkg.name}>
-                <span className="tsx-package-fit">{pkg.fit}</span>
-                <h3 className="tsx-package-name">{pkg.name}</h3>
-                <ul className="tsx-package-includes">
-                  {pkg.includes.map(item => <li key={item}>{item}</li>)}
-                </ul>
-                <div className="tsx-package-meta">
-                  <span>{pkg.price}</span>
-                  <span>{pkg.duration}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <TrustPackageCards packages={section.packages} />
         </div>
 
         <div className="tsx-deliverables">
