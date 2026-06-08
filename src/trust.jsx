@@ -476,6 +476,26 @@ function TrustSubNav({ section, activeSlug }) {
   );
 }
 
+function TrustProofStrips({ items }) {
+  return (
+    <div className="tsx-proof-strips">
+      {items.map(p => (
+        <div className="tsx-proof-strip" key={p.name}>
+          <div>
+            <span className="tsx-proof-eng-label">Engagement</span>
+            <p className="tsx-proof-eng-name">{p.name}</p>
+          </div>
+          <div>
+            <span className="tsx-proof-result-label">What was delivered</span>
+            <p className="tsx-proof-result-text">{p.result.trust}</p>
+          </div>
+          <span className="tsx-proof-org">{p.org}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function TrustPackageCards({ packages }) {
   return (
     <div className="tsx-tier-grid">
@@ -595,20 +615,7 @@ function TrustSectionOverview({ section }) {
 
         <div className="tsx-deliverables">
           <h2 className="tsx-section-heading" style={{marginBottom:'24px'}}>Delivery proof</h2>
-          <table className="tsx-del-table">
-            <thead>
-              <tr><th>Engagement</th><th>What was delivered</th><th>Area</th></tr>
-            </thead>
-            <tbody>
-              {section.proof.map(p => (
-                <tr key={p.name}>
-                  <td><strong>{p.name}</strong></td>
-                  <td>{p.result.trust}</td>
-                  <td><span className="tsx-outcome">{p.org}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <TrustProofStrips items={section.proof} />
         </div>
 
         <div className="tsx-faq">

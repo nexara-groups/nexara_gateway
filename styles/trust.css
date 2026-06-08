@@ -1321,3 +1321,14 @@
 .trust .tsx-tier-cta{font-size:12px;color:var(--muted)}
 .trust .tsx-tier-cta.featured-cta{font-size:12px;font-weight:700;color:var(--tsx-accent)}
 @media(max-width:700px){.trust .tsx-tier-grid{grid-template-columns:1fr}}
+
+/* ── Case Study Strips ───────────────────────────────────────────── */
+.trust .tsx-proof-strips{display:flex;flex-direction:column;gap:10px}
+.trust .tsx-proof-strip{border-left:3px solid var(--tsx-accent);border:1px solid var(--line);border-left-width:3px;border-left-color:var(--tsx-accent);border-radius:0 8px 8px 0;padding:14px 18px;display:grid;grid-template-columns:160px 1fr auto;gap:18px;align-items:center;background:#fff;transition:background .15s}
+.trust .tsx-proof-strip:hover{background:#fafbff}
+.trust .tsx-proof-eng-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--tsx-accent);display:block;margin-bottom:4px}
+.trust .tsx-proof-eng-name{font-family:'Poppins','Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;color:var(--text);margin:0;letter-spacing:-.01em}
+.trust .tsx-proof-result-label{font-size:9px;font-weight:600;color:#94a3b8;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block}
+.trust .tsx-proof-result-text{font-size:12px;color:#334155;line-height:1.55;margin:0}
+.trust .tsx-proof-org{font-size:10px;font-weight:700;color:var(--tsx-accent);background:var(--tsx-accent-fg);border:1px solid rgba(15,76,129,.2);border-radius:4px;padding:4px 10px;white-space:nowrap;flex-shrink:0}
+@media(max-width:700px){.trust .tsx-proof-strip{grid-template-columns:1fr;gap:8px}.trust .tsx-proof-org{align-self:flex-start}}
