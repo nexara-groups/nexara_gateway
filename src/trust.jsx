@@ -185,16 +185,21 @@ function TrustHeroFlat() {
 }
 
 function TrustProofStrip() {
+  const stats = [
+    { num: '3',     label: 'Solution Lines',     accent: false },
+    { num: '9',     label: 'Capability Modules',  accent: false },
+    { num: 'Brief', label: 'Driven Delivery',     accent: true  },
+    { num: '1',     label: 'Partner, All Areas',  accent: false },
+  ];
   return (
-    <div className="tsx-proof" aria-label="Trusted by">
-      <div className="tsx-proof-inner">
-        <p className="tsx-proof-label">Same Nexara route map, translated for enterprise buyers</p>
-        <div className="tsx-proof-divider" aria-hidden="true" />
-        <div className="tsx-proof-chips">
-          {DATA.nav.map(item => (
-            <span className="tsx-proof-chip" key={item.page}>{getTrustNavLabel(item)}</span>
-          ))}
-        </div>
+    <div className="tsx-stat-band" aria-label="Key figures">
+      <div className="tsx-stat-band-inner">
+        {stats.map(({ num, label, accent }) => (
+          <div className="tsx-stat-cell" key={label}>
+            <span className={`tsx-stat-num${accent ? ' accent' : ''}`}>{num}</span>
+            <span className="tsx-stat-sublabel">{label}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
