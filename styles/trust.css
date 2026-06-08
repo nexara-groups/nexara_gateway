@@ -1347,3 +1347,76 @@
 .trust .tsx-faq-item.open .tsx-faq-indicator{color:var(--tsx-accent)}
 .trust .tsx-faq-panel{padding:0 18px 16px 52px;border-top:1px solid rgba(15,76,129,.1)}
 .trust .tsx-faq-a{font-size:13px;color:var(--muted);line-height:1.7;margin:12px 0 0}
+
+/* Trust Dark Footer Implementation */
+.trust .tsx-footer {
+  background: #0A0F1E;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #F8FAFC;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle shifting background grid for footer */
+.trust .tsx-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(15, 76, 129, 0.08) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(15, 76, 129, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle at 50% 100%, black, transparent 75%);
+  pointer-events: none;
+}
+
+.trust .tsx-footer-col-label {
+  color: #475569; /* Muted slate for label contrast */
+}
+
+.trust .tsx-footer-brand-desc {
+  color: #94A3B8; /* Balanced slate description */
+}
+
+.trust .tsx-footer-links button {
+  color: #94A3B8;
+  position: relative;
+}
+
+.trust .tsx-footer-links button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: #1d4ed8;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.24s ease;
+}
+
+.trust .tsx-footer-links button:hover {
+  color: #F8FAFC;
+}
+
+.trust .tsx-footer-links button:hover::after {
+  transform: scaleX(1);
+}
+
+.trust .tsx-footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.trust .tsx-footer-copyright {
+  color: #64748B;
+}
+
+/* Logo icon rotate animation on hover */
+.trust .tsx-logo:hover .tsx-logo-mark {
+  transform: rotate(180deg) scale(1.05);
+  background: #1d4ed8;
+  box-shadow: 0 0 16px rgba(29, 78, 216, 0.45);
+}
+.trust .tsx-logo-mark {
+  transition: transform 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
+}

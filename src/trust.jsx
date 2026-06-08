@@ -27,6 +27,10 @@ function TrustParticleCanvas() {
     const BG = '#0A0F1E', LINE = 'rgba(15,76,129,', DOT = 'rgba(15,76,129,1)';
     const MAX_DIST = 160, N = 320;
     let W, H, particles, raf;
+    
+    // Mouse proximity tracking state
+    const mouse = { x: null, y: null };
+
     function Particle() {
       this.x = Math.random() * W; this.y = Math.random() * H;
       this.vx = (Math.random() - 0.5) * 0.28; this.vy = (Math.random() - 0.5) * 0.28;
@@ -56,6 +60,26 @@ function TrustParticleCanvas() {
           ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
         }
       }
+      
+      // Interactive cursor constellation lines
+      if (mouse.x !== null && mouse.y !== null) {
+        ctx.fillStyle = 'rgba(147, 197, 253, 0.04)';
+        ctx.beginPath();
+        ctx.arc(mouse.x, mouse.y, 100, 0, Math.PI * 2);
+        ctx.fill();
+
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx*dx + dy*dy;
+          if (d2 < 120 * 120) {
+            const alpha = (1 - Math.sqrt(d2) / 120) * 0.38;
+            ctx.strokeStyle = `rgba(147, 197, 253, ${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+          }
+        }
+      }
+
       ctx.fillStyle = DOT;
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i]; p.update();
@@ -64,11 +88,33 @@ function TrustParticleCanvas() {
       ctx.globalAlpha = 1;
       raf = requestAnimationFrame(draw);
     }
+    
+    // Mouse event handlers
+    const onMouseMove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    };
+    const onMouseLeave = () => {
+      mouse.x = null;
+      mouse.y = null;
+    };
+
     init(); draw();
+    
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('mouseleave', onMouseLeave);
     let rt;
     const onResize = () => { clearTimeout(rt); rt = setTimeout(() => { cancelAnimationFrame(raf); init(); draw(); }, 120); };
     window.addEventListener('resize', onResize);
-    return () => { cancelAnimationFrame(raf); clearTimeout(rt); window.removeEventListener('resize', onResize); };
+    
+    return () => { 
+      cancelAnimationFrame(raf); 
+      clearTimeout(rt); 
+      window.removeEventListener('resize', onResize);
+      canvas.removeEventListener('mousemove', onMouseMove);
+      canvas.removeEventListener('mouseleave', onMouseLeave);
+    };
   }, []);
   return <canvas ref={canvasRef} className="tsx-hero-canvas" aria-hidden="true" />;
 }
@@ -152,11 +198,41 @@ function TrustNav({ page, detail }) {
 
 function TrustHeroFlat() {
   const copy = DATA.home.trust;
+  const cardRef = React.useRef(null);
+  const copyRef = React.useRef(null);
+  
+  React.useEffect(() => {
+    if (!HAS_SCROLL_ANIMATION) return;
+
+    // Slide up text copy elements
+    const copyEls = copyRef.current ? [...copyRef.current.children] : [];
+    if (copyEls.length) {
+      gsap.fromTo(copyEls, 
+        { y: 32, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, stagger: 0.12, ease: "power2.out" }
+      );
+    }
+
+    // Slide in stats card with stagger
+    if (cardRef.current) {
+      gsap.fromTo(cardRef.current,
+        { x: 48, opacity: 0 },
+        { x: 0, opacity: 1, duration: 1.0, ease: "power3.out", delay: 0.2 }
+      );
+      
+      const stats = cardRef.current.querySelectorAll('.tsx-stat');
+      gsap.fromTo(stats,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.6, stagger: 0.12, ease: "power2.out", delay: 0.4 }
+      );
+    }
+  }, []);
+
   return (
     <section className="tsx-hero" aria-label="Hero">
       <TrustParticleCanvas />
       <div className="tsx-hero-rule" aria-hidden="true" />
-      <div className="tsx-hero-copy">
+      <div className="tsx-hero-copy" ref={copyRef}>
         <p className="tsx-eyebrow">{copy.eyebrow}</p>
         <h1 className="tsx-h1">{copy.title}<br /><span>{copy.accent}</span></h1>
         <p className="tsx-hero-sub">{copy.body}</p>
@@ -165,7 +241,7 @@ function TrustHeroFlat() {
           <button className="tsx-btn-ghost" onClick={() => routeTo('trust', 'academy')}>Explore Solutions</button>
         </div>
       </div>
-      <div className="tsx-hero-card" role="complementary" aria-label="Nexara at a glance">
+      <div ref={cardRef} className="tsx-hero-card" role="complementary" aria-label="Nexara at a glance">
         <div className="tsx-hero-card-header">
           <p>Nexara / Enterprise</p>
           <p>Route parity</p>
