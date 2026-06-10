@@ -1741,43 +1741,61 @@ function TrustHero({ copy, theme }) {
 
 function Gateway() {
   const [hover, setHover] = useState(null);
+  const [leaving, setLeaving] = useState(null);
   const neo = DATA.gateway.neo;
   const trust = DATA.gateway.trust;
+  const sections = DATA.nav.filter(item => item.page !== "contact");
+  const enter = (theme) => {
+    if (leaving) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) { routeTo(theme); return; }
+    setLeaving(theme);
+    window.setTimeout(() => routeTo(theme), 640);
+  };
+  const cls = "gateway" +
+    (hover && !leaving ? " is-" + hover : "") +
+    (leaving ? " is-leaving leave-" + leaving : "");
   return (
-    <main className={"gateway " + (hover ? "is-" + hover : "")}>
-      <section 
-        className="gate-panel gate-neo" 
-        onMouseEnter={() => setHover("neo")} 
-        onMouseLeave={() => setHover(null)} 
-        onClick={() => routeTo("neo")}
+    <main className={cls}>
+      <section
+        className="gate-panel gate-neo"
+        onMouseEnter={() => setHover("neo")}
+        onMouseLeave={() => setHover(null)}
+        onClick={() => enter("neo")}
       >
         <div className="gate-motion-grid"></div>
         <div className="gate-content">
           <p className="gate-kicker">{neo.kicker}</p>
           <h1>{neo.title}</h1>
           <p>{neo.body}</p>
+          <ul className="gate-preview" aria-hidden="true">
+            {sections.map(item => <li key={item.page}>&gt; {item.label}</li>)}
+          </ul>
           <div className="gate-mini-stats">
             {neo.chips.map(chip => <span key={chip}>{chip}</span>)}
           </div>
-          <button onClick={(e) => { e.stopPropagation(); routeTo("neo"); }}>
+          <button onClick={(e) => { e.stopPropagation(); enter("neo"); }}>
             {neo.cta}
           </button>
         </div>
       </section>
-      <section 
-        className="gate-panel gate-trust" 
-        onMouseEnter={() => setHover("trust")} 
-        onMouseLeave={() => setHover(null)} 
-        onClick={() => routeTo("trust")}
+      <section
+        className="gate-panel gate-trust"
+        onMouseEnter={() => setHover("trust")}
+        onMouseLeave={() => setHover(null)}
+        onClick={() => enter("trust")}
       >
         <div className="gate-content">
           <p className="gate-kicker">{trust.kicker}</p>
           <h1>{trust.title}</h1>
           <p>{trust.body}</p>
+          <ul className="gate-preview" aria-hidden="true">
+            {sections.map(item => <li key={item.page}>{item.trustLabel}</li>)}
+          </ul>
           <div className="gate-mini-stats">
             {trust.chips.map(chip => <span key={chip}>{chip}</span>)}
           </div>
-          <button onClick={(e) => { e.stopPropagation(); routeTo("trust"); }}>
+          <button onClick={(e) => { e.stopPropagation(); enter("trust"); }}>
             {trust.cta}
           </button>
         </div>
