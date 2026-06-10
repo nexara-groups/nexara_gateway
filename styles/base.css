@@ -2498,6 +2498,14 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid cur
   width: 100%;
 }
 
+.roi-disclaimer {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  opacity: 0.6;
+  max-width: 56ch;
+  margin: 8px 0 0;
+}
+
 .roi-container {
   border-radius: 12px;
   padding: 32px;

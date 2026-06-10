@@ -8,7 +8,7 @@ window.NEXARA = {
   ],
   gateway: {
     neo: {
-      kicker: "For teams that move like the deadline is always tomorrow.",
+      kicker: "For teams that move before the market catches up.",
       title: "Loud, fast, fluorescent. The Nexara you'd screenshot for your story.",
       body: "Live cohorts, campaigns that hit, and AI systems that actually ship, from one team that treats every brief like launch week.",
       chips: ["no cap", "shipping daily", "vibes reserved"],
@@ -37,7 +37,7 @@ window.NEXARA = {
       accent: "Structured. Governed. Operational.",
       body: "Nexara helps organizations run talent enablement, digital market infrastructure and applied AI automation through three clearly defined solution lines.",
       calloutTitle: "One enterprise operating model across three solution lines.",
-      calloutBody: "Trust keeps the same Nexara capabilities visible while translating them into corporate service lines, defined modules, delivery stages and governance-ready reporting.",
+      calloutBody: "Trust keeps the same Nexara capabilities visible while translating them into corporate service lines, defined modules, delivery stages and review-ready reporting.",
     },
   },
   unbox: {
@@ -50,7 +50,7 @@ window.NEXARA = {
     trust: {
       eyebrow: "Operating model",
       title: "One enterprise model across talent, digital and automation.",
-      body: "The operating model keeps each solution line distinct while connecting project scoping, reporting, governance and production-readiness standards.",
+      body: "The operating model keeps each solution line distinct while connecting project scoping, reporting, controls and production-readiness standards.",
       sequence: "Enterprise capability model",
     },
     faces: [
@@ -355,7 +355,7 @@ window.NEXARA = {
       },
       stats: [["4", "AI build modules"], ["3", "deployment paths"], ["4", "control layers"], ["6", "stack capabilities"]],
       modules: [
-        { title: "Atlas", neo: "Knowledge search with source trails — no hallucinations, no loose threads.", trust: "A knowledge-retrieval pattern for documents, tickets, policies and wikis." },
+        { title: "Atlas", neo: "Knowledge search with source trails, review paths and fewer loose threads.", trust: "A knowledge-retrieval pattern for documents, tickets, policies and wikis." },
         { title: "Pulse", neo: "Ask business questions in plain language. Stop waiting for dashboard bottlenecks.", trust: "A natural-language analytics pattern for product and business events." },
         { title: "Forge", neo: "Agent workflows with logs, traces and permissions locked in. Ship daily with brakes.", trust: "Agent workflow patterns with orchestration, controls, traces and evaluation." },
         { title: "Vault", neo: "Messy forms, contracts and invoices become clean structured data you can actually review.", trust: "Document intelligence patterns for invoices, forms, contracts and operational files." },
@@ -395,7 +395,7 @@ window.NEXARA = {
         {
           slug: "products",
           title: "Products",
-          callout: { neo: "A lab shelf of robust patterns ready to scope. Zero hallucinations tolerated.", trust: "Reusable product patterns designed around practical enterprise workflows." },
+          callout: { neo: "A lab shelf of robust patterns ready to scope, grounded before they ship.", trust: "Reusable product patterns designed around practical enterprise workflows." },
           cards: [
             { title: "Atlas", neo: "Grounded-answer search with source trails — every answer accountable.", trust: "Grounded-answer workflows for internal knowledge systems." },
             { title: "Pulse", neo: "Ask actual business questions without waiting on dashboard queues.", trust: "Natural-language analytics patterns over product and business events." },
@@ -427,7 +427,7 @@ window.NEXARA = {
         },
       ],
       proof: [
-        { name: "Knowledge workflow", result: { neo: "Answers tied back to sources — hallucinations out of the loop", trust: "Grounded knowledge assistant scoped for internal use" }, org: "Retrieval system" },
+        { name: "Knowledge workflow", result: { neo: "Answers tied back to sources before they reach the workflow", trust: "Grounded knowledge assistant scoped for internal use" }, org: "Retrieval system" },
         { name: "Document workflow", result: { neo: "Manual fields became reviewable structured data", trust: "Extraction, validation and export workflow designed" }, org: "Document AI" },
         { name: "Operations workflow", result: { neo: "Repetitive follow-ups got a system instead of a sticky note", trust: "Controlled automation flow mapped with review checkpoints" }, org: "Agent workflow" },
       ],
@@ -462,7 +462,7 @@ window.NEXARA = {
       ],
     },
     trust: {
-      manifesto: "Nexara is an incorporated enterprise capability company with three focused solution lines: Talent Programmes for workforce readiness, Digital Solutions for market infrastructure, and AI & Automation for applied systems. Each line has its own delivery model while sharing standards for clarity, reporting, governance and production readiness.",
+      manifesto: "Nexara is an incorporated enterprise capability company with three focused solution lines: Talent Programmes for workforce readiness, Digital Solutions for market infrastructure, and AI & Automation for applied systems. Each line has its own delivery model while sharing standards for clarity, reporting, controls and production readiness.",
       principles: [
         { title: "Maintain distinct section ownership", body: "Academy, Digital Marketing and Labs remain separate service lines with clear scopes and decision paths." },
         { title: "Use shared standards and reporting", body: "Every engagement should define deliverables, cadence, evidence, handoff and next-step reporting." },

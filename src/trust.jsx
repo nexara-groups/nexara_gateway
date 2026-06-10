@@ -3,10 +3,11 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 function setupTsxFade() {
+  document.documentElement.classList.add('js-reveal-ready');
   const els = document.querySelectorAll('.tsx-fade:not(.visible)');
   if (!('IntersectionObserver' in window)) {
     els.forEach(el => el.classList.add('visible'));
-    return () => {};
+    return () => document.documentElement.classList.remove('js-reveal-ready');
   }
   const obs = new IntersectionObserver(
     (entries) => entries.forEach(e => {
@@ -15,7 +16,14 @@ function setupTsxFade() {
     { threshold: 0.15 }
   );
   els.forEach(el => obs.observe(el));
-  return () => obs.disconnect();
+  const revealFallback = window.setTimeout(() => {
+    els.forEach(el => el.classList.add('visible'));
+  }, 900);
+  return () => {
+    window.clearTimeout(revealFallback);
+    obs.disconnect();
+    document.documentElement.classList.remove('js-reveal-ready');
+  };
 }
 
 function TrustParticleCanvas() {
@@ -238,7 +246,7 @@ function TrustProofStrip() {
     { num: '3', label: 'Solution Lines',       accent: false },
     { num: '9', label: 'Capability Modules',   accent: false },
     { num: '4', label: 'Delivery Standards',   accent: true  },
-    { num: '1', label: 'Partner, All Areas',   accent: false },
+    { num: '3', label: 'Engagement Packages', accent: false },
   ];
   return (
     <div className="tsx-stat-band" aria-label="Key figures">
@@ -418,7 +426,7 @@ function TrustCTABand() {
         <div className="tsx-cta-inner tsx-fade">
           <p className="tsx-cta-eyebrow">Enterprise intake</p>
           <h2 className="tsx-cta-heading" id="tsx-cta-h">Ready to work with Nexara?</h2>
-          <p className="tsx-cta-sub">Pick a solution line and open an engagement. Nexara confirms fit and next steps within one business day.</p>
+          <p className="tsx-cta-sub">Pick a solution line and open an engagement. Nexara reviews the brief and responds with fit and next steps.</p>
           <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'contact')}>Start a Project</button>
         </div>
       </div>
@@ -433,7 +441,7 @@ function TrustFooter() {
   );
   const cols = [
     { label: 'Solutions', links: solutionLinks },
-    { label: 'Modules', links: moduleLinks.slice(0, 5) },
+    { label: 'Modules', links: moduleLinks },
     { label: 'Company', links: [{ text: 'Delivery Proof', page: 'customers' }, { text: 'About Nexara', page: 'company' }, { text: 'Enterprise Enquiry', page: 'contact' }] },
   ];
   return (
@@ -462,7 +470,7 @@ function TrustFooter() {
         ))}
       </div>
       <div className="tsx-footer-bottom">
-        <p className="tsx-footer-copyright">© 2026 Nexara. Incorporated company. All rights reserved.</p>
+        <p className="tsx-footer-copyright">© 2026 Nexara. All rights reserved.</p>
       </div>
     </footer>
   );

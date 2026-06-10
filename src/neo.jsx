@@ -71,7 +71,7 @@ function InfiniteMarquee() {
             <span className="accent-color">✦ academic</span>
             <span>✦ software</span>
             <span className="cyan-color">✦ marketing</span>
-            <span>✦ no cap</span>
+            <span>✦ proof live</span>
             <span className="accent-color">✦ shipping daily</span>
           </React.Fragment>
         ))}
@@ -467,9 +467,6 @@ function NeoGuide() {
     const spotlight = spotlightRef.current;
     const burst     = burstRef.current;
     const triggers  = [];
-    const guideState = {
-      sandboxCompiled: false,
-    };
     const guideHomeHero = document.querySelector(".neo-scrolly-hero-wrap");
     const isDesktopFollower = window.matchMedia("(pointer: fine) and (min-width: 761px)").matches;
 
@@ -507,12 +504,7 @@ function NeoGuide() {
           ".before-after-band",
           ".faq-band details",
           ".intake-cta button",
-          ".sandbox-action-btn",
-          ".toggle-deck button",
-          ".checkbox-deck button",
           ".form-group",
-          ".telemetry-card",
-          ".blueprint-spec-box",
           ".unbox-word-play button",
           ".unbox-route-card",
           ".unbox-quick-actions button",
@@ -529,12 +521,9 @@ function NeoGuide() {
           ".process-grid article",
           ".detail-hero",
           ".market-context",
-          ".sandbox-card",
           ".super-skills",
           ".section-grid-wrap",
-          ".callout",
-          ".stack-matrix",
-          ".proof-rail"
+          ".callout"
         ].join(","));
 
         if (!target) {
@@ -559,7 +548,7 @@ function NeoGuide() {
             line: rotateLine("currency", [
               `swapping coins to ${mode}. respect.`,
               `maths is mathing in any currency.`,
-              `${mode} mode hits different.`,
+              `${mode} mode engaged.`,
               `counting in ${mode}. let's go.`
             ], key)
           };
@@ -583,12 +572,12 @@ function NeoGuide() {
         if (target.matches(".roi-metric-big")) {
           return {
             key: "roi-payout",
-            label: "grow payout",
+            label: "scenario value",
             line: rotateLine("roi-payout", [
-              "that's the payout. no cap.",
-              "big numbers. big wins.",
-              "optimized traffic results look like this.",
-              "compounding metrics."
+              "your inputs, your number.",
+              "that's the what-if total.",
+              "sandbox math. play with it.",
+              "move a slider. watch it shift."
             ], "roi-payout")
           };
         }
@@ -716,26 +705,6 @@ function NeoGuide() {
           ], key) };
         }
 
-        if (target.matches(".sandbox-action-btn")) {
-          return { key: "compile", label: "send it", line: rotateLine("compile", [
-            "press it.",
-            "bro just press it.",
-            "one click. chaos ends.",
-            "do it."
-          ], "compile") };
-        }
-
-        if (target.matches(".toggle-deck button, .checkbox-deck button")) {
-          const control = clean(target.textContent).toLowerCase();
-          const key = `control-${control}`;
-          return { key, label: "vibe dial", line: rotateLine("control", [
-            `${control}. changed.`,
-            `${control}. i felt that.`,
-            `tweaked ${control}. plan moved.`,
-            `${control} selected. interesting.`
-          ], key) };
-        }
-
         if (target.matches(".form-group")) {
           const key = `field-${textFrom(target, "label")}`;
           return {
@@ -747,33 +716,6 @@ function NeoGuide() {
               "go on.",
               "that's a setting btw."
             ], key)
-          };
-        }
-
-        if (target.matches(".telemetry-card")) {
-          const key = `metric-${textFrom(target, "span")}`;
-          return {
-            key,
-            label: (textFrom(target, "span") || "telemetry").toLowerCase(),
-            line: rotateLine("metric", [
-              "numbers. real ones.",
-              "data showed up.",
-              "look at that number go.",
-              "receipts."
-            ], key)
-          };
-        }
-
-        if (target.matches(".blueprint-spec-box")) {
-          return {
-            key: "blueprint",
-            label: (textFrom(target, "h4") || "blueprint").toLowerCase(),
-            line: rotateLine("blueprint", [
-              "plan spawned.",
-              "cooked.",
-              "idea has a shape now.",
-              "there's your blueprint."
-            ], "blueprint")
           };
         }
 
@@ -843,15 +785,6 @@ function NeoGuide() {
           };
         }
 
-        if (target.matches(".sandbox-card")) {
-          return { key: "sandbox", label: "sandbox", line: rotateLine("sandbox", [
-            "touch stuff.",
-            "it responds.",
-            "mess with it.",
-            "interactive. go."
-          ], "sandbox") };
-        }
-
         if (target.matches(".super-skills")) {
           return {
             key: "super-skills",
@@ -883,21 +816,12 @@ function NeoGuide() {
           ], "callout") };
         }
 
-        if (target.matches(".stack-matrix")) {
-          return { key: "matrix", label: (textFrom(target, "h2") || "stack matrix").toLowerCase(), line: rotateLine("matrix", [
-            "side by side.",
-            "compare without crying.",
-            "three columns. clean.",
-            "no spreadsheet needed."
-          ], "matrix") };
-        }
-
-        return { key: "proof", label: "proof rail", line: rotateLine("proof", [
-          "receipts.",
-          "proof dropped.",
-          "documented.",
-          "it happened."
-        ], "proof") };
+        return { key: "spot", label: "spotted", line: rotateLine("spot", [
+          "noted.",
+          "seen it.",
+          "tracking this.",
+          "logged."
+        ], "spot") };
       };
 
       const setInfo = (info) => {
@@ -1069,24 +993,6 @@ function NeoGuide() {
         },
       },
       {
-        sel: ".sandbox-section",
-        yPos: "44vh",
-        label: "Marketing",
-        line: "get loud.",
-        interact: (tl) => {
-          const btn = document.querySelector('.sandbox-action-btn');
-          if (!btn) return;
-          tl.to(btn, { scale: 0.87, duration: 0.07, ease: "power3.in" }, "+=0.12")
-            .to(btn, { scale: 1.07, filter: "brightness(1.9)", duration: 0.14, ease: "power2.out" })
-            .to(btn, { scale: 1, filter: "none", duration: 0.38, ease: "elastic.out(1.5,0.5)" })
-            .call(() => {
-              if (guideState.sandboxCompiled) return;
-              guideState.sandboxCompiled = true;
-              try { btn.click(); } catch (e) {}
-            });
-        },
-      },
-      {
         sel: ".super-skills",
         yPos: "60vh",
         label: "Labs",
@@ -1139,7 +1045,7 @@ function NeoGuide() {
 
     const undock = () => {
       gsap.killTweensOf([charWrap, bubble, tag, beacon]);
-      gsap.killTweensOf(Array.from(document.querySelectorAll('.super-skill-card, .market-cities span, .sandbox-action-btn')));
+      gsap.killTweensOf(Array.from(document.querySelectorAll('.super-skill-card, .market-cities span')));
       gsap.to(Array.from(document.querySelectorAll('.super-skill-card')), { scale: 1, borderColor: "", boxShadow: "", duration: 0.3, overwrite: true });
       gsap.to(charWrap,  { x: 0, y: "44vh", duration: 0.55, ease: "power2.inOut", overwrite: true });
       gsap.to(spotlight, { top: "44vh", duration: 0.55, overwrite: true });
@@ -1153,10 +1059,8 @@ function NeoGuide() {
 
       const cities = Array.from(document.querySelectorAll('.market-cities span'));
       const cards = Array.from(document.querySelectorAll('.super-skill-card'));
-      const btn = document.querySelector('.sandbox-action-btn');
       gsap.set(cities, { clearProps: "color,borderColor,backgroundColor,boxShadow,textShadow,scale" });
       gsap.set(cards, { clearProps: "scale,borderColor,boxShadow" });
-      if (btn) gsap.set(btn, { clearProps: "scale,filter,boxShadow" });
     };
 
     sectionDefs.forEach((sec) => {
@@ -1203,14 +1107,22 @@ function NeoHero({ copy, theme }) {
   const canvasRef = React.useRef(null);
 
   React.useEffect(() => {
-    if (!HAS_SCROLL_ANIMATION) return;
-    if (!canvasRef.current) return;
+    const collapseRunway = () => wrapRef.current?.classList.add("hero-webgl-failed");
+    if (!HAS_SCROLL_ANIMATION) {
+      collapseRunway();
+      return;
+    }
+    if (!canvasRef.current) {
+      collapseRunway();
+      return;
+    }
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const THREE = window.THREE;
     if (!THREE) {
       console.error("Three.js not loaded.");
+      collapseRunway();
       return;
     }
 
@@ -1222,6 +1134,7 @@ function NeoHero({ copy, theme }) {
       renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true, antialias: true });
     } catch (err) {
       console.warn("WebGL unavailable — 3D hero skipped, page renders without it.", err);
+      collapseRunway();
       return;
     }
     renderer.setSize(width, height);
@@ -1449,14 +1362,22 @@ function TrustHero({ copy, theme }) {
   const copyRef = React.useRef(null);
 
   React.useEffect(() => {
-    if (!HAS_SCROLL_ANIMATION) return;
-    if (!canvasRef.current) return;
+    const collapseRunway = () => wrapRef.current?.classList.add("hero-webgl-failed");
+    if (!HAS_SCROLL_ANIMATION) {
+      collapseRunway();
+      return;
+    }
+    if (!canvasRef.current) {
+      collapseRunway();
+      return;
+    }
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const THREE = window.THREE;
     if (!THREE) {
       console.error("Three.js not loaded.");
+      collapseRunway();
       return;
     }
 
@@ -1468,6 +1389,7 @@ function TrustHero({ copy, theme }) {
       renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true, antialias: true });
     } catch (err) {
       console.warn("WebGL unavailable — 3D hero skipped, page renders without it.", err);
+      collapseRunway();
       return;
     }
     renderer.setSize(width, height);
@@ -3023,17 +2945,17 @@ const MODULE_DETAILS = {
     },
     trust: {
       offer: "Naming systems, corporate design manuals, vector branding kits, messaging frameworks, launch kits, and brand governance.",
-      better: "We provide tokenized style guidelines that integrate directly with enterprise frontend codebases, ensuring absolute brand consistency across divisions."
+      better: "We provide tokenized style guidelines that support consistent implementation across divisions and frontend codebases."
     }
   },
   "Web Experience": {
     neo: {
       offer: "WebGL layouts, interactive scroll animations, cursor spotlights, reactive grid containers, and custom typography.",
-      better: "Our sites act as digital closers. They hook visitor attention in under three seconds and keep it with responsive micro-actions."
+      better: "Our sites are built to explain the offer quickly and keep users oriented with responsive micro-actions."
     },
     trust: {
       offer: "Enterprise websites, landing page systems, product sheets, SEO-friendly markup, and responsive structural layouts.",
-      better: "We deliver audited, standard-compliant frontend components that achieve 100/100 Lighthouse performance scores and WCAG AA accessibility compliance."
+      better: "We deliver frontend components with performance, accessibility and responsive behavior reviewed as part of the build scope."
     }
   },
   "Social Studio": {
@@ -3049,7 +2971,7 @@ const MODULE_DETAILS = {
   "Performance Growth": {
     neo: {
       offer: "Programmatic ad campaigns, custom analytics setups, programmatic landing pages, and rapid creative testing loops.",
-      better: "No vanity metrics. We focus on real-time attribution and direct acquisition models to translate every dollar of ad spend into revenue."
+      better: "No vanity metrics. We focus on attribution, channel discipline and acquisition models that can be reviewed against the agreed business objective."
     },
     trust: {
       offer: "Audited paid media campaigns, SEO site hierarchy structures, live dashboards, and weekly performance reviews.",
@@ -3065,7 +2987,7 @@ const MODULE_DETAILS = {
     },
     trust: {
       offer: "Role-aligned skilling tracks mapped directly to regional hiring criteria across software engineering, DevOps, design, and analytics.",
-      better: "Industry-reviewed curricula with verified credentials and structured project reviews that guarantee employer readiness."
+      better: "Role-aligned curricula and structured project reviews help document readiness signals for employer review."
     }
   },
   "Internship Engine": {
@@ -3080,8 +3002,8 @@ const MODULE_DETAILS = {
   },
   "Placement Desk": {
     neo: {
-      offer: "Resume re-writes, Github portfolio polish, intensive technical mock interviews, and direct matching with fast-growing tech squads.",
-      better: "We connect candidates directly with engineering leads who care about shipped code, cutting out generic HR filters entirely."
+      offer: "Resume re-writes, Github portfolio polish, intensive technical mock interviews, and role-fit matching support for growing tech squads.",
+      better: "We prepare candidate proof for technical review and align profiles with the hiring workflows included in scope."
     },
     trust: {
       offer: "Employer partnership requirements, pre-screened talent shortlists, interview readiness prep, and comprehensive hiring support.",
@@ -3103,17 +3025,17 @@ const MODULE_DETAILS = {
   "Atlas": {
     neo: {
       offer: "Smart vector indexing, semantic search interfaces, and RAG systems with transparent citation trails.",
-      better: "Absolute truth. Zero AI hallucinations, instant retrieval, and traceable citations back to your source documents."
+      better: "Answers are designed around source trails, review paths and citation visibility instead of unsupported model output."
     },
     trust: {
       offer: "Document intelligence retrieval patterns for policies, contracts, documentation, and internal wikis.",
-      better: "Strict access control integration, SOC2-aligned data handling, and grounded retrieval validation protocols."
+      better: "Access control, data handling and retrieval validation are scoped against the documents and risk level in the engagement."
     }
   },
   "Pulse": {
     neo: {
-      offer: "Natural language query interface for product events, SQL database connections, and instant charting.",
-      better: "Get answers in seconds, not sprint cycles. Ask plain questions and get accurate data visualizations instantly."
+      offer: "Natural language query interface for product events, SQL database connections, and reviewed chart outputs.",
+      better: "Ask plain-language questions against approved data paths and review the generated chart or query before decisions move."
     },
     trust: {
       offer: "Structured analytics patterns translating business query intent to auditable data models.",
@@ -3123,7 +3045,7 @@ const MODULE_DETAILS = {
   "Forge": {
     neo: {
       offer: "Multi-agent workflows, state-machine orchestrations, and visual step-by-step telemetry logs.",
-      better: "Dynamic execution with safety bounds. Build systems that handle complex multi-step reasoning reliably."
+      better: "Dynamic execution with safety bounds, traces and review points for multi-step workflows."
     },
     trust: {
       offer: "Agentic workflow patterns with governance frameworks, detailed traces, and performance evaluations.",
@@ -3133,11 +3055,11 @@ const MODULE_DETAILS = {
   "Vault": {
     neo: {
       offer: "Unstructured document parsers, layout-aware OCR engines, and automated validation rules.",
-      better: "Convert dense PDFs, invoices, and hand-written forms into clean JSON payloads with high-speed accuracy."
+      better: "Convert dense PDFs, invoices and forms into structured outputs with validation rules and review checkpoints."
     },
     trust: {
       offer: "Document processing patterns for high-volume invoices, compliance forms, and operational files.",
-      better: "Layout-aware parsers with human-in-the-loop audit paths, verified extraction metrics, and secure exports."
+      better: "Layout-aware parsers with human-in-the-loop audit paths, extraction review metrics and controlled exports."
     }
   }
 };
@@ -3163,8 +3085,8 @@ function ModuleModal({ theme, module, eyebrow, onClose }) {
   }, [onClose]);
 
   const detail = MODULE_DETAILS[module.title] || {
-    neo: { offer: "Details coming soon.", better: "Advanced capability design." },
-    trust: { offer: "Details pending documentation.", better: "Standardized integration approach." }
+    neo: { offer: "Scope notes for this module get prepared per enquiry.", better: "Module detail is mapped during scoping, not guessed upfront." },
+    trust: { offer: "Module details are documented during engagement scoping.", better: "Capability detail is confirmed against your workflow before delivery." }
   };
 
   const isNeo = theme === "neo";
@@ -3331,7 +3253,7 @@ function SubNav({ theme, section, active }) {
 }
 
 function BeforeAfterSlider({ theme }) {
-  const [sliderPos, setSliderPos] = useState(0); // Starts at extreme left (boring default centered)
+  const [sliderPos, setSliderPos] = useState(50);
   const containerRef = React.useRef(null);
 
   const handleMove = (clientX) => {
@@ -3414,7 +3336,7 @@ function BeforeAfterSlider({ theme }) {
           <div 
             className="comp-panel comp-before"
           >
-            {/* Boring default - Swapped to the bottom layer so it is centered on load (sliderPos = 0) */}
+            {/* Generic baseline layer */}
             <div className="before-content-wrapper" style={{ minWidth: "320px" }}>
               <div className="before-headline">{copy.before.title}</div>
               <p style={{ marginBottom: "16px" }}>{copy.before.desc}</p>
@@ -3625,24 +3547,27 @@ function RoiEstimator({ theme }) {
   let recommendation = "";
   if (valueGained < 5000) {
     recommendation = isNeo
-      ? "RECOMMENDED PLAN: Brand Launch Package. Prioritize visual identity & core messaging baseline."
-      : "Recommended engagement: Brand Launch. Focus on branding guidelines and positioning before active spend.";
+      ? "CLOSEST PACKAGE: Brand Launch. At this scenario size, identity and core messaging come first."
+      : "Closest package: Brand Launch. A scenario at this scale usually starts with positioning and identity.";
   } else if (valueGained < 30000) {
     recommendation = isNeo
-      ? "RECOMMENDED PLAN: Website Growth Platform. Upgrade conversion mechanics to capture leakages."
-      : "Recommended engagement: Website Growth. Focus on UX structure, high-converting copy, and basic SEO.";
+      ? "CLOSEST PACKAGE: Website Growth. This scenario shape points at conversion mechanics."
+      : "Closest package: Website Growth. A scenario at this scale usually centres on UX structure, copy and SEO foundations.";
   } else {
     recommendation = isNeo
-      ? "RECOMMENDED PLAN: Full-Stack Demand System. Paid performance layers and weekly dashboards loop."
-      : "Recommended engagement: Demand System. Focus on paid ads optimization, analytics reporting, and active content rhythms.";
+      ? "CLOSEST PACKAGE: Demand System. A scenario this size needs content, paid and reporting running as one loop."
+      : "Closest package: Demand System. A scenario at this scale usually combines campaigns, content cadence and reporting.";
   }
 
   return (
     <section className="roi-estimator-band">
       <div className="section-head">
         <div>
-          <p className="eyebrow">{isNeo ? "ROI Estimator" : "Conversion calculator"}</p>
-          <h2>{isNeo ? "Project optimized traffic conversions." : "Calculate the impact of a high-conversion funnel."}</h2>
+          <p className="eyebrow">{isNeo ? "Scenario Sandbox" : "Scenario calculator"}</p>
+          <h2>{isNeo ? "Play with the math behind your funnel." : "Model a hypothetical funnel scenario."}</h2>
+          <p className="roi-disclaimer">{isNeo
+            ? "Your inputs, your math. This is a what-if sandbox — not a Nexara projection or promise."
+            : "Figures are derived entirely from the inputs you set below. This is an illustrative scenario, not a performance projection or commitment."}</p>
         </div>
       </div>
 
@@ -3717,14 +3642,14 @@ function RoiEstimator({ theme }) {
         </div>
 
         <div className="roi-results-pane">
-          <span className="eyebrow">{isNeo ? "CONVERTED GROW-VALUE" : "Projected Impact (Monthly)"}</span>
+          <span className="eyebrow">{isNeo ? "SCENARIO VALUE (MONTHLY)" : "Scenario value (monthly)"}</span>
           <div className="roi-metric-big">
             {isINR ? `₹${(valueGained * rate).toLocaleString()}` : `$${valueGained.toLocaleString()}`}
           </div>
           <p style={{ fontSize: "0.85rem", opacity: 0.75, marginBottom: "16px" }}>
-            {isNeo 
-              ? `Based on ${leads.toLocaleString()} projected monthly conversions` 
-              : `Derived from ${leads.toLocaleString()} conversions per month`}
+            {isNeo
+              ? `Based on ${leads.toLocaleString()} hypothetical monthly conversions from your inputs`
+              : `Derived from ${leads.toLocaleString()} hypothetical conversions per month at your chosen inputs`}
           </p>
           <div className="roi-recommendation-box">
             {recommendation}
@@ -4292,4 +4217,3 @@ function Footer({ theme }) {
     </footer>
   );
 }
-
