@@ -640,3 +640,72 @@
 .neo .floating-book {
   background: linear-gradient(135deg, color-mix(in srgb, var(--face-color) 25%, transparent), transparent), rgba(8, 8, 10, 0.9);
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   NEO SIGNATURE SECTION HEROES — Marketing (broadcast) + Labs (pipeline)
+   ═══════════════════════════════════════════════════════════════════ */
+.neo .neo-sig-visual{position:relative;display:grid;place-items:center;min-height:320px;align-self:center}
+
+/* ── Marketing: cyan broadcast ─────────────────────────────────────── */
+.neo .neo-bcast{position:relative;width:100%;height:320px;display:grid;place-items:center}
+.neo .neo-bcast-core{position:relative;z-index:3;width:104px;height:104px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(0,240,255,.28),rgba(0,0,0,.65));border:1px solid var(--cyan);box-shadow:0 0 34px rgba(0,240,255,.45),inset 0 0 22px rgba(0,240,255,.25)}
+.neo .neo-bcast-core span{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;color:var(--cyan)}
+.neo .neo-bcast-ring{position:absolute;top:50%;left:50%;width:104px;height:104px;margin:-52px 0 0 -52px;border-radius:50%;border:1px solid rgba(0,240,255,.55);z-index:1;animation:neoBcast 3.6s ease-out infinite}
+.neo .neo-bcast-ring:nth-child(2){animation-delay:1.2s}
+.neo .neo-bcast-ring:nth-child(3){animation-delay:2.4s}
+@keyframes neoBcast{0%{transform:scale(1);opacity:.7}100%{transform:scale(3.4);opacity:0}}
+.neo .neo-bcast-chip{position:absolute;z-index:4;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(0,240,255,.06);border:1px solid var(--line);padding:5px 11px;border-radius:999px;backdrop-filter:blur(4px);animation:neoChipFloat 5s ease-in-out infinite}
+.neo .neo-bcast-chip.chip-1{top:10%;left:8%}
+.neo .neo-bcast-chip.chip-2{top:22%;right:6%;animation-delay:.7s}
+.neo .neo-bcast-chip.chip-3{bottom:20%;left:6%;animation-delay:1.4s}
+.neo .neo-bcast-chip.chip-4{bottom:9%;right:10%;animation-delay:2.1s}
+@keyframes neoChipFloat{50%{transform:translateY(-9px)}}
+
+/* ── Labs: lime pipeline ───────────────────────────────────────────── */
+.neo .neo-pipe{position:relative;width:100%;max-width:300px;min-height:320px;display:flex;flex-direction:column;justify-content:space-between;padding:18px 0 18px 40px}
+.neo .neo-pipe::before{content:"";position:absolute;left:13px;top:18px;bottom:18px;width:2px;background:linear-gradient(180deg,transparent,var(--accent) 18%,var(--cyan) 82%,transparent);box-shadow:0 0 14px rgba(204,255,0,.4)}
+.neo .neo-pipe-pulse{position:absolute;left:8px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 18px var(--accent),0 0 6px #fff;z-index:2;animation:neoPipeFlow 3.4s ease-in-out infinite}
+@keyframes neoPipeFlow{0%{top:14px;opacity:0}12%{opacity:1}88%{opacity:1}100%{top:calc(100% - 22px);opacity:0}}
+.neo .neo-pipe-node{position:relative;display:flex;align-items:center;gap:12px;background:rgba(10,10,12,.7);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+.neo .neo-pipe-node .neo-pipe-dot{position:absolute;left:-33px;width:11px;height:11px;border-radius:50%;background:#000;border:2px solid var(--accent);box-shadow:0 0 10px rgba(204,255,0,.55)}
+.neo .neo-pipe-num{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--accent)}
+.neo .neo-pipe-label{font-family:"Syne",sans-serif;font-size:15px;font-weight:700;color:#fff}
+
+@media(prefers-reduced-motion:reduce){
+  .neo .neo-bcast-ring,.neo .neo-bcast-chip,.neo .neo-pipe-pulse{animation:none!important}
+  .neo .neo-bcast-ring{opacity:.22}
+  .neo .neo-pipe-pulse{top:14px}
+}
+@media(max-width:760px){
+  .neo .neo-sig-visual{min-height:240px}
+  .neo .neo-bcast,.neo .neo-pipe{height:auto;min-height:240px}
+  .neo .neo-pipe{margin-inline:auto}
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   NEO STACK CARDS — spec-block redesign ("What you get")
+   ═══════════════════════════════════════════════════════════════════ */
+.neo .stack-detail-card{display:flex;flex-direction:column}
+.neo .stack-outcome{color:var(--accent);background:rgba(204,255,0,.05);border-color:rgba(204,255,0,.28)}
+.neo .stack-index{color:rgba(255,255,255,.10);transition:color .25s ease}
+.neo .stack-detail-card:hover .stack-index{color:rgba(204,255,0,.35)}
+.neo .stack-detail-card h3{margin-top:18px}
+.neo .stack-detail-card ul{margin-top:auto;padding-top:6px;gap:10px}
+.neo .stack-detail-card li{position:relative;padding-left:20px;color:rgba(255,255,255,.78)}
+.neo .stack-detail-card li::before{content:"";position:absolute;left:1px;top:.5em;width:7px;height:7px;background:var(--accent);transform:rotate(45deg);box-shadow:0 0 9px rgba(204,255,0,.55);transition:box-shadow .2s,transform .2s}
+.neo .stack-detail-card:hover li::before{box-shadow:0 0 14px rgba(204,255,0,.85)}
+
+/* ── Home "Receipts" cards — purpose-built (was clipping long titles) ── */
+.neo .proof-receipt{background:var(--panel);border-color:var(--line);transition:transform .2s,background .2s,box-shadow .2s}
+.neo .proof-receipt:hover{transform:translateY(-4px);background:var(--panel2);box-shadow:0 0 0 1px rgba(204,255,0,.35),0 0 32px rgba(204,255,0,.08)}
+.neo .receipt-tag{font-family:"JetBrains Mono",monospace;color:var(--accent)}
+.neo .receipt-index{color:rgba(255,255,255,.10);transition:color .25s ease}
+.neo .proof-receipt:hover .receipt-index{color:rgba(204,255,0,.35)}
+.neo .receipt-engine{font-family:"Syne",sans-serif;color:#fff}
+.neo .receipt-context{color:var(--accent)}
+.neo .receipt-result{color:var(--muted)}
+
+/* ── Module card polish ────────────────────────────────────────────── */
+.neo .module-card:hover .card-visual{border-color:rgba(204,255,0,.3);box-shadow:inset 0 0 26px rgba(204,255,0,.07)}
+.neo .clickable-card .card-click-prompt{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);padding:8px 12px;border-radius:6px;color:var(--accent);width:fit-content;transition:border-color .2s,background .2s,box-shadow .2s,opacity .2s}
+.neo .clickable-card:hover .card-click-prompt{border-color:rgba(204,255,0,.5);background:rgba(204,255,0,.06);box-shadow:0 0 18px rgba(204,255,0,.12);opacity:1!important}

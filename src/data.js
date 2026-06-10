@@ -128,6 +128,7 @@ window.NEXARA = {
       index: "01",
       name: "Academy",
       short: { neo: "Learn fast. Build proof. Get placed. No cap.", trust: "Enterprise talent enablement and placement operations." },
+      statement: "Talent isn't found — it's built. Cohort by cohort, project by project, until the portfolio speaks before the résumé does.",
       hero: {
         neo: {
           eyebrow: "🎓 NEXARA ACADEMY",
@@ -230,6 +231,7 @@ window.NEXARA = {
       index: "02",
       name: "Digital Marketing",
       short: { neo: "Make the brand impossible to ignore. Full stop.", trust: "Digital presence, web infrastructure and growth operations." },
+      statement: "Attention is earned in the first ten seconds. Everything we build is engineered for that moment — and the decision that follows it.",
       hero: {
         neo: {
           eyebrow: "📣 NEXARA DIGITAL MARKETING",
@@ -332,6 +334,7 @@ window.NEXARA = {
       index: "03",
       name: "Labs",
       short: { neo: "From prompt to product. We build agents that survive real traffic.", trust: "Applied AI systems, workflow automation and operational controls." },
+      statement: "AI earns its place when it survives real traffic. We scope the workflow first, prove it second, and ship only what holds.",
       hero: {
         neo: {
           eyebrow: "🤖 NEXARA LABS",

@@ -12,7 +12,7 @@ function setupTsxFade() {
     (entries) => entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
     }),
-    { threshold: 0.12 }
+    { threshold: 0.15 }
   );
   els.forEach(el => obs.observe(el));
   return () => obs.disconnect();
@@ -181,7 +181,10 @@ function TrustNav({ page, detail }) {
           </ul>
         </nav>
         <div className="tsx-nav-right">
-          <button className="tsx-nav-switch" onClick={() => routeTo('neo', page, detail)}>Neo ↗</button>
+          <div className="theme-pill">
+            <button className="" onClick={() => routeTo('neo', page, detail)}>Neo</button>
+            <button className="active" onClick={() => routeTo('trust', page, detail)}>Trust</button>
+          </div>
           <button className="tsx-nav-cta" onClick={() => routeTo('trust', 'contact')}>Start a Project</button>
         </div>
       </div>
@@ -198,41 +201,11 @@ function TrustNav({ page, detail }) {
 
 function TrustHeroFlat() {
   const copy = DATA.home.trust;
-  const cardRef = React.useRef(null);
-  const copyRef = React.useRef(null);
-  
-  React.useEffect(() => {
-    if (!HAS_SCROLL_ANIMATION) return;
-
-    // Slide up text copy elements
-    const copyEls = copyRef.current ? [...copyRef.current.children] : [];
-    if (copyEls.length) {
-      gsap.fromTo(copyEls, 
-        { y: 32, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, stagger: 0.12, ease: "power2.out" }
-      );
-    }
-
-    // Slide in stats card with stagger
-    if (cardRef.current) {
-      gsap.fromTo(cardRef.current,
-        { x: 48, opacity: 0 },
-        { x: 0, opacity: 1, duration: 1.0, ease: "power3.out", delay: 0.2 }
-      );
-      
-      const stats = cardRef.current.querySelectorAll('.tsx-stat');
-      gsap.fromTo(stats,
-        { opacity: 0, y: 16 },
-        { opacity: 1, y: 0, duration: 0.6, stagger: 0.12, ease: "power2.out", delay: 0.4 }
-      );
-    }
-  }, []);
-
   return (
     <section className="tsx-hero" aria-label="Hero">
       <TrustParticleCanvas />
       <div className="tsx-hero-rule" aria-hidden="true" />
-      <div className="tsx-hero-copy" ref={copyRef}>
+      <div className="tsx-hero-copy">
         <p className="tsx-eyebrow">{copy.eyebrow}</p>
         <h1 className="tsx-h1">{copy.title}<br /><span>{copy.accent}</span></h1>
         <p className="tsx-hero-sub">{copy.body}</p>
@@ -241,17 +214,17 @@ function TrustHeroFlat() {
           <button className="tsx-btn-ghost" onClick={() => routeTo('trust', 'academy')}>Explore Solutions</button>
         </div>
       </div>
-      <div ref={cardRef} className="tsx-hero-card" role="complementary" aria-label="Nexara at a glance">
+      <div className="tsx-hero-card" role="complementary" aria-label="Nexara at a glance">
         <div className="tsx-hero-card-header">
           <p>Nexara / Enterprise</p>
-          <p>Route parity</p>
+          <p>Capability index</p>
         </div>
         <div>
-          {Object.values(DATA.sections).map((section, index) => (
+          {Object.values(DATA.sections).map((section) => (
             <div className="tsx-stat" key={section.id}>
               <div className="tsx-stat-label">{getTrustSectionLabel(section)}</div>
               <div className="tsx-stat-value">{section.index}<span>{section.stackDetails.length} modules</span></div>
-              <div className={`tsx-stat-dot${index < 2 ? ' green' : ''}`} />
+              <div className="tsx-stat-dot" />
             </div>
           ))}
         </div>
@@ -383,11 +356,11 @@ function TrustEnterpriseStacks() {
   return (
     <section className="tsx-enterprise-stacks" aria-labelledby="tsx-stack-h">
       <div className="tsx-section-inner">
-        <p className="tsx-section-eyebrow">Capability stacks</p>
-        <h2 className="tsx-section-heading" id="tsx-stack-h">Integrated stacks built from the same Nexara capabilities.</h2>
+        <p className="tsx-section-eyebrow tsx-fade">Capability stacks</p>
+        <h2 className="tsx-section-heading tsx-fade tsx-fade-d1" id="tsx-stack-h">Integrated stacks built from the same Nexara capabilities.</h2>
         <div className="tsx-matrix">
           {DATA.superSkills.map((item, index) => (
-            <div className="tsx-matrix-row" key={item.title}>
+            <div className={`tsx-matrix-row tsx-fade tsx-fade-d${Math.min(index + 1, 4)}`} key={item.title}>
               <div className="tsx-matrix-main">
                 <span className="tsx-matrix-num">{String(index + 1).padStart(2, '0')}</span>
                 <div>
@@ -400,13 +373,11 @@ function TrustEnterpriseStacks() {
                   ))}
                 </div>
               </div>
-              {index === 0 && (
-                <div className="tsx-matrix-detail">
-                  {item.stack.map(module => (
-                    <span className="tsx-matrix-chip" key={module}>{module}</span>
-                  ))}
-                </div>
-              )}
+              <div className="tsx-matrix-detail">
+                {item.stack.map(module => (
+                  <span className="tsx-matrix-chip" key={module}>{module}</span>
+                ))}
+              </div>
             </div>
           ))}
         </div>
@@ -420,16 +391,16 @@ function TrustMarketContext() {
     <section className="tsx-market-context" aria-labelledby="tsx-market-h">
       <div className="tsx-section-inner tsx-market-grid">
         <div className="tsx-market-left-rule">
-          <p className="tsx-section-eyebrow">Operating region</p>
-          <h2 className="tsx-section-heading" id="tsx-market-h">{DATA.market.title.trust}</h2>
-          <p className="tsx-section-lede">{DATA.market.body.trust}</p>
+          <p className="tsx-section-eyebrow tsx-fade">Operating region</p>
+          <h2 className="tsx-section-heading tsx-fade tsx-fade-d1" id="tsx-market-h">{DATA.market.title.trust}</h2>
+          <p className="tsx-section-lede tsx-fade tsx-fade-d2">{DATA.market.body.trust}</p>
           <div className="tsx-city-grid">
             {DATA.market.cities.map((city, i) => (
-              <span key={city} className={i === 0 ? 'tsx-city-primary' : ''}>{city}</span>
+              <span key={city} className={`${i === 0 ? 'tsx-city-primary ' : ''}tsx-fade tsx-fade-d${Math.min(i + 1, 4)}`}>{city}</span>
             ))}
           </div>
         </div>
-        <div className="tsx-assumption-panel">
+        <div className="tsx-assumption-panel tsx-fade tsx-fade-d3">
           <span className="tsx-panel-title">Planning assumptions</span>
           {DATA.market.assumptions.map((assumption, index) => (
             <p key={assumption}><strong>{String(index + 1).padStart(2, '0')}</strong>{assumption}</p>
@@ -677,6 +648,16 @@ const TRUST_SECTION_CTA = {
   labs:      'Scope an AI System',
 };
 
+function TrustStatement({ section }) {
+  if (!section.statement) return null;
+  return (
+    <figure className="tsx-statement tsx-fade">
+      <span className="tsx-statement-mark" aria-hidden="true">&ldquo;</span>
+      <p className="tsx-statement-text">{section.statement}</p>
+    </figure>
+  );
+}
+
 function TrustSectionOverview({ section }) {
   return (
     <div className="tsx-overview">
@@ -686,7 +667,7 @@ function TrustSectionOverview({ section }) {
             <span className="tsx-overview-label">Capabilities</span>
             <ul className="tsx-capability-list">
               {section.modules.map((m, i) => (
-                <li className="tsx-capability-item" key={m.title}>
+                <li className={`tsx-capability-item tsx-fade tsx-fade-d${Math.min(i + 1, 4)}`} key={m.title}>
                   <span className="tsx-cap-index">0{i + 1}</span>
                   <div className="tsx-cap-body">
                     <strong>{m.title}</strong>
@@ -697,7 +678,7 @@ function TrustSectionOverview({ section }) {
             </ul>
           </div>
           <div>
-            <div className="tsx-audience-panel">
+            <div className="tsx-audience-panel tsx-fade tsx-fade-d2">
               <span className="tsx-panel-title">Who this serves</span>
               {section.audiences.map(a => (
                 <div className="tsx-audience-row" key={a.title}>
@@ -709,28 +690,30 @@ function TrustSectionOverview({ section }) {
           </div>
         </div>
 
+        <TrustStatement section={section} />
+
         <div className="tsx-deliverables">
-          <h2 className="tsx-section-heading" style={{marginBottom:'24px'}}>What we deliver</h2>
+          <h2 className="tsx-section-heading tsx-overview-h tsx-fade">What we deliver</h2>
           <TrustDeliverableRows rows={section.stackDetails} />
         </div>
 
         <div className="tsx-process">
-          <h2 className="tsx-section-heading" style={{marginBottom:'24px'}}>How it works</h2>
+          <h2 className="tsx-section-heading tsx-overview-h tsx-fade">How it works</h2>
           <TrustProcessTimeline steps={section.process} />
         </div>
 
         <div className="tsx-packages">
-          <h2 className="tsx-section-heading" style={{marginBottom:'24px'}}>Engagement packages</h2>
+          <h2 className="tsx-section-heading tsx-overview-h tsx-fade">Engagement packages</h2>
           <TrustPackageCards packages={section.packages} />
         </div>
 
         <div className="tsx-deliverables">
-          <h2 className="tsx-section-heading" style={{marginBottom:'24px'}}>Delivery proof</h2>
+          <h2 className="tsx-section-heading tsx-overview-h tsx-fade">Delivery proof</h2>
           <TrustProofStrips items={section.proof} />
         </div>
 
         <div className="tsx-faq">
-          <h2 className="tsx-section-heading" style={{marginBottom:'24px'}}>Common questions</h2>
+          <h2 className="tsx-section-heading tsx-overview-h tsx-fade">Common questions</h2>
           <TrustFaqAccordion faqs={section.faqs} />
         </div>
 
@@ -818,7 +801,7 @@ function TrustCustomers({ detail }) {
         </div>
       </div>
       <section className="tsx-section-inner tsx-proof-table-section">
-        <h2 className="tsx-section-heading" style={{marginBottom: "24px"}}>Delivery model proof</h2>
+        <h2 className="tsx-section-heading tsx-overview-h">Delivery model proof</h2>
         <table className="tsx-del-table">
           <thead>
             <tr><th>Section</th><th>Engagement type</th><th>What was produced</th></tr>
@@ -833,7 +816,7 @@ function TrustCustomers({ detail }) {
             ))}
           </tbody>
         </table>
-        <div className="tsx-intake-band" style={{marginTop: "48px"}}>
+        <div className="tsx-intake-band tsx-intake-spaced">
           <div>
             <p className="tsx-intake-heading">Start a scoped engagement</p>
             <p className="tsx-intake-sub">Tell us what you need. Nexara maps the right next step.</p>
@@ -868,7 +851,7 @@ function TrustCompany() {
         </div>
       </div>
       <section className="tsx-section-inner tsx-principles-section">
-        <h2 className="tsx-section-heading" style={{marginBottom: "24px"}}>Operating principles</h2>
+        <h2 className="tsx-section-heading tsx-overview-h">Operating principles</h2>
         <ul className="tsx-capability-list">
           {company.principles.map((principle, index) => (
             <li className="tsx-capability-item" key={principle.title}>
@@ -882,7 +865,7 @@ function TrustCompany() {
         </ul>
       </section>
       <section className="tsx-section-inner tsx-standards-section">
-        <h2 className="tsx-section-heading" style={{marginBottom: "24px"}}>Delivery governance</h2>
+        <h2 className="tsx-section-heading tsx-overview-h">Delivery governance</h2>
         <table className="tsx-del-table">
           <thead>
             <tr><th>Standard</th><th>Commitment</th></tr>
@@ -896,7 +879,7 @@ function TrustCompany() {
             ))}
           </tbody>
         </table>
-        <div className="tsx-intake-band" style={{marginTop: "48px"}}>
+        <div className="tsx-intake-band tsx-intake-spaced">
           <div>
             <p className="tsx-intake-heading">Work with Nexara</p>
             <p className="tsx-intake-sub">Pick a solution line and open an engagement.</p>
@@ -930,7 +913,7 @@ function TrustContact({ detail }) {
       </section>
 
       <section className="tsx-section-inner tsx-channel-section">
-        <h2 className="tsx-section-heading" style={{marginBottom: "0"}}>Select a section</h2>
+        <h2 className="tsx-section-heading tsx-heading-flush">Select a section</h2>
         <div className="tsx-channel-grid">
           {DATA.contact.channels.map(channel => (
             <button
@@ -947,7 +930,7 @@ function TrustContact({ detail }) {
       </section>
 
       <section className="tsx-section-inner tsx-brief-section">
-        <h2 className="tsx-section-heading" style={{marginBottom: "0"}}>{DATA.contact.enquiry.title}</h2>
+        <h2 className="tsx-section-heading tsx-heading-flush">{DATA.contact.enquiry.title}</h2>
         <p className="tsx-brief-intro">{DATA.contact.enquiry.body}</p>
         {showSuccess ? (
           <div className="tsx-intake-band">
@@ -1011,7 +994,7 @@ function TrustContact({ detail }) {
 function TrustSite({ page, detail }) {
   const section = DATA.sections[page];
   React.useEffect(() => { window.scrollTo(0, 0); }, [page]);
-  React.useEffect(() => setupTsxFade(), [page]);
+  React.useEffect(() => setupTsxFade(), [page, detail]);
   const validPage = section || STATIC_PAGES.includes(page);
   return (
     <div className="site trust tsx-site">

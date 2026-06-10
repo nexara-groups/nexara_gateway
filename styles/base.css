@@ -1,6 +1,6 @@
 *{box-sizing:border-box}
 html,body,#root{min-height:100%;margin:0}
-body{font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:#000;color:#fff;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:#000;color:#fff;-webkit-font-smoothing:antialiased;overflow-x:clip}
 button{font:inherit;cursor:pointer;min-height:44px;transition:transform 180ms cubic-bezier(0.16,1,0.3,1)}
 button:active{transform:scale(0.96)}
 button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid currentColor;outline-offset:4px}
@@ -47,6 +47,8 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid cur
 .detail-hero .eyebrow{margin-top:6px}
 .detail-hero h2{font-size:clamp(1.55rem,2.75vw,3rem);line-height:1.08;max-width:22ch;text-wrap:balance}
 .section-cards,.module-grid,.proof-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.modules-band{padding:clamp(54px,7vw,96px) var(--pad);max-width:var(--content-max);margin-left:auto;margin-right:auto;width:100%}
+.modules-band .module-grid{padding:0;max-width:none;margin:0}
 .section-card,.module-card,.proof-cards article{padding:28px;min-height:250px}
 .section-card span,.module-card span,.proof-cards span{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
 .section-card h3,.module-card h3,.proof-cards h3{margin:18px 0 0;font-size:clamp(1.4rem,2.4vw,2.4rem);line-height:1.05;letter-spacing:0}
@@ -567,6 +569,10 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid cur
 .stack-detail-grid,.package-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .stack-detail-card,.package-card,.process-grid article{padding:26px}
 .stack-detail-card span,.package-card span,.process-grid span{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.stack-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.stack-outcome{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:6px 11px;border-radius:999px;border:1px solid var(--line);line-height:1}
+.stack-outcome::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+.stack-index{font-family:"JetBrains Mono",monospace;font-size:32px;font-weight:800;line-height:.8;letter-spacing:-.03em;text-transform:none}
 .stack-detail-card h3,.package-card h3,.process-grid h3{margin:14px 0 16px;font-size:clamp(1.25rem,2vw,2rem);line-height:1.05;letter-spacing:0}
 .stack-detail-card ul,.package-card ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
 .package-meta{display:grid;gap:4px;margin:0 0 18px}
@@ -750,6 +756,14 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid cur
 .trust .breadcrumb-bar{color:var(--muted)}
 /* Home proof section */
 .home-proof{padding:clamp(54px,7vw,96px) var(--pad);border-top:1px solid rgba(128,128,128,.15);max-width:var(--content-max);margin-left:auto;margin-right:auto;width:100%}
+.proof-receipts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.proof-receipt{padding:28px;border:1px solid var(--line);display:flex;flex-direction:column;min-height:230px;overflow:hidden}
+.receipt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.receipt-tag{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.receipt-index{font-family:"JetBrains Mono",monospace;font-size:30px;font-weight:800;line-height:.8;letter-spacing:-.03em}
+.receipt-engine{margin:0;font-size:clamp(1.4rem,2vw,1.9rem);line-height:1.05;letter-spacing:0;overflow-wrap:anywhere}
+.receipt-context{margin:6px 0 0;font-size:13px;font-weight:700;line-height:1.4}
+.receipt-result{margin:14px 0 0;font-size:14.5px;line-height:1.6}
 /* Terminal zone — reduced padding between proof/faq/cta */
 .terminal-zone>section,.terminal-zone>div{padding-top:clamp(32px,4vw,52px);padding-bottom:clamp(32px,4vw,52px)}
 /* Contact pending note */
@@ -2819,4 +2833,3 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid cur
   from { transform: scale(0.96); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
-

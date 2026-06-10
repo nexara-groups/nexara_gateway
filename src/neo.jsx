@@ -1217,7 +1217,13 @@ function NeoHero({ copy, theme }) {
     const width = canvasRef.current.clientWidth;
     const height = canvasRef.current.clientHeight;
 
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true, antialias: true });
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true, antialias: true });
+    } catch (err) {
+      console.warn("WebGL unavailable — 3D hero skipped, page renders without it.", err);
+      return;
+    }
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -1457,7 +1463,13 @@ function TrustHero({ copy, theme }) {
     const width = canvasRef.current.clientWidth;
     const height = canvasRef.current.clientHeight;
 
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true, antialias: true });
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true, antialias: true });
+    } catch (err) {
+      console.warn("WebGL unavailable — 3D hero skipped, page renders without it.", err);
+      return;
+    }
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -2285,6 +2297,76 @@ function HeroBanner({ theme, eyebrow, title, accent, body, section, compact = fa
         {stats.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}
       </div>
     </section>
+  );
+}
+
+function NeoSectionHero({ theme, section, variant, children }) {
+  const copy = section.hero[theme];
+  return (
+    <section className={`hero-banner compact neo-sig-hero neo-sig-${variant}`}>
+      <div className="hero-bg">
+        <div className="orb one"></div>
+        <div className="orb two"></div>
+        <div className="scanlines"></div>
+      </div>
+      <div className="hero-copy">
+        <p className="eyebrow">{copy.eyebrow}</p>
+        <h1>{copy.title} <em>{copy.accent}</em></h1>
+        <p className="hero-body">{copy.body}</p>
+        <div className="hero-actions">
+          <button onClick={() => routeTo(theme, section.id, section.subpages[0].slug)}>{copy.primary}</button>
+          <button className="secondary" onClick={() => routeTo(theme, "customers", section.id)}>{copy.secondary}</button>
+        </div>
+      </div>
+      <div className="neo-sig-visual">{children}</div>
+    </section>
+  );
+}
+
+function BroadcastVisual() {
+  const channels = ["Social", "Search", "Ads", "Content"];
+  return (
+    <div className="neo-bcast" aria-hidden="true">
+      <span className="neo-bcast-ring"></span>
+      <span className="neo-bcast-ring"></span>
+      <span className="neo-bcast-ring"></span>
+      <div className="neo-bcast-core"><span>SIGNAL</span></div>
+      {channels.map((c, i) => (
+        <span key={c} className={`neo-bcast-chip chip-${i + 1}`}>{c}</span>
+      ))}
+    </div>
+  );
+}
+
+function PipelineVisual() {
+  const nodes = [["01", "Ingest"], ["02", "Reason"], ["03", "Evaluate"], ["04", "Ship"]];
+  return (
+    <div className="neo-pipe" aria-hidden="true">
+      <span className="neo-pipe-pulse"></span>
+      {nodes.map(([n, label]) => (
+        <div className="neo-pipe-node" key={n}>
+          <span className="neo-pipe-dot"></span>
+          <span className="neo-pipe-num">{n}</span>
+          <span className="neo-pipe-label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function MarketingHero({ theme, section }) {
+  return (
+    <NeoSectionHero theme={theme} section={section} variant="mkt">
+      <BroadcastVisual />
+    </NeoSectionHero>
+  );
+}
+
+function LabsHero({ theme, section }) {
+  return (
+    <NeoSectionHero theme={theme} section={section} variant="labs">
+      <PipelineVisual />
+    </NeoSectionHero>
   );
 }
 
@@ -3181,6 +3263,10 @@ function SectionPage({ theme, section, detail }) {
     <main>
       {section.id === "academy" ? (
         <AcademyHero theme={theme} section={section} />
+      ) : section.id === "marketing" ? (
+        <MarketingHero theme={theme} section={section} />
+      ) : section.id === "labs" ? (
+        <LabsHero theme={theme} section={section} />
       ) : (
         <HeroBanner compact theme={theme} section={section} eyebrow={section.hero[theme].eyebrow} title={section.hero[theme].title} accent={section.hero[theme].accent} body={section.hero[theme].body} />
       )}
@@ -3637,40 +3723,54 @@ function SectionOverview({ theme, section }) {
 
   return (
     <>
-      <AudienceFit theme={theme} section={section} />
-      
-      {isMarketing && <BeforeAfterSlider theme={theme} />}
-
-      <section className="module-grid">
-        {section.modules.map((module) => (
-          <ModuleCard 
-            key={module.title} 
-            theme={theme} 
-            eyebrow={section.name} 
-            title={module.title} 
-            visualTitle={module.title}
-            onClick={() => setActiveModule(module)}
-          >
-            {voice(theme, module)}
-          </ModuleCard>
-        ))}
+      {/* 1 — What it does: the offer, framed */}
+      <section className="modules-band">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">{theme === "neo" ? "What we run" : "Capabilities"}</p>
+            <h2>{theme === "neo" ? `Inside ${section.name}.` : `What ${section.name} delivers.`}</h2>
+          </div>
+          <p>{theme === "neo" ? "Four engines doing the actual work. Tap any one for the full breakdown." : "Core capability modules that make up this solution line."}</p>
+        </div>
+        <div className="module-grid">
+          {section.modules.map((module, i) => (
+            <ModuleCard
+              key={module.title}
+              theme={theme}
+              eyebrow={theme === "neo" ? `Module 0${i + 1}` : section.name}
+              title={module.title}
+              visualTitle={module.title}
+              onClick={() => setActiveModule(module)}
+            >
+              {voice(theme, module)}
+            </ModuleCard>
+          ))}
+        </div>
       </section>
-      
+
       {activeModule && (
-        <ModuleModal 
-          theme={theme} 
-          module={activeModule} 
+        <ModuleModal
+          theme={theme}
+          module={activeModule}
           eyebrow={section.name}
-          onClose={() => setActiveModule(null)} 
+          onClose={() => setActiveModule(null)}
         />
       )}
-      
-      <StackDetails theme={theme} section={section} />
-      
+
+      {/* 2 — Who it's for */}
+      <AudienceFit theme={theme} section={section} />
+
+      {/* 3 — How it works */}
       <InteractiveTimeline theme={theme} section={section} />
 
+      {/* 4 — What you get */}
+      <StackDetails theme={theme} section={section} />
+
+      {/* 5 — Quality proof (marketing-specific signature moments) */}
+      {isMarketing && <BeforeAfterSlider theme={theme} />}
       {isMarketing && <RoiEstimator theme={theme} />}
 
+      {/* 6-8 — Receipts, FAQ, CTA */}
       <TerminalZone theme={theme} section={section} />
     </>
   );
@@ -3702,11 +3802,17 @@ function HomeProof({ theme, category }) {
           <h2>{theme === "neo" ? "Receipts from each engine." : "Delivery-model proof."}</h2>
         </div>
       </div>
-      <div className="module-grid">
-        {filtered.map((customer) => (
-          <ModuleCard key={customer.company} theme={theme} eyebrow={customer.section} title={customer.company}>
-            {customer[theme]}
-          </ModuleCard>
+      <div className="proof-receipts">
+        {filtered.map((customer, i) => (
+          <article className="proof-receipt" key={customer.company}>
+            <div className="receipt-head">
+              <span className="receipt-tag">{theme === "neo" ? "Receipt" : "Record"}</span>
+              <span className="receipt-index">{String(i + 1).padStart(2, "0")}</span>
+            </div>
+            <h3 className="receipt-engine">{customer.section}</h3>
+            <p className="receipt-context">{customer.company}</p>
+            <p className="receipt-result">{customer[theme]}</p>
+          </article>
         ))}
       </div>
     </section>
@@ -3787,9 +3893,12 @@ function StackDetails({ theme, section }) {
         </div>
       </div>
       <div className="stack-detail-grid">
-        {section.stackDetails.map((item) => (
+        {section.stackDetails.map((item, i) => (
           <article className="stack-detail-card" key={item.title}>
-            <span>{item.outcome}</span>
+            <div className="stack-card-head">
+              <span className="stack-outcome">{item.outcome}</span>
+              <span className="stack-index">{String(i + 1).padStart(2, "0")}</span>
+            </div>
             <h3>{item.title}</h3>
             <ul>{item.deliverables.map((d) => <li key={d}>{d}</li>)}</ul>
           </article>
