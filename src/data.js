@@ -10,7 +10,7 @@ window.NEXARA = {
     neo: {
       kicker: "For teams that move like the deadline is always tomorrow.",
       title: "Loud, fast, fluorescent. The Nexara you'd screenshot for your story.",
-      body: "Live cohorts, campaigns that hit, and AI systems that actually ship — from one team that moves like the deadline is always tomorrow.",
+      body: "Live cohorts, campaigns that hit, and AI systems that actually ship, from one team that treats every brief like launch week.",
       chips: ["no cap", "shipping daily", "vibes reserved"],
       cta: "Enter the Chaos",
     },
@@ -35,7 +35,7 @@ window.NEXARA = {
       eyebrow: "NEXARA ENTERPRISE",
       title: "Enterprise IT solutions across people, markets and automation.",
       accent: "Structured. Governed. Operational.",
-      body: "Nexara helps organizations run talent enablement, digital market infrastructure and applied AI automation through three clearly governed solution lines.",
+      body: "Nexara helps organizations run talent enablement, digital market infrastructure and applied AI automation through three clearly defined solution lines.",
       calloutTitle: "One enterprise operating model across three solution lines.",
       calloutBody: "Trust keeps the same Nexara capabilities visible while translating them into corporate service lines, defined modules, delivery stages and governance-ready reporting.",
     },
@@ -103,7 +103,7 @@ window.NEXARA = {
     {
       title: "AI-Ready Business Kit",
       sections: ["Digital Marketing", "Labs"],
-      neo: "Give regional brands the website, data trail and automation layer they need before AI gets real. No more catching up.",
+      neo: "Give regional brands the website, data trail and automation layer they need before the AI wave lands. No more catching up.",
       trust: "Prepares growing businesses with clear web journeys, knowledge structure and first-stage automation.",
       stack: ["Service pages", "Knowledge base", "Document AI", "Workflow audit"],
     },
@@ -127,7 +127,7 @@ window.NEXARA = {
       id: "academy",
       index: "01",
       name: "Academy",
-      short: { neo: "Learn fast. Build proof. Get placed. No cap.", trust: "Enterprise talent enablement and placement operations." },
+      short: { neo: "Learn fast. Build proof. Get placed. Receipts included.", trust: "Enterprise talent enablement and placement operations." },
       statement: "Talent isn't found — it's built. Cohort by cohort, project by project, until the portfolio speaks before the résumé does.",
       hero: {
         neo: {
@@ -147,7 +147,7 @@ window.NEXARA = {
           secondary: "View placement workflows",
         },
       },
-      stats: [["6", "skill options"], ["3", "audience groups"], ["4", "delivery stages"], ["1", "portfolio-first model"]],
+      stats: [["6", "skill options"], ["3", "audience groups"], ["4", "delivery stages"], ["3", "programme packages"]],
       modules: [
         { title: "Career Tracks", neo: "Full-stack, AI, design and growth — sprint-based builds that turn learners into people worth hiring.", trust: "Role-aligned tracks across engineering, data, design, cloud and growth functions." },
         { title: "Internship Engine", neo: "Real projects, mentor pressure and weekly output. Move like a junior operator from week one.", trust: "Managed internship workflows with mentor reviews, delivery checkpoints and portfolio artifacts." },
@@ -175,9 +175,9 @@ window.NEXARA = {
         { step: "04", title: "Place or partner", body: "Match candidates to interviews or report cohort outcomes." },
       ],
       packages: [
-        { name: "Career Cohort", fit: "Students and freshers", price: "Scoped after enquiry", duration: "Timeline confirmed in scope", includes: ["Facilitated cohort sessions", "Project portfolio", "Mentor reviews", "Placement prep"] },
-        { name: "Internship Batch", fit: "Colleges and academies", price: "Scoped after enquiry", duration: "Timeline confirmed in scope", includes: ["Managed internship", "Weekly reports", "Completion scoring", "Demo day"] },
-        { name: "Hiring Pipeline", fit: "Employers", price: "Custom / role-based", duration: "Timeline confirmed in scope", includes: ["Role requirements", "Candidate screening", "Interview shortlist", "Offer tracking"] },
+        { name: "Career Cohort", fit: "Students and freshers", price: "Priced per cohort and city", duration: "Set by track length", includes: ["Facilitated cohort sessions", "Project portfolio", "Mentor reviews", "Placement prep"] },
+        { name: "Internship Batch", fit: "Colleges and academies", price: "Priced per batch size", duration: "Aligned to the academic calendar", includes: ["Managed internship", "Weekly reports", "Completion scoring", "Demo day"] },
+        { name: "Hiring Pipeline", fit: "Employers", price: "Custom, role-based", duration: "Runs until roles close", includes: ["Role requirements", "Candidate screening", "Interview shortlist", "Offer tracking"] },
       ],
       faqs: [
         ["Is Academy only for students?", "No. Academy supports learner cohorts, college programmes and employer-led hiring pipelines, with scope adjusted for each audience."],
@@ -250,7 +250,7 @@ window.NEXARA = {
           secondary: "View market outcomes",
         },
       },
-      stats: [["6", "growth services"], ["4", "launch stages"], ["3", "channel layers"], ["1", "measurable growth system"]],
+      stats: [["6", "growth services"], ["4", "launch stages"], ["3", "channel layers"], ["3", "engagement packages"]],
       modules: [
         { title: "Brand Identity", neo: "Names, visuals and voice that don't look like a Canva template pack. Custom attitude only.", trust: "Naming, visual systems, messaging, launch kits and brand governance." },
         { title: "Web Experience", neo: "Pages that sell before users bounce. Your site should be your best closer.", trust: "Corporate websites, landing pages and product pages designed for conversion." },
@@ -278,9 +278,9 @@ window.NEXARA = {
         { step: "04", title: "Optimize", body: "Review reporting, test creative, improve pages and compound winners." },
       ],
       packages: [
-        { name: "Brand Launch", fit: "New or repositioning brands", price: "Scoped after enquiry", duration: "Timeline confirmed in scope", includes: ["Positioning", "Identity", "Messaging", "Launch assets"] },
-        { name: "Website Growth", fit: "Companies with weak conversion", price: "Scoped after enquiry", duration: "Timeline confirmed in scope", includes: ["Site architecture", "Copy", "Design", "SEO foundations"] },
-        { name: "Demand System", fit: "Teams ready to scale", price: "Scoped after enquiry", duration: "Retainer terms confirmed in scope", includes: ["Content calendar", "Paid campaigns", "Reporting", "Creative testing"] },
+        { name: "Brand Launch", fit: "New or repositioning brands", price: "Priced per identity scope", duration: "Confirmed at kickoff", includes: ["Positioning", "Identity", "Messaging", "Launch assets"] },
+        { name: "Website Growth", fit: "Companies with weak conversion", price: "Priced per site architecture", duration: "Set by page count and content readiness", includes: ["Site architecture", "Copy", "Design", "SEO foundations"] },
+        { name: "Demand System", fit: "Teams ready to scale", price: "Monthly retainer, scoped to budget", duration: "Rolling, cadence agreed in scope", includes: ["Content calendar", "Paid campaigns", "Reporting", "Creative testing"] },
       ],
       faqs: [
         ["Do you only design websites?", "No. Website work can be delivered independently, but it is usually strongest when connected to positioning, content and lead-capture strategy."],
@@ -292,7 +292,7 @@ window.NEXARA = {
         {
           slug: "brand",
           title: "Brand",
-          callout: { neo: "Look sharp enough to get screenshotted. Custom details only — no template packs.", trust: "A complete identity system for consistent market presence." },
+          callout: { neo: "Look sharp enough to get saved and shared. Custom details only, no template packs.", trust: "A complete identity system for consistent market presence." },
           cards: [
             { title: "Positioning", neo: "Say what you are before the market decides for you.", trust: "Clear category, audience and value proposition definition." },
             { title: "Visual identity", neo: "Logo, color, type — built with actual custom attitude, not vibes-as-a-service.", trust: "A usable visual system across digital and sales touchpoints." },
@@ -353,7 +353,7 @@ window.NEXARA = {
           secondary: "View system patterns",
         },
       },
-      stats: [["4", "AI build modules"], ["3", "deployment paths"], ["4", "control layers"], ["1", "workflow-first method"]],
+      stats: [["4", "AI build modules"], ["3", "deployment paths"], ["4", "control layers"], ["6", "stack capabilities"]],
       modules: [
         { title: "Atlas", neo: "Knowledge search with source trails — no hallucinations, no loose threads.", trust: "A knowledge-retrieval pattern for documents, tickets, policies and wikis." },
         { title: "Pulse", neo: "Ask business questions in plain language. Stop waiting for dashboard bottlenecks.", trust: "A natural-language analytics pattern for product and business events." },
@@ -381,9 +381,9 @@ window.NEXARA = {
         { step: "04", title: "Deploy and observe", body: "Launch with monitoring, usage review and improvement cycles." },
       ],
       packages: [
-        { name: "AI Discovery Sprint", fit: "Teams exploring AI use cases", price: "Scoped after enquiry", duration: "Timeline confirmed in scope", includes: ["Workflow audit", "Feasibility map", "Risk review", "Pilot plan"] },
-        { name: "Product Build", fit: "Teams ready to ship", price: "Scoped after enquiry", duration: "Timeline confirmed in scope", includes: ["Architecture", "Prototype", "Evaluation", "Production handoff"] },
-        { name: "Automation Layer", fit: "Operations-heavy teams", price: "Scoped after enquiry", duration: "Support terms confirmed in scope", includes: ["Agent workflows", "Integrations", "Monitoring", "Ongoing support cadence"] },
+        { name: "AI Discovery Sprint", fit: "Teams exploring AI use cases", price: "Fixed-scope sprint pricing", duration: "Short sprint, dates agreed in scope", includes: ["Workflow audit", "Feasibility map", "Risk review", "Pilot plan"] },
+        { name: "Product Build", fit: "Teams ready to ship", price: "Priced per system architecture", duration: "Set by build phases", includes: ["Architecture", "Prototype", "Evaluation", "Production handoff"] },
+        { name: "Automation Layer", fit: "Operations-heavy teams", price: "Retainer scoped to workflow count", duration: "Ongoing, support cadence agreed", includes: ["Agent workflows", "Integrations", "Monitoring", "Ongoing support cadence"] },
       ],
       faqs: [
         ["Do you build custom AI systems?", "Yes. Labs supports both reusable product patterns and custom builds around specific workflows, data sources and operational constraints."],
