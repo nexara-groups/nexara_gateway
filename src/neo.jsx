@@ -2,11 +2,108 @@
    ADVANCED HYBRID PARALLAX & COSMETIC MODULES - BACKPORT FROM DUO-THEME
    ========================================================================== */
 
+function useScrollY() {
+  const [y, setY] = useState(0);
+  React.useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        setY(window.scrollY);
+        raf = 0;
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+  return y;
+}
+
 function clamp01(value) {
   return Math.max(0, Math.min(1, value));
 }
 
 /* Deleted — replaced by RAF loop inside NexaraUnbox (no React state on scroll) */
+
+const SPARKLE_DATA = [
+  { left: "8%",  top: "18%", delay: "0s",   duration: "10s", char: "✦" },
+  { left: "84%", top: "12%", delay: "1.5s", duration: "12s", char: "✸" },
+  { left: "70%", top: "65%", delay: "3s",   duration: "11s", char: "✦" },
+  { left: "15%", top: "72%", delay: "0.8s", duration: "13s", char: "✸" },
+  { left: "48%", top: "28%", delay: "2s",   duration: "8s",  char: "✦" },
+  { left: "92%", top: "50%", delay: "4s",   duration: "14s", char: "✸" },
+];
+function Sparkles() {
+  const layerRef = React.useRef(null);
+  React.useEffect(() => {
+    let raf = 0;
+    let visible = true;
+    const tick = () => {
+      if (visible && layerRef.current)
+        layerRef.current.style.transform = `translateY(${window.scrollY * 0.45}px)`;
+      raf = requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; }, { threshold: 0 });
+    if (layerRef.current) io.observe(layerRef.current.closest(".neo-hero-sticky") || layerRef.current);
+    raf = requestAnimationFrame(tick);
+    return () => { cancelAnimationFrame(raf); io.disconnect(); };
+  }, []);
+  return (
+    <div className="sparkles-layer" ref={layerRef}>
+      {SPARKLE_DATA.map((p, i) => (
+        <span key={i} className="sparkle-star" style={{ left: p.left, top: p.top, animationDelay: p.delay, animationDuration: p.duration }}>{p.char}</span>
+      ))}
+    </div>
+  );
+}
+
+function InfiniteMarquee() {
+  return (
+    <div className="marquee-ribbon" aria-hidden="true">
+      <div className="marquee-content">
+        {Array(3).fill(0).map((_, idx) => (
+          <React.Fragment key={idx}>
+            <span>✦ ai labs</span>
+            <span className="accent-color">✦ academic</span>
+            <span>✦ software</span>
+            <span className="cyan-color">✦ marketing</span>
+            <span>✦ no cap</span>
+            <span className="accent-color">✦ shipping daily</span>
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LabsStatsStrip() {
+  const stats = [
+    ["Cohort-based", "talent pipeline"],
+    ["Project-led", "live projects"],
+    ["Open-source", "by default"],
+    ["Shipping", "daily cadence"]
+  ];
+  return (
+    <section className="labs-high-impact-section">
+      <div className="labs-high-impact-strip">
+        <h3>Three engines. One operating model. No filler.</h3>
+        <div className="labs-high-impact-grid">
+          {stats.map(([val, label]) => (
+            <div key={label}>
+              <strong>{val}</strong>
+              <span>{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 /* ── Neo avatar SVG — shared by hero and guide ──────────────────── */
 function NeoAvatarSVG({ id = "neo-avatar", className = "" }) {
@@ -73,6 +170,280 @@ function NeoAvatarSVG({ id = "neo-avatar", className = "" }) {
   );
 }
 
+
+function NeoScrollyHero({ copy, theme }) {
+  const wrapRef    = React.useRef(null);
+  const charRef    = React.useRef(null);
+  const heroFaceRef= React.useRef(null);
+  const serverRef  = React.useRef(null);
+  const codeRef    = React.useRef(null);
+  const codeBodyRef= React.useRef(null);
+  const octaRef    = React.useRef(null);
+  const networkRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (!HAS_SCROLL_ANIMATION) return;
+
+    const wrap = wrapRef.current;
+    const heroEl = wrap.querySelector(".neo-scrolly-hero");
+    const network = networkRef.current;
+    const serverNodes = Array.from(wrap.querySelectorAll(".neo-server-grid rect"));
+    const code = codeRef.current;
+    const codeLines = Array.from(wrap.querySelectorAll(".neo-console-lines path"));
+    const codeBody = codeBodyRef.current;
+    const octa = octaRef.current;
+
+    // Timeline setup
+    const heroTl = gsap.timeline({ paused: true });
+    const ambientTl = gsap.timeline({ repeat: -1, yoyo: true });
+
+    // Initial styles
+    gsap.set(charRef.current, { y: 22, x: 0 });
+    gsap.set(heroFaceRef.current, { transformOrigin: "center center", scale: 0.96 });
+    gsap.set(serverNodes, { fillOpacity: 0.15, strokeOpacity: 0.35 });
+    gsap.set(code, { autoAlpha: 0, x: 12 });
+    gsap.set(codeLines, { strokeDasharray: 100, strokeDashoffset: 100 });
+    gsap.set(octa, { transformOrigin: "center center", rotateX: 20, rotateY: -35, scale: 0.86, autoAlpha: 0 });
+
+    // Ambient loop (pulsing servers, rotating octa)
+    ambientTl.to(serverNodes, {
+      fillOpacity: "random(0.2, 0.65)",
+      strokeOpacity: "random(0.4, 0.8)",
+      duration: 1.8,
+      stagger: { each: 0.08, grid: "auto", from: "random" },
+      ease: "power1.inOut"
+    }, 0);
+    ambientTl.to(octa, {
+      rotation: 360,
+      duration: 18,
+      ease: "none"
+    }, 0);
+
+    // Dynamic typing in mock console
+    if (codeBody) {
+      const logs = [
+        "SYS: init_gateway()... OK",
+        "NET: channel_handshake_done",
+        "AI: pulse_detection... 98.4%",
+        "SEC: status_nominal",
+        "VIBE: no_cap_mode_active",
+        "SYS: ship_daily() loop ON"
+      ];
+      let currentLogIdx = 0;
+      const typeNext = () => {
+        if (!wrapRef.current) return;
+        const line = document.createElement("p");
+        line.style.margin = "0";
+        line.style.fontFamily = "inherit";
+        line.style.color = "inherit";
+        line.textContent = logs[currentLogIdx];
+        codeBody.appendChild(line);
+        if (codeBody.childNodes.length > 5) {
+          codeBody.removeChild(codeBody.firstChild);
+        }
+        currentLogIdx = (currentLogIdx + 1) % logs.length;
+        setTimeout(typeNext, 2400);
+      };
+      typeNext();
+    }
+
+    // Scroll trigger animation timeline
+    // 0.0 -> 0.3: Char slides in, server grid scales down
+    heroTl.to(charRef.current, { y: 0, scale: 1.15, duration: 0.3, ease: "power2.out" }, 0)
+      .to(serverRef.current, { scale: 0.8, y: -20, autoAlpha: 0.4, duration: 0.3, ease: "power2.inOut" }, 0)
+      
+      // 0.2 -> 0.5: Network connections light up
+      .fromTo(network.querySelectorAll("line"), 
+        { strokeDasharray: 200, strokeDashoffset: 200 },
+        { strokeDashoffset: 0, duration: 0.3, stagger: 0.02, ease: "power1.inOut" }, 0.2)
+      .fromTo(network.querySelectorAll("circle"),
+        { scale: 0, autoAlpha: 0 },
+        { scale: 1, autoAlpha: 1, duration: 0.25, stagger: 0.02, ease: "back.out(2)" }, 0.2)
+
+      // 0.4 -> 0.7: Console flies in & code lines draw
+      .to(code, { autoAlpha: 1, x: 0, duration: 0.35, ease: "power3.out" }, 0.4)
+      .to(codeLines, { strokeDashoffset: 0, duration: 0.4, stagger: 0.04, ease: "power1.out" }, 0.4)
+
+      // 0.6 -> 0.9: Octahedral Core materialises and starts spinning fast
+      .to(octa, { autoAlpha: 1, scale: 1.15, y: -10, duration: 0.35, ease: "back.out(1.5)" }, 0.6)
+      
+      // 0.8 -> 1.0: Dock state - fade console & focus octa
+      .to([code, network], { autoAlpha: 0.15, duration: 0.2 }, 0.8)
+      .to(octa, { scale: 1.0, y: 0, duration: 0.2 }, 0.8);
+
+    const st = ScrollTrigger.create({
+      trigger: wrap,
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0.35,
+      animation: heroTl
+    });
+
+    // Hover parallax tilt on desktop
+    const isDesktop = window.matchMedia("(pointer: fine) and (min-width: 761px)").matches;
+    const onHeroMouseMove = (e) => {
+      const rect = heroEl.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      gsap.to(heroFaceRef.current, { rotateY: x * 26, rotateX: -y * 22, duration: 0.45, ease: "power2.out" });
+    };
+    const onHeroMouseLeave = () => {
+      gsap.to(heroFaceRef.current, { rotateY: 0, rotateX: 0, duration: 0.6, ease: "power2.out" });
+    };
+
+    if (isDesktop && heroEl) {
+      heroEl.addEventListener("mousemove", onHeroMouseMove, { passive: true });
+      heroEl.addEventListener("mouseleave", onHeroMouseLeave);
+    }
+
+    return () => {
+      if (heroEl) {
+        heroEl.removeEventListener("mousemove", onHeroMouseMove);
+        heroEl.removeEventListener("mouseleave", onHeroMouseLeave);
+      }
+      st.kill();
+      heroTl.kill();
+      ambientTl.kill();
+      gsap.killTweensOf(heroFaceRef.current);
+    };
+  }, []);
+
+  const serverUnits = ["SYS-01", "NET-02", "AI-03", "DB-04"];
+
+  return (
+    <div ref={wrapRef} className="neo-scrolly-hero-wrap">
+    <div className="neo-scrolly-hero">
+      <div className="neo-hero-grid" style={{ position:"absolute", inset:0, zIndex:0, pointerEvents:"none" }}/>
+      <div className="scanlines"      style={{ position:"absolute", inset:0, pointerEvents:"none" }}/>
+      <Sparkles />
+      <div className="neo-hud-corner neo-hud-tl"  aria-hidden="true"/>
+      <div className="neo-hud-corner neo-hud-tr"  aria-hidden="true"/>
+      <div className="neo-hud-corner neo-hud-bl"  aria-hidden="true"/>
+      <div className="neo-hud-corner neo-hud-brr" aria-hidden="true"/>
+
+      {/* Copy */}
+      <div className="neo-scrolly-copy hero-copy">
+        <p className="eyebrow">{copy.eyebrow}</p>
+        <h1>{copy.title} <em className="neo-gradient-text">{copy.accent}</em></h1>
+        <p className="hero-body">{copy.body}</p>
+        <div className="hero-actions">
+          <button onClick={() => routeTo(theme, "academy")}>Start with Academy</button>
+          <button className="secondary" onClick={() => routeTo(theme, "customers")}>View proof</button>
+        </div>
+      </div>
+
+      {/* 3D Stage */}
+      <div className="neo-3d-stage" aria-hidden="true">
+
+        {/* Data network */}
+        <svg ref={networkRef} className="neo-data-network" viewBox="0 0 400 480" preserveAspectRatio="xMidYMid slice">
+          <circle cx="200" cy="240" r="5"   fill="#ccff00" fillOpacity="0.8"/>
+          <circle cx="305" cy="135" r="3.5" fill="#00f0ff" fillOpacity="0.65"/>
+          <circle cx="88"  cy="158" r="3.5" fill="#00f0ff" fillOpacity="0.65"/>
+          <circle cx="332" cy="342" r="3"   fill="#ccff00" fillOpacity="0.55"/>
+          <circle cx="114" cy="385" r="3.5" fill="#00f0ff" fillOpacity="0.65"/>
+          <circle cx="264" cy="415" r="3"   fill="#ccff00" fillOpacity="0.55"/>
+          
+          <line x1="200" y1="240" x2="305" y2="135" stroke="#ccff00" strokeWidth="0.5" strokeOpacity="0.45"/>
+          <line x1="200" y1="240" x2="88"  y2="158" stroke="#00f0ff" strokeWidth="0.5" strokeOpacity="0.45"/>
+          <line x1="200" y1="240" x2="332" y2="342" stroke="#ccff00" strokeWidth="0.5" strokeOpacity="0.45"/>
+          <line x1="200" y1="240" x2="114" y2="385" stroke="#00f0ff" strokeWidth="0.5" strokeOpacity="0.45"/>
+          <line x1="200" y1="240" x2="264" y2="415" stroke="#ccff00" strokeWidth="0.5" strokeOpacity="0.45"/>
+          <line x1="305" y1="135" x2="332" y2="342" stroke="#ccff00" strokeWidth="0.5" strokeOpacity="0.3"/>
+          <line x1="88"  y1="158" x2="114" y2="385" stroke="#00f0ff" strokeWidth="0.5" strokeOpacity="0.3"/>
+        </svg>
+
+        {/* Consoles / telemetry */}
+        <div ref={codeRef} className="neo-data-console">
+          <div className="neo-console-head"><span>TELEMETRY_LOG</span></div>
+          <div ref={codeBodyRef} className="neo-console-body"></div>
+          <svg className="neo-console-lines" viewBox="0 0 160 80">
+            <path d="M 10 10 L 150 10" stroke="#00f0ff" strokeWidth="0.75" fill="none"/>
+            <path d="M 10 24 L 120 24" stroke="#ccff00" strokeWidth="0.75" fill="none"/>
+            <path d="M 10 38 L 140 38" stroke="#ccff00" strokeWidth="0.75" fill="none"/>
+            <path d="M 10 52 L 90  52" stroke="#00f0ff" strokeWidth="0.75" fill="none"/>
+            <path d="M 10 66 L 130 66" stroke="#00f0ff" strokeWidth="0.75" fill="none"/>
+          </svg>
+        </div>
+
+        {/* Virtual face assembly */}
+        <div ref={heroFaceRef} className="neo-face-assembly">
+          
+          {/* Constellation wireframes */}
+          <svg ref={charRef} className="neo-character-constellation" viewBox="0 0 100 100">
+            <line x1="50" y1="22" x2="32" y2="38" stroke="#00f0ff" strokeWidth="0.5" strokeOpacity="0.45"/>
+            <line x1="50" y1="22" x2="68" y2="38" stroke="#00f0ff" strokeWidth="0.5" strokeOpacity="0.45"/>
+            <line x1="32" y1="38" x2="32" y2="62" stroke="#ccff00" strokeWidth="0.5" strokeOpacity="0.45"/>
+            <line x1="68" y1="38" x2="68" y2="62" stroke="#ccff00" strokeWidth="0.5" strokeOpacity="0.45"/>
+            <line x1="32" y1="62" x2="50" y2="78" stroke="#00f0ff" strokeWidth="0.5" strokeOpacity="0.45"/>
+            <line x1="68" y1="62" x2="50" y2="78" stroke="#00f0ff" strokeWidth="0.5" strokeOpacity="0.45"/>
+            
+            <circle cx="50" cy="22" r="1.8" fill="#00f0ff"/>
+            <circle cx="32" cy="38" r="1.8" fill="#00f0ff"/>
+            <circle cx="68" cy="38" r="1.8" fill="#00f0ff"/>
+            <circle cx="32" cy="62" r="1.8" fill="#ccff00"/>
+            <circle cx="68" cy="62" r="1.8" fill="#ccff00"/>
+            <circle cx="50" cy="78" r="1.8" fill="#00f0ff"/>
+            
+            {/* Eyes */}
+            <circle cx="42" cy="46" r="3.2" fill="#00f0ff" fillOpacity="0.85"/>
+            <circle cx="42" cy="46" r="1"   fill="#000"/>
+            <circle cx="58" cy="46" r="3.2" fill="#00f0ff" fillOpacity="0.85"/>
+            <circle cx="58" cy="46" r="1"   fill="#000"/>
+
+            {/* Mouth */}
+            <path d="M 44 58 Q 50 62 56 58" stroke="#ccff00" strokeWidth="1.25" fill="none" strokeLinecap="round"/>
+          </svg>
+
+          {/* 3D spinning Core */}
+          <div ref={octaRef} className="neo-core-cube">
+            <div className="neo-cube-face f-front"><span>SYS</span></div>
+            <div className="neo-cube-face f-back"><span>NET</span></div>
+            <div className="neo-cube-face f-left"><span>AI</span></div>
+            <div className="neo-cube-face f-right"><span>DB</span></div>
+            <div className="neo-cube-face f-top"><span>OPS</span></div>
+            <div className="neo-cube-face f-bottom"><span>SEC</span></div>
+          </div>
+          
+        </div>
+
+        {/* Server grid */}
+        <div ref={serverRef} className="neo-server-assembly">
+          <svg className="neo-server-grid" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+            {/* Server unit 1 */}
+            <rect x="10" y="8"  width="80" height="14" rx="2" fill="#00f0ff" stroke="#00f0ff" strokeWidth="0.5"/>
+            <line x1="16" y1="15" x2="36" y2="15" stroke="#000" strokeWidth="1.5" strokeOpacity="0.85"/>
+            <circle cx="76" cy="15" r="1.5" fill="#ccff00"/>
+            <circle cx="82" cy="15" r="1.5" fill="#00f0ff"/>
+
+            {/* Server unit 2 */}
+            <rect x="10" y="27" width="80" height="14" rx="2" fill="#ccff00" stroke="#ccff00" strokeWidth="0.5"/>
+            <line x1="16" y1="34" x2="42" y2="34" stroke="#000" strokeWidth="1.5" strokeOpacity="0.85"/>
+            <circle cx="76" cy="34" r="1.5" fill="#00f0ff"/>
+            <circle cx="82" cy="34" r="1.5" fill="#ccff00"/>
+
+            {/* Server unit 3 */}
+            <rect x="10" y="46" width="80" height="14" rx="2" fill="#00f0ff" stroke="#00f0ff" strokeWidth="0.5"/>
+            <line x1="16" y1="53" x2="32" y2="53" stroke="#000" strokeWidth="1.5" strokeOpacity="0.85"/>
+            <circle cx="76" cy="53" r="1.5" fill="#ccff00"/>
+            <circle cx="82" cy="53" r="1.5" fill="#ccff00"/>
+
+            {/* Server unit 4 */}
+            <rect x="10" y="65" width="80" height="14" rx="2" fill="#ccff00" stroke="#ccff00" strokeWidth="0.5"/>
+            <line x1="16" y1="72" x2="48" y2="72" stroke="#000" strokeWidth="1.5" strokeOpacity="0.85"/>
+            <circle cx="76" cy="72" r="1.5" fill="#00f0ff"/>
+            <circle cx="82" cy="72" r="1.5" fill="#00f0ff"/>
+
+            {/* Matrix signals */}
+            <circle cx="16" cy="50" r="1.8" fill="#ccff00" fillOpacity="0.5"/>
+            <circle cx="50" cy="50" r="1.8" fill="#00f0ff" fillOpacity="0.5"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    </div>
+  );
+}
 
 /* ── Scrollytelling guide (phases 2 & 3) ───────────────────────── */
 function NeoGuide() {
@@ -828,23 +1199,23 @@ function NeoGuide() {
 
 function NeoHero({ copy, theme }) {
   const wrapRef = React.useRef(null);
+  const pinRef = React.useRef(null);
   const canvasRef = React.useRef(null);
-  const actionsRef = React.useRef(null);
-  const labelsRef = React.useRef(null);
 
   React.useEffect(() => {
     if (!HAS_SCROLL_ANIMATION) return;
-    if (!canvasRef.current || !wrapRef.current) return;
+    if (!canvasRef.current) return;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const isMobile = window.innerWidth <= 760;
-    const staticMode = prefersReducedMotion || isMobile;
 
     const THREE = window.THREE;
     if (!THREE) {
       console.error("Three.js not loaded.");
       return;
     }
+
+    const width = canvasRef.current.clientWidth;
+    const height = canvasRef.current.clientHeight;
 
     let renderer;
     try {
@@ -853,152 +1224,167 @@ function NeoHero({ copy, theme }) {
       console.warn("WebGL unavailable — 3D hero skipped, page renders without it.", err);
       return;
     }
-    const width = canvasRef.current.clientWidth;
-    const height = canvasRef.current.clientHeight;
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
-    camera.position.set(0, 0.2, 8);
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.z = 7;
 
-    scene.add(new THREE.AmbientLight(0x202636, 1.4));
-    const keyLight = new THREE.PointLight(0x00f0ff, 0.9, 40);
-    keyLight.position.set(5, 6, 8);
-    scene.add(keyLight);
-    const rimLight = new THREE.PointLight(0xccff00, 0.5, 40);
-    rimLight.position.set(-7, -3, 5);
-    scene.add(rimLight);
+    const isMobile = window.innerWidth <= 980;
 
-    const group = new THREE.Group();
-    group.rotation.set(0.14, 0.52, 0);
-    // Desktop: core sits in the right grid column; copy occupies the left.
-    group.position.x = isMobile ? 0 : 1.6;
-    scene.add(group);
-
-    const MODULES = [
-      { color: 0xccff00, dock: -0.85, split: { x: -2.5, y: 0, ry: -0.85 } },
-      { color: 0x00f0ff, dock: 0, split: { x: 0, y: 1.35, ry: 0.55 } },
-      { color: 0xff5c8a, dock: 0.85, split: { x: 2.5, y: 0, ry: 0.85 } },
-    ];
-
-    const disposables = [];
-    const meshes = MODULES.map((def) => {
-      const geom = new THREE.BoxGeometry(0.8, 2.4, 0.9);
-      const mat = new THREE.MeshStandardMaterial({
-        color: 0x0b0d14,
-        metalness: 0.6,
-        roughness: 0.35,
-        emissive: new THREE.Color(def.color),
-        emissiveIntensity: 0.1,
-      });
-      const mesh = new THREE.Mesh(geom, mat);
-      mesh.position.x = def.dock;
-      const edgeGeom = new THREE.EdgesGeometry(geom);
-      const edgeMat = new THREE.LineBasicMaterial({ color: def.color, transparent: true, opacity: 0.55 });
-      mesh.add(new THREE.LineSegments(edgeGeom, edgeMat));
-      group.add(mesh);
-      disposables.push(geom, mat, edgeGeom, edgeMat);
-      return mesh;
-    });
-
-    // Seam planes between docked modules — breathe in stage 1, flash on re-dock.
-    const seamGeom = new THREE.PlaneGeometry(0.03, 2.3);
-    const seamMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
+    // 1. (3, 7) Torus Knot Geometry
+    const geometry = new THREE.TorusKnotGeometry(1.2, 0.28, 180, 16, 3, 7);
+    
+    // Create custom particle system for torus knot
+    const count = geometry.attributes.position.count;
+    const particleGeom = new THREE.BufferGeometry();
+    const positions = new Float32Array(count * 3);
+    const originalPositions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    
+    const posAttr = geometry.attributes.position;
+    // Pre-cache normalized directions — eliminates per-frame sqrt
+    const normalizedDirs = new Float32Array(count * 3);
+    const lengths = new Float32Array(count);
+    for (let i = 0; i < count; i++) {
+      const ox = posAttr.getX(i), oy = posAttr.getY(i), oz = posAttr.getZ(i);
+      positions[i * 3] = originalPositions[i * 3] = ox;
+      positions[i * 3 + 1] = originalPositions[i * 3 + 1] = oy;
+      positions[i * 3 + 2] = originalPositions[i * 3 + 2] = oz;
+      const len = Math.sqrt(ox*ox + oy*oy + oz*oz);
+      lengths[i] = len;
+      normalizedDirs[i * 3]     = len > 0.001 ? ox / len : 0;
+      normalizedDirs[i * 3 + 1] = len > 0.001 ? oy / len : 0;
+      normalizedDirs[i * 3 + 2] = len > 0.001 ? oz / len : 0;
+      const ratio = i / count;
+      colors[i * 3] = 0.8 + Math.sin(ratio * Math.PI) * 0.2;
+      colors[i * 3 + 1] = 1.0;
+      colors[i * 3 + 2] = 0.0;
+    }
+    
+    particleGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particleGeom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    
+    const particleMaterial = new THREE.PointsMaterial({
+      size: isMobile ? 0.038 : 0.052,
+      vertexColors: true,
       transparent: true,
-      opacity: 0,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending
     });
-    disposables.push(seamGeom, seamMat);
-    [-0.425, 0.425].forEach((x) => {
-      const p = new THREE.Mesh(seamGeom, seamMat);
-      p.position.set(x, 0, 0.46);
-      group.add(p);
+    
+    const torusPoints = new THREE.Points(particleGeom, particleMaterial);
+    scene.add(torusPoints);
+
+    // 2. Space Dust Background Particles
+    const dustCount = 350;
+    const dustGeom = new THREE.BufferGeometry();
+    const dustPositions = new Float32Array(dustCount * 3);
+    for (let i = 0; i < dustCount * 3; i++) {
+      dustPositions[i] = (Math.random() - 0.5) * 15;
+    }
+    dustGeom.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+    const dustMaterial = new THREE.PointsMaterial({
+      color: 0x00f0ff,
+      size: 0.02,
+      transparent: true,
+      opacity: 0.35,
+      blending: THREE.AdditiveBlending
     });
+    const dustPoints = new THREE.Points(dustGeom, dustMaterial);
+    scene.add(dustPoints);
 
-    // Animation state driven by the timeline; consumed by the render loop.
-    const fx = { seam: 0, glow: 0, flash: 0, spin: 0 };
+    // Initial position based on mobile/desktop layout
+    torusPoints.position.set(isMobile ? 0 : 1.4, isMobile ? -1.0 : 0, 0);
 
-    const setAssembledState = () => {
-      fx.seam = 0;
-      fx.glow = 1;
-      fx.flash = 0;
-      fx.spin = 1;
-      meshes.forEach((m, i) => {
-        m.position.set(MODULES[i].dock, 0, 0);
-        m.rotation.set(0, 0, 0);
-      });
+    // Scroll state object to animate with GSAP
+    const state = {
+      progress: 0,
+      zoom: 7.0,
+      speed: 1.0,
+      scatter: 0.0,
+      posOffset: isMobile ? -1.0 : 0
     };
 
-    let tl = null;
-    let st = null;
-    if (!staticMode) {
-      if (actionsRef.current) gsap.set(actionsRef.current, { opacity: 0, y: 18 });
-      tl = gsap.timeline({ paused: true, defaults: { ease: "power2.inOut" } });
-      tl.to(fx, { seam: 1, duration: 0.15, ease: "none" }, 0);
-      meshes.forEach((m, i) => {
-        tl.to(m.position, { x: MODULES[i].split.x, y: MODULES[i].split.y, duration: 0.3 }, 0.15);
-        tl.to(m.rotation, { y: MODULES[i].split.ry, duration: 0.3 }, 0.15);
-      });
-      tl.to(fx, { seam: 0, duration: 0.1, ease: "none" }, 0.15);
-      if (labelsRef.current) {
-        tl.to(labelsRef.current.children, { opacity: 1, y: 0, stagger: 0.03, duration: 0.12 }, 0.22);
-      }
-      meshes.forEach((m, i) => {
-        tl.to(m.position, { x: MODULES[i].dock, y: 0, duration: 0.28, ease: "back.out(1.3)" }, 0.5);
-        tl.to(m.rotation, { y: 0, duration: 0.28 }, 0.5);
-      });
-      if (labelsRef.current) {
-        tl.to(labelsRef.current.children, { opacity: 0, y: -8, duration: 0.08 }, 0.52);
-      }
-      tl.to(fx, { flash: 1, duration: 0.02, ease: "none" }, 0.78)
-        .to(fx, { flash: 0, duration: 0.06, ease: "none" }, 0.8);
-      tl.to(fx, { glow: 1, spin: 1, duration: 0.2, ease: "none" }, 0.8);
-      if (actionsRef.current) {
-        tl.to(actionsRef.current, { opacity: 1, y: 0, duration: 0.15 }, 0.83);
-      }
+    // GSAP ScrollTrigger Timeline
+    const tl = window.gsap.timeline({ paused: true });
+    tl.to(state, {
+      progress: 1,
+      zoom: 3.5,
+      speed: 7.0,
+      scatter: 3.0,
+      posOffset: isMobile ? 1.0 : 0,
+      duration: 1,
+      ease: "none"
+    });
 
-      st = window.ScrollTrigger.create({
-        trigger: wrapRef.current,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 0.8,
-        onUpdate: (self) => tl.progress(self.progress),
-      });
-    } else {
-      setAssembledState();
-    }
+    const shouldPin = window.innerWidth > 760;
+    const st = shouldPin ? window.ScrollTrigger.create({
+      trigger: wrapRef.current,
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0.5,
+      animation: tl
+    }) : null;
+    if (!shouldPin) tl.progress(0.32);
 
-    const clock = new THREE.Clock();
+    // Mouse movement interactive tilt
+    let mouse = { x: 0, y: 0 };
+    let targetMouse = { x: 0, y: 0 };
+    const handleMouseMove = (e) => {
+      targetMouse.x = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+      targetMouse.y = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+
+    // Animation Loop
+    let clock = new THREE.Clock();
+    let animId;
+    const tick = () => {
+      const elapsedTime = clock.getElapsedTime();
+      
+      mouse.x += (targetMouse.x - mouse.x) * 0.05;
+      mouse.y += (targetMouse.y - mouse.y) * 0.05;
+
+      // Base rotation + scroll speed + mouse tilt
+      torusPoints.rotation.y = elapsedTime * 0.16 * state.speed + mouse.x * 0.45;
+      torusPoints.rotation.x = elapsedTime * 0.12 * state.speed + mouse.y * 0.45;
+      
+      dustPoints.rotation.y = -elapsedTime * 0.02 + mouse.x * 0.15;
+      dustPoints.rotation.x = mouse.y * 0.15;
+
+      camera.position.z = state.zoom;
+
+      // Position update for mobile offset
+      const isMob = window.innerWidth <= 980;
+      torusPoints.position.set(isMob ? 0 : 1.4, isMob ? state.posOffset : 0, 0);
+
+      // Scatter: push points outwards on scroll (cached dirs — no per-frame sqrt)
+      const posArr = torusPoints.geometry.attributes.position.array;
+      const scatter125 = state.scatter * 1.25;
+      for (let i = 0; i < count; i++) {
+        const xIdx = i * 3, yIdx = i * 3 + 1, zIdx = i * 3 + 2;
+        const wave = Math.sin(elapsedTime * 2.5 + lengths[i] * 3.5) * 0.05;
+        const push = scatter125 + wave;
+        posArr[xIdx] = originalPositions[xIdx] + normalizedDirs[xIdx] * push;
+        posArr[yIdx] = originalPositions[yIdx] + normalizedDirs[yIdx] * push;
+        posArr[zIdx] = originalPositions[zIdx] + normalizedDirs[zIdx] * push;
+      }
+      torusPoints.geometry.attributes.position.needsUpdate = true;
+
+      if (heroVisible) renderer.render(scene, camera);
+      if (!prefersReducedMotion) animId = requestAnimationFrame(tick);
+    };
+
     let heroVisible = true;
     const visObs = new IntersectionObserver(([e]) => {
       heroVisible = e.isIntersecting;
     }, { threshold: 0 });
     visObs.observe(wrapRef.current);
+    tick();
 
-    let animId = 0;
-    const renderFrame = () => {
-      const t = clock.getElapsedTime();
-      seamMat.opacity = Math.max(fx.seam * (0.3 + 0.35 * Math.sin(t * 2.2)), fx.flash);
-      meshes.forEach((m) => {
-        m.material.emissiveIntensity = 0.1 + fx.glow * 0.9;
-      });
-      group.rotation.y = 0.52 + Math.sin(t * 0.22) * 0.06 + fx.spin * t * 0.05;
-      group.position.y = Math.sin(t * 0.5) * 0.05;
-      renderer.render(scene, camera);
-    };
-    if (staticMode) {
-      renderFrame(); // single static frame per mobile/reduced-motion rules
-    } else {
-      const tick = () => {
-        if (heroVisible) renderFrame();
-        animId = requestAnimationFrame(tick);
-      };
-      tick();
-    }
-
+    // Resize Handler
     const handleResize = () => {
       if (!canvasRef.current) return;
       const w = canvasRef.current.clientWidth;
@@ -1006,28 +1392,37 @@ function NeoHero({ copy, theme }) {
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
-      if (staticMode) renderFrame();
+      const isMob = window.innerWidth <= 980;
+      state.posOffset = isMob ? (state.progress * 2 - 1.0) : 0;
     };
     window.addEventListener("resize", handleResize);
 
     return () => {
-      if (animId) cancelAnimationFrame(animId);
+      cancelAnimationFrame(animId);
+      animId = 0;
       visObs.disconnect();
+      window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
       if (st) st.kill();
-      if (tl) tl.kill();
-      disposables.forEach((d) => d.dispose());
+      tl.kill();
+      
+      geometry.dispose();
+      particleGeom.dispose();
+      particleMaterial.dispose();
+      dustGeom.dispose();
+      dustMaterial.dispose();
       renderer.dispose();
     };
   }, []);
 
   return (
     <div ref={wrapRef} className="neo-hero-wrap">
-      <section className="neo-hero-sticky">
+      <section ref={pinRef} className="neo-hero-sticky">
         <div className="neo-hero-bg">
           <div className="neo-hero-grid"></div>
           <canvas ref={canvasRef} className="hero-3d-canvas" />
           <div className="scanlines"></div>
+          <Sparkles />
         </div>
         <div className="neo-hud-br neo-hud-tl"></div>
         <div className="neo-hud-br neo-hud-tr"></div>
@@ -1037,15 +1432,10 @@ function NeoHero({ copy, theme }) {
           <p className="eyebrow">{copy.eyebrow}</p>
           <h1>{copy.title} <em className="neo-gradient-text">{copy.accent}</em></h1>
           <p className="hero-body">{copy.body}</p>
-          <div className="hero-actions" ref={actionsRef}>
+          <div className="hero-actions">
             <button onClick={() => routeTo(theme, "academy")}>Start with Academy</button>
             <button className="secondary" onClick={() => routeTo(theme, "customers")}>View proof</button>
           </div>
-        </div>
-        <div className="neo-core-labels" ref={labelsRef} aria-hidden="true">
-          <span className="neo-core-label" style={{ "--label-accent": "#ccff00" }}>01 // ACADEMY</span>
-          <span className="neo-core-label" style={{ "--label-accent": "#00f0ff" }}>02 // MARKETING</span>
-          <span className="neo-core-label" style={{ "--label-accent": "#ff5c8a" }}>03 // LABS</span>
         </div>
       </section>
     </div>
@@ -2870,7 +3260,7 @@ function SectionPage({ theme, section, detail }) {
   const active = useMemo(() => section.subpages.find((p) => p.slug === detail), [section, detail]);
   if (detail && !active) return <NotFound theme={theme} page={`${section.id}/${detail}`} />;
   return (
-    <main data-section={section.id}>
+    <main>
       {section.id === "academy" ? (
         <AcademyHero theme={theme} section={section} />
       ) : section.id === "marketing" ? (

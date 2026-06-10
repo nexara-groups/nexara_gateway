@@ -19,21 +19,6 @@
 .neo .hero-actions button{font-family:"JetBrains Mono",monospace;text-transform:uppercase;background:var(--accent);color:#000}.neo .hero-actions .secondary{background:transparent;color:#fff;border:1px solid var(--line)}
 .neo .hero-dashboard{background:var(--line);border:1px solid var(--line)}.neo .hero-dashboard div{background:rgba(11,11,13,.86)}.neo .hero-dashboard strong{font-family:"Syne",sans-serif;color:#fff}.neo .hero-dashboard span{font-family:"JetBrains Mono",monospace;color:var(--muted)}
 .neo .section-grid-wrap,.neo .module-grid,.neo .stack-matrix,.neo .proof-cards{background:#000}
-/* Module normalization — count-aware columns, one gutter token, equal-height cards */
-.neo{--module-gap:clamp(20px,2.5vw,32px)}
-.neo .module-grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--module-gap);align-items:stretch}
-.neo .module-grid.compact{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.neo .module-card{display:flex;flex-direction:column;height:100%}
-.neo .module-card .card-content-wrapper{display:flex;flex-direction:column;flex:1}
-.neo .module-card .card-content-wrapper p{flex:1}
-.neo .section-card{display:flex;flex-direction:column;height:100%}
-/* Per-section accent — mirrors Nexara Core hero module colors */
-.neo [data-section="academy"]{--section-accent:#ccff00}
-.neo [data-section="marketing"]{--section-accent:#00f0ff}
-.neo [data-section="labs"]{--section-accent:#ff5c8a}
-.neo [data-section] .module-card span,
-.neo [data-section] .section-head .eyebrow{color:var(--section-accent,var(--accent))}
-.neo [data-section] .module-card.spotlight-card:hover{border-color:color-mix(in srgb,var(--section-accent,var(--accent)) 55%,transparent)}
 .neo .super-skills{background:radial-gradient(circle at 0 0,rgba(204,255,0,.14),transparent 32%),radial-gradient(circle at 82% 24%,rgba(0,240,255,.12),transparent 30%),linear-gradient(180deg,#050506,#000);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .neo .super-skills-intro>p{color:var(--muted)}
 .neo .super-play-feature{background:linear-gradient(135deg,rgba(204,255,0,.08),rgba(0,240,255,.03) 46%,rgba(255,61,245,.04));border:1px solid rgba(255,255,255,.08);transition:all 0.4s cubic-bezier(0.16, 1, 0.3, 1)}
@@ -101,20 +86,46 @@
 .neo .neo-hero-copy h1{font-size:clamp(2.9rem,6.2vw,6.8rem);line-height:.92}
 .neo .neo-hero-copy .hero-body{margin-top:18px}
 .neo .neo-hero-copy .hero-actions{margin-top:26px}
-.neo .neo-core-labels{position:absolute;z-index:2;right:clamp(24px,6vw,90px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:18px;pointer-events:none}
-.neo .neo-core-label{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.14em;color:var(--label-accent,#fff);border:1px solid color-mix(in srgb,var(--label-accent,#fff) 45%,transparent);padding:6px 10px;background:rgba(8,9,12,.72);opacity:0;transform:translateY(10px)}
+.neo .neo-hero-rings{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;min-height:260px}
+.neo .neo-ring-wrapper{position:absolute;display:flex;align-items:center;justify-content:center;width:100%;height:100%;pointer-events:none;will-change:transform}
+.neo .neo-hero-core-wrapper{position:absolute;display:flex;align-items:center;justify-content:center;width:100%;height:100%;pointer-events:none;will-change:transform;z-index:3}
+.neo .neo-ring{position:absolute;border:1px solid rgba(204,255,0,.55);clip-path:polygon(8% 0,92% 0,100% 8%,100% 92%,92% 100%,8% 100%,0 92%,0 8%);will-change:transform}
+.neo .neo-ring-1{width:100px;height:100px;border-color:rgba(204,255,0,.8);animation:neo-spin-clockwise 22s linear infinite}
+.neo .neo-ring-2{width:180px;height:180px;border-color:rgba(0,240,255,.5);animation:neo-spin-counter 28s linear infinite}
+.neo .neo-ring-3{width:260px;height:260px;border-color:rgba(204,255,0,.25);animation:neo-spin-clockwise 36s linear infinite}
+.neo .neo-hero-core{position:absolute;width:140px;height:140px;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);background:#000;border:1.5px solid rgba(204, 255, 0, 0.85);box-shadow:0 0 24px rgba(204,255,0,0.4), inset 0 0 20px rgba(0, 240, 255, 0.35);overflow:hidden;display:flex;align-items:center;justify-content:center;animation:neo-core-glow 4s ease-in-out infinite alternate;will-change:transform}
+.neo .neo-portal-avatar{width:100%;height:100%;object-fit:cover;opacity:0.9;mix-blend-mode:screen;filter:contrast(1.15) brightness(1.08)}
+.neo .neo-portal-overlay{position:absolute;inset:0;background:linear-gradient(rgba(204,255,0,0.06) 1px,transparent 1px);background-size:100% 3px;pointer-events:none;z-index:4}
 .neo .neo-hud-br{position:absolute;width:16px;height:16px;border-color:rgba(204,255,0,.5);border-style:solid;z-index:4;pointer-events:none}
 .neo .neo-hud-tl{top:14px;left:14px;border-width:1.5px 0 0 1.5px}
 .neo .neo-hud-tr{top:14px;right:14px;border-width:1.5px 1.5px 0 0}
 .neo .neo-hud-bl{bottom:14px;left:14px;border-width:0 0 1.5px 1.5px}
 .neo .neo-hud-brr{bottom:14px;right:14px;border-width:0 1.5px 1.5px 0}
 
+@keyframes neo-spin-clockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes neo-spin-counter {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+@keyframes neo-core-glow {
+  0% {
+    transform: scale(0.96);
+    box-shadow: 0 0 16px rgba(204,255,0,0.4), inset 0 0 16px rgba(0,240,255,0.2);
+  }
+  100% {
+    transform: scale(1.04);
+    box-shadow: 0 0 32px rgba(204,255,0,0.75), inset 0 0 28px rgba(0,240,255,0.45);
+  }
+}
 @keyframes neo-hero-bleed {
   from { transform: translateX(4%) scale(1); opacity: .62; }
   to { transform: translateX(-8%) scale(1.06); opacity: .95; }
 }
 
-@media(max-width:980px){.neo .neo-hero-sticky{grid-template-columns:1fr;align-items:start}.neo .neo-core-labels{right:18px;gap:10px}}
+@media(max-width:980px){.neo .neo-hero-sticky{grid-template-columns:1fr;align-items:start}.neo .neo-hero-rings{height:220px;min-height:220px}}
 @media(max-width:760px){
   .neo .neo-hero-wrap{height:auto;min-height:0}
   .neo .neo-hero-sticky{position:relative;top:auto;height:auto;min-height:0}
@@ -123,7 +134,7 @@
   .neo .neo-hero-copy h1{max-width:11ch;font-size:clamp(2.3rem,12vw,3.4rem);line-height:1;text-wrap:balance;overflow-wrap:break-word}
   .neo .neo-hero-copy .hero-body{max-width:34ch;line-height:1.62}
   .neo .neo-hero-copy .hero-actions{max-width:22rem}
-  .neo .neo-core-labels{display:none}
+  .neo .neo-hero-rings{height:180px;min-height:180px}
 }
 @media(max-height:820px) and (min-width:981px){.neo .neo-hero-copy h1{font-size:clamp(2.6rem,5.4vw,5.6rem)}.neo .neo-hero-sticky{padding-top:54px;padding-bottom:54px}}
 
@@ -145,6 +156,83 @@
 @keyframes neoGradientShift {
   0% { background-position: 0% 50%; }
   100% { background-position: 200% 50%; }
+}
+
+/* Floating Sparkle Animation Layer */
+.neo .sparkles-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.neo .sparkle-star {
+  position: absolute;
+  font-size: clamp(16px, 2.5vw, 24px);
+  color: rgba(255, 255, 255, 0.45);
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
+  opacity: 0.65;
+  animation: neoSparkleFloat 9s ease-in-out infinite;
+  user-select: none;
+}
+
+@keyframes neoSparkleFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg) scale(0.9);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(-40px) rotate(180deg) scale(1.15);
+    opacity: 0.8;
+  }
+}
+
+/* Continuous Auto-scrolling Ribbon Ticker Marquee */
+.neo .marquee-ribbon {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 18px 0;
+  background: rgba(10, 0, 20, 0.4);
+  backdrop-blur: 10px;
+  width: 100%;
+  margin: 36px 0;
+}
+
+.neo .marquee-content {
+  display: flex;
+  gap: 60px;
+  white-space: nowrap;
+  animation: neoMarqueeRun 30s linear infinite;
+  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-family: "Syne", sans-serif;
+  letter-spacing: 0.08em;
+}
+
+.neo .marquee-content span {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+}
+
+.neo .marquee-content span.accent-color {
+  color: #ff3df5;
+  text-shadow: 0 0 12px rgba(255, 61, 245, 0.3);
+}
+
+.neo .marquee-content span.cyan-color {
+  color: #00f0ff;
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+}
+
+@keyframes neoMarqueeRun {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* Card Radial-Gradient Highlight Blurs */
