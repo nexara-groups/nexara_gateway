@@ -3241,7 +3241,7 @@ function SectionPage({ theme, section, detail }) {
   const active = useMemo(() => section.subpages.find((p) => p.slug === detail), [section, detail]);
   if (detail && !active) return <NotFound theme={theme} page={`${section.id}/${detail}`} />;
   return (
-    <main>
+    <main data-section={section.id}>
       {section.id === "academy" ? (
         <AcademyHero theme={theme} section={section} />
       ) : section.id === "marketing" ? (
