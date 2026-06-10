@@ -1199,23 +1199,23 @@ function NeoGuide() {
 
 function NeoHero({ copy, theme }) {
   const wrapRef = React.useRef(null);
-  const pinRef = React.useRef(null);
   const canvasRef = React.useRef(null);
+  const actionsRef = React.useRef(null);
+  const labelsRef = React.useRef(null);
 
   React.useEffect(() => {
     if (!HAS_SCROLL_ANIMATION) return;
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !wrapRef.current) return;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isMobile = window.innerWidth <= 760;
+    const staticMode = prefersReducedMotion || isMobile;
 
     const THREE = window.THREE;
     if (!THREE) {
       console.error("Three.js not loaded.");
       return;
     }
-
-    const width = canvasRef.current.clientWidth;
-    const height = canvasRef.current.clientHeight;
 
     let renderer;
     try {
@@ -1224,167 +1224,152 @@ function NeoHero({ copy, theme }) {
       console.warn("WebGL unavailable — 3D hero skipped, page renders without it.", err);
       return;
     }
+    const width = canvasRef.current.clientWidth;
+    const height = canvasRef.current.clientHeight;
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.z = 7;
+    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
+    camera.position.set(0, 0.2, 8);
 
-    const isMobile = window.innerWidth <= 980;
+    scene.add(new THREE.AmbientLight(0x202636, 1.4));
+    const keyLight = new THREE.PointLight(0x00f0ff, 0.9, 40);
+    keyLight.position.set(5, 6, 8);
+    scene.add(keyLight);
+    const rimLight = new THREE.PointLight(0xccff00, 0.5, 40);
+    rimLight.position.set(-7, -3, 5);
+    scene.add(rimLight);
 
-    // 1. (3, 7) Torus Knot Geometry
-    const geometry = new THREE.TorusKnotGeometry(1.2, 0.28, 180, 16, 3, 7);
-    
-    // Create custom particle system for torus knot
-    const count = geometry.attributes.position.count;
-    const particleGeom = new THREE.BufferGeometry();
-    const positions = new Float32Array(count * 3);
-    const originalPositions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-    
-    const posAttr = geometry.attributes.position;
-    // Pre-cache normalized directions — eliminates per-frame sqrt
-    const normalizedDirs = new Float32Array(count * 3);
-    const lengths = new Float32Array(count);
-    for (let i = 0; i < count; i++) {
-      const ox = posAttr.getX(i), oy = posAttr.getY(i), oz = posAttr.getZ(i);
-      positions[i * 3] = originalPositions[i * 3] = ox;
-      positions[i * 3 + 1] = originalPositions[i * 3 + 1] = oy;
-      positions[i * 3 + 2] = originalPositions[i * 3 + 2] = oz;
-      const len = Math.sqrt(ox*ox + oy*oy + oz*oz);
-      lengths[i] = len;
-      normalizedDirs[i * 3]     = len > 0.001 ? ox / len : 0;
-      normalizedDirs[i * 3 + 1] = len > 0.001 ? oy / len : 0;
-      normalizedDirs[i * 3 + 2] = len > 0.001 ? oz / len : 0;
-      const ratio = i / count;
-      colors[i * 3] = 0.8 + Math.sin(ratio * Math.PI) * 0.2;
-      colors[i * 3 + 1] = 1.0;
-      colors[i * 3 + 2] = 0.0;
-    }
-    
-    particleGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    particleGeom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    
-    const particleMaterial = new THREE.PointsMaterial({
-      size: isMobile ? 0.038 : 0.052,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.85,
-      blending: THREE.AdditiveBlending
+    const group = new THREE.Group();
+    group.rotation.set(0.14, 0.52, 0);
+    // Desktop: core sits in the right grid column; copy occupies the left.
+    group.position.x = isMobile ? 0 : 1.6;
+    scene.add(group);
+
+    const MODULES = [
+      { color: 0xccff00, dock: -0.85, split: { x: -2.5, y: 0, ry: -0.85 } },
+      { color: 0x00f0ff, dock: 0, split: { x: 0, y: 1.35, ry: 0.55 } },
+      { color: 0xff5c8a, dock: 0.85, split: { x: 2.5, y: 0, ry: 0.85 } },
+    ];
+
+    const disposables = [];
+    const meshes = MODULES.map((def) => {
+      const geom = new THREE.BoxGeometry(0.8, 2.4, 0.9);
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0x0b0d14,
+        metalness: 0.6,
+        roughness: 0.35,
+        emissive: new THREE.Color(def.color),
+        emissiveIntensity: 0.1,
+      });
+      const mesh = new THREE.Mesh(geom, mat);
+      mesh.position.x = def.dock;
+      const edgeGeom = new THREE.EdgesGeometry(geom);
+      const edgeMat = new THREE.LineBasicMaterial({ color: def.color, transparent: true, opacity: 0.55 });
+      mesh.add(new THREE.LineSegments(edgeGeom, edgeMat));
+      group.add(mesh);
+      disposables.push(geom, mat, edgeGeom, edgeMat);
+      return mesh;
     });
-    
-    const torusPoints = new THREE.Points(particleGeom, particleMaterial);
-    scene.add(torusPoints);
 
-    // 2. Space Dust Background Particles
-    const dustCount = 350;
-    const dustGeom = new THREE.BufferGeometry();
-    const dustPositions = new Float32Array(dustCount * 3);
-    for (let i = 0; i < dustCount * 3; i++) {
-      dustPositions[i] = (Math.random() - 0.5) * 15;
-    }
-    dustGeom.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
-    const dustMaterial = new THREE.PointsMaterial({
-      color: 0x00f0ff,
-      size: 0.02,
+    // Seam planes between docked modules — breathe in stage 1, flash on re-dock.
+    const seamGeom = new THREE.PlaneGeometry(0.03, 2.3);
+    const seamMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
       transparent: true,
-      opacity: 0.35,
-      blending: THREE.AdditiveBlending
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
     });
-    const dustPoints = new THREE.Points(dustGeom, dustMaterial);
-    scene.add(dustPoints);
+    disposables.push(seamGeom, seamMat);
+    [-0.425, 0.425].forEach((x) => {
+      const p = new THREE.Mesh(seamGeom, seamMat);
+      p.position.set(x, 0, 0.46);
+      group.add(p);
+    });
 
-    // Initial position based on mobile/desktop layout
-    torusPoints.position.set(isMobile ? 0 : 1.4, isMobile ? -1.0 : 0, 0);
+    // Animation state driven by the timeline; consumed by the render loop.
+    const fx = { seam: 0, glow: 0, flash: 0, spin: 0 };
 
-    // Scroll state object to animate with GSAP
-    const state = {
-      progress: 0,
-      zoom: 7.0,
-      speed: 1.0,
-      scatter: 0.0,
-      posOffset: isMobile ? -1.0 : 0
+    const setAssembledState = () => {
+      fx.seam = 0;
+      fx.glow = 1;
+      fx.flash = 0;
+      fx.spin = 1;
+      meshes.forEach((m, i) => {
+        m.position.set(MODULES[i].dock, 0, 0);
+        m.rotation.set(0, 0, 0);
+      });
     };
 
-    // GSAP ScrollTrigger Timeline
-    const tl = window.gsap.timeline({ paused: true });
-    tl.to(state, {
-      progress: 1,
-      zoom: 3.5,
-      speed: 7.0,
-      scatter: 3.0,
-      posOffset: isMobile ? 1.0 : 0,
-      duration: 1,
-      ease: "none"
-    });
-
-    const shouldPin = window.innerWidth > 760;
-    const st = shouldPin ? window.ScrollTrigger.create({
-      trigger: wrapRef.current,
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 0.5,
-      animation: tl
-    }) : null;
-    if (!shouldPin) tl.progress(0.32);
-
-    // Mouse movement interactive tilt
-    let mouse = { x: 0, y: 0 };
-    let targetMouse = { x: 0, y: 0 };
-    const handleMouseMove = (e) => {
-      targetMouse.x = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
-      targetMouse.y = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-
-    // Animation Loop
-    let clock = new THREE.Clock();
-    let animId;
-    const tick = () => {
-      const elapsedTime = clock.getElapsedTime();
-      
-      mouse.x += (targetMouse.x - mouse.x) * 0.05;
-      mouse.y += (targetMouse.y - mouse.y) * 0.05;
-
-      // Base rotation + scroll speed + mouse tilt
-      torusPoints.rotation.y = elapsedTime * 0.16 * state.speed + mouse.x * 0.45;
-      torusPoints.rotation.x = elapsedTime * 0.12 * state.speed + mouse.y * 0.45;
-      
-      dustPoints.rotation.y = -elapsedTime * 0.02 + mouse.x * 0.15;
-      dustPoints.rotation.x = mouse.y * 0.15;
-
-      camera.position.z = state.zoom;
-
-      // Position update for mobile offset
-      const isMob = window.innerWidth <= 980;
-      torusPoints.position.set(isMob ? 0 : 1.4, isMob ? state.posOffset : 0, 0);
-
-      // Scatter: push points outwards on scroll (cached dirs — no per-frame sqrt)
-      const posArr = torusPoints.geometry.attributes.position.array;
-      const scatter125 = state.scatter * 1.25;
-      for (let i = 0; i < count; i++) {
-        const xIdx = i * 3, yIdx = i * 3 + 1, zIdx = i * 3 + 2;
-        const wave = Math.sin(elapsedTime * 2.5 + lengths[i] * 3.5) * 0.05;
-        const push = scatter125 + wave;
-        posArr[xIdx] = originalPositions[xIdx] + normalizedDirs[xIdx] * push;
-        posArr[yIdx] = originalPositions[yIdx] + normalizedDirs[yIdx] * push;
-        posArr[zIdx] = originalPositions[zIdx] + normalizedDirs[zIdx] * push;
+    let tl = null;
+    let st = null;
+    if (!staticMode) {
+      if (actionsRef.current) gsap.set(actionsRef.current, { opacity: 0, y: 18 });
+      tl = gsap.timeline({ paused: true, defaults: { ease: "power2.inOut" } });
+      tl.to(fx, { seam: 1, duration: 0.15, ease: "none" }, 0);
+      meshes.forEach((m, i) => {
+        tl.to(m.position, { x: MODULES[i].split.x, y: MODULES[i].split.y, duration: 0.3 }, 0.15);
+        tl.to(m.rotation, { y: MODULES[i].split.ry, duration: 0.3 }, 0.15);
+      });
+      tl.to(fx, { seam: 0, duration: 0.1, ease: "none" }, 0.15);
+      if (labelsRef.current) {
+        tl.to(labelsRef.current.children, { opacity: 1, y: 0, stagger: 0.03, duration: 0.12 }, 0.22);
       }
-      torusPoints.geometry.attributes.position.needsUpdate = true;
+      meshes.forEach((m, i) => {
+        tl.to(m.position, { x: MODULES[i].dock, y: 0, duration: 0.28, ease: "back.out(1.3)" }, 0.5);
+        tl.to(m.rotation, { y: 0, duration: 0.28 }, 0.5);
+      });
+      if (labelsRef.current) {
+        tl.to(labelsRef.current.children, { opacity: 0, y: -8, duration: 0.08 }, 0.52);
+      }
+      tl.to(fx, { flash: 1, duration: 0.02, ease: "none" }, 0.78)
+        .to(fx, { flash: 0, duration: 0.06, ease: "none" }, 0.8);
+      tl.to(fx, { glow: 1, spin: 1, duration: 0.2, ease: "none" }, 0.8);
+      if (actionsRef.current) {
+        tl.to(actionsRef.current, { opacity: 1, y: 0, duration: 0.15 }, 0.83);
+      }
 
-      if (heroVisible) renderer.render(scene, camera);
-      if (!prefersReducedMotion) animId = requestAnimationFrame(tick);
-    };
+      st = window.ScrollTrigger.create({
+        trigger: wrapRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 0.8,
+        onUpdate: (self) => tl.progress(self.progress),
+      });
+    } else {
+      setAssembledState();
+    }
 
+    const clock = new THREE.Clock();
     let heroVisible = true;
     const visObs = new IntersectionObserver(([e]) => {
       heroVisible = e.isIntersecting;
     }, { threshold: 0 });
     visObs.observe(wrapRef.current);
-    tick();
 
-    // Resize Handler
+    let animId = 0;
+    const renderFrame = () => {
+      const t = clock.getElapsedTime();
+      seamMat.opacity = Math.max(fx.seam * (0.3 + 0.35 * Math.sin(t * 2.2)), fx.flash);
+      meshes.forEach((m) => {
+        m.material.emissiveIntensity = 0.1 + fx.glow * 0.9;
+      });
+      group.rotation.y = 0.52 + Math.sin(t * 0.22) * 0.06 + fx.spin * t * 0.05;
+      group.position.y = Math.sin(t * 0.5) * 0.05;
+      renderer.render(scene, camera);
+    };
+    if (staticMode) {
+      renderFrame(); // single static frame per mobile/reduced-motion rules
+    } else {
+      const tick = () => {
+        if (heroVisible) renderFrame();
+        animId = requestAnimationFrame(tick);
+      };
+      tick();
+    }
+
     const handleResize = () => {
       if (!canvasRef.current) return;
       const w = canvasRef.current.clientWidth;
@@ -1392,37 +1377,28 @@ function NeoHero({ copy, theme }) {
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
-      const isMob = window.innerWidth <= 980;
-      state.posOffset = isMob ? (state.progress * 2 - 1.0) : 0;
+      if (staticMode) renderFrame();
     };
     window.addEventListener("resize", handleResize);
 
     return () => {
-      cancelAnimationFrame(animId);
-      animId = 0;
+      if (animId) cancelAnimationFrame(animId);
       visObs.disconnect();
-      window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
       if (st) st.kill();
-      tl.kill();
-      
-      geometry.dispose();
-      particleGeom.dispose();
-      particleMaterial.dispose();
-      dustGeom.dispose();
-      dustMaterial.dispose();
+      if (tl) tl.kill();
+      disposables.forEach((d) => d.dispose());
       renderer.dispose();
     };
   }, []);
 
   return (
     <div ref={wrapRef} className="neo-hero-wrap">
-      <section ref={pinRef} className="neo-hero-sticky">
+      <section className="neo-hero-sticky">
         <div className="neo-hero-bg">
           <div className="neo-hero-grid"></div>
           <canvas ref={canvasRef} className="hero-3d-canvas" />
           <div className="scanlines"></div>
-          <Sparkles />
         </div>
         <div className="neo-hud-br neo-hud-tl"></div>
         <div className="neo-hud-br neo-hud-tr"></div>
@@ -1432,10 +1408,15 @@ function NeoHero({ copy, theme }) {
           <p className="eyebrow">{copy.eyebrow}</p>
           <h1>{copy.title} <em className="neo-gradient-text">{copy.accent}</em></h1>
           <p className="hero-body">{copy.body}</p>
-          <div className="hero-actions">
+          <div className="hero-actions" ref={actionsRef}>
             <button onClick={() => routeTo(theme, "academy")}>Start with Academy</button>
             <button className="secondary" onClick={() => routeTo(theme, "customers")}>View proof</button>
           </div>
+        </div>
+        <div className="neo-core-labels" ref={labelsRef} aria-hidden="true">
+          <span className="neo-core-label" style={{ "--label-accent": "#ccff00" }}>01 // ACADEMY</span>
+          <span className="neo-core-label" style={{ "--label-accent": "#00f0ff" }}>02 // MARKETING</span>
+          <span className="neo-core-label" style={{ "--label-accent": "#ff5c8a" }}>03 // LABS</span>
         </div>
       </section>
     </div>
