@@ -1101,257 +1101,562 @@ function NeoGuide() {
   );
 }
 
-function NeoHero({ copy, theme }) {
+function NeoHeroUnravel({ copy, theme }) {
   const wrapRef = React.useRef(null);
-  const pinRef = React.useRef(null);
   const canvasRef = React.useRef(null);
-
+  const titleRef = React.useRef(null);
+  const counterNumRef = React.useRef(null);
+  const counterBarRef = React.useRef(null);
+  const scrollCueRef = React.useRef(null);
+  
   React.useEffect(() => {
-    const collapseRunway = () => wrapRef.current?.classList.add("hero-webgl-failed");
-    if (!HAS_SCROLL_ANIMATION) {
-      collapseRunway();
-      return;
-    }
-    if (!canvasRef.current) {
-      collapseRunway();
-      return;
-    }
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
+    const ctx = canvas.getContext("2d");
+    const TAU = Math.PI * 2;
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const THREE = window.THREE;
-    if (!THREE) {
-      console.error("Three.js not loaded.");
-      collapseRunway();
-      return;
-    }
+    // Strands Accent Colors (Violet, Coral, Mint)
+    const STRANDS = [
+      { id: "academy",   rgb: [124, 92, 255] },
+      { id: "labs",      rgb: [255, 92, 138] },
+      { id: "marketing", rgb: [0, 229, 160]  },
+    ];
 
-    const width = canvasRef.current.clientWidth;
-    const height = canvasRef.current.clientHeight;
-
-    let renderer;
-    try {
-      renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true, antialias: true });
-    } catch (err) {
-      console.warn("WebGL unavailable — 3D hero skipped, page renders without it.", err);
-      collapseRunway();
-      return;
-    }
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.z = 7;
-
-    const isMobile = window.innerWidth <= 980;
-
-    // 1. (3, 7) Torus Knot Geometry
-    const geometry = new THREE.TorusKnotGeometry(1.2, 0.28, 180, 16, 3, 7);
-    
-    // Create custom particle system for torus knot
-    const count = geometry.attributes.position.count;
-    const particleGeom = new THREE.BufferGeometry();
-    const positions = new Float32Array(count * 3);
-    const originalPositions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-    
-    const posAttr = geometry.attributes.position;
-    // Pre-cache normalized directions — eliminates per-frame sqrt
-    const normalizedDirs = new Float32Array(count * 3);
-    const lengths = new Float32Array(count);
-    for (let i = 0; i < count; i++) {
-      const ox = posAttr.getX(i), oy = posAttr.getY(i), oz = posAttr.getZ(i);
-      positions[i * 3] = originalPositions[i * 3] = ox;
-      positions[i * 3 + 1] = originalPositions[i * 3 + 1] = oy;
-      positions[i * 3 + 2] = originalPositions[i * 3 + 2] = oz;
-      const len = Math.sqrt(ox*ox + oy*oy + oz*oz);
-      lengths[i] = len;
-      normalizedDirs[i * 3]     = len > 0.001 ? ox / len : 0;
-      normalizedDirs[i * 3 + 1] = len > 0.001 ? oy / len : 0;
-      normalizedDirs[i * 3 + 2] = len > 0.001 ? oz / len : 0;
-      const ratio = i / count;
-      colors[i * 3] = 0.8 + Math.sin(ratio * Math.PI) * 0.2;
-      colors[i * 3 + 1] = 1.0;
-      colors[i * 3 + 2] = 0.0;
-    }
-    
-    particleGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    particleGeom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    
-    const particleMaterial = new THREE.PointsMaterial({
-      size: isMobile ? 0.038 : 0.052,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.85,
-      blending: THREE.AdditiveBlending
-    });
-    
-    const torusPoints = new THREE.Points(particleGeom, particleMaterial);
-    scene.add(torusPoints);
-
-    // 2. Space Dust Background Particles
-    const dustCount = 350;
-    const dustGeom = new THREE.BufferGeometry();
-    const dustPositions = new Float32Array(dustCount * 3);
-    for (let i = 0; i < dustCount * 3; i++) {
-      dustPositions[i] = (Math.random() - 0.5) * 15;
-    }
-    dustGeom.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
-    const dustMaterial = new THREE.PointsMaterial({
-      color: 0x00f0ff,
-      size: 0.02,
-      transparent: true,
-      opacity: 0.35,
-      blending: THREE.AdditiveBlending
-    });
-    const dustPoints = new THREE.Points(dustGeom, dustMaterial);
-    scene.add(dustPoints);
-
-    // Initial position based on mobile/desktop layout
-    torusPoints.position.set(isMobile ? 0 : 1.4, isMobile ? -1.0 : 0, 0);
-
-    // Scroll state object to animate with GSAP
-    const state = {
-      progress: 0,
-      zoom: 7.0,
-      speed: 1.0,
-      scatter: 0.0,
-      posOffset: isMobile ? -1.0 : 0
+    const makeSprite = (rgb) => {
+      const s = document.createElement("canvas");
+      s.width = s.height = 64;
+      const c = s.getContext("2d");
+      const grad = c.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, "rgba(255,255,255,0.95)");
+      grad.addColorStop(0.18, "rgba(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ",0.85)");
+      grad.addColorStop(0.5, "rgba(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ",0.22)");
+      grad.addColorStop(1, "rgba(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ",0)");
+      c.fillStyle = grad;
+      c.fillRect(0, 0, 64, 64);
+      return s;
     };
 
-    // GSAP ScrollTrigger Timeline
-    const tl = window.gsap.timeline({ paused: true });
-    tl.to(state, {
-      progress: 1,
-      zoom: 3.5,
-      speed: 7.0,
-      scatter: 3.0,
-      posOffset: isMobile ? 1.0 : 0,
-      duration: 1,
-      ease: "none"
-    });
+    const sprites = STRANDS.map(s => makeSprite(s.rgb));
 
-    const shouldPin = window.innerWidth > 760;
-    const st = shouldPin ? window.ScrollTrigger.create({
-      trigger: wrapRef.current,
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 0.5,
-      animation: tl
-    }) : null;
-    if (!shouldPin) tl.progress(0.32);
+    let parts = [];
+    let COUNT = window.innerWidth < 760 ? 340 : 720;
 
-    // Mouse movement interactive tilt
-    let mouse = { x: 0, y: 0 };
-    let targetMouse = { x: 0, y: 0 };
-    const handleMouseMove = (e) => {
-      targetMouse.x = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
-      targetMouse.y = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
-    };
-    window.addEventListener("mousemove", handleMouseMove);
+    function buildParticles() {
+      COUNT = window.innerWidth < 760 ? 340 : 720;
+      parts = STRANDS.map(() => {
+        const arr = new Array(COUNT);
+        for (let i = 0; i < COUNT; i++) {
+          let x = Math.random() * 2 - 1;
+          let y = Math.random() * 2 - 1;
+          let z = Math.random() * 2 - 1;
+          const l = Math.hypot(x, y, z) || 1;
+          const rad = 1.6 + Math.random() * 1.5;
+          arr[i] = {
+            t: i / COUNT,
+            cx: (x / l) * rad, cy: (y / l) * rad, cz: (z / l) * rad,
+            j: Math.random() * TAU,
+            sz: 0.55 + Math.random() * 1.05,
+          };
+        }
+        return arr;
+      });
+    }
 
-    // Animation Loop
-    let clock = new THREE.Clock();
-    let animId;
-    const tick = () => {
-      const elapsedTime = clock.getElapsedTime();
-      
-      mouse.x += (targetMouse.x - mouse.x) * 0.05;
-      mouse.y += (targetMouse.y - mouse.y) * 0.05;
+    buildParticles();
 
-      // Base rotation + scroll speed + mouse tilt
-      torusPoints.rotation.y = elapsedTime * 0.16 * state.speed + mouse.x * 0.45;
-      torusPoints.rotation.x = elapsedTime * 0.12 * state.speed + mouse.y * 0.45;
-      
-      dustPoints.rotation.y = -elapsedTime * 0.02 + mouse.x * 0.15;
-      dustPoints.rotation.x = mouse.y * 0.15;
-
-      camera.position.z = state.zoom;
-
-      // Position update for mobile offset
-      const isMob = window.innerWidth <= 980;
-      torusPoints.position.set(isMob ? 0 : 1.4, isMob ? state.posOffset : 0, 0);
-
-      // Scatter: push points outwards on scroll (cached dirs — no per-frame sqrt)
-      const posArr = torusPoints.geometry.attributes.position.array;
-      const scatter125 = state.scatter * 1.25;
-      for (let i = 0; i < count; i++) {
-        const xIdx = i * 3, yIdx = i * 3 + 1, zIdx = i * 3 + 2;
-        const wave = Math.sin(elapsedTime * 2.5 + lengths[i] * 3.5) * 0.05;
-        const push = scatter125 + wave;
-        posArr[xIdx] = originalPositions[xIdx] + normalizedDirs[xIdx] * push;
-        posArr[yIdx] = originalPositions[yIdx] + normalizedDirs[yIdx] * push;
-        posArr[zIdx] = originalPositions[zIdx] + normalizedDirs[zIdx] * push;
+    // Formations variables local to effect
+    const v = [0, 0, 0];
+    function fCloud(si, pt) {
+      v[0] = pt.cx; v[1] = pt.cy; v[2] = pt.cz;
+    }
+    function fMonolith(si, pt, time) {
+      const a = pt.t * TAU * 3 + si * (TAU / 3) + time * 0.3;
+      const r = 0.17 + Math.sin(pt.j + time * 1.4) * 0.022;
+      v[0] = Math.cos(a) * r;
+      v[1] = (pt.t - 0.5) * 2.7;
+      v[2] = Math.sin(a) * r;
+    }
+    function fBloom(si, pt, time) {
+      const A = si * (TAU / 3) + time * 0.12;
+      const ox = Math.cos(A) * 0.9, oz = Math.sin(A) * 0.9;
+      const a = pt.t * TAU * 2.4 + time * 0.5;
+      v[0] = ox + Math.cos(a) * 0.3;
+      v[1] = (pt.t - 0.5) * 2.1;
+      v[2] = oz + Math.sin(a) * 0.3;
+    }
+    function fSignature(si, pt, time) {
+      if (si === 0) {
+        const a = pt.t * TAU * 1.7 + time * 0.32;
+        const r = 0.5 + pt.t * 0.72;
+        v[0] = Math.cos(a) * r;
+        v[1] = (pt.t - 0.5) * 2.35;
+        v[2] = Math.sin(a) * r;
+      } else if (si === 1) {
+        const ga = pt.t * COUNT * 2.39996323;
+        const y = 1 - pt.t * 2;
+        const rr = Math.sqrt(Math.max(0, 1 - y * y));
+        const R = 1.18 + Math.sin(time * 1.3 + pt.j) * 0.05;
+        v[0] = Math.cos(ga) * rr * R;
+        v[1] = y * R;
+        v[2] = Math.sin(ga) * rr * R;
+      } else {
+        const a = pt.t * TAU * 3.4 + time * 0.55;
+        const r = 0.14 + pt.t * 1.55;
+        v[0] = Math.cos(a) * r;
+        v[1] = Math.sin(pt.t * TAU * 2 + time * 1.1) * 0.13;
+        v[2] = Math.sin(a) * r * 0.62;
       }
-      torusPoints.geometry.attributes.position.needsUpdate = true;
+    }
+    function fOrbit(si, pt, time) {
+      const a = pt.t * TAU + si * 2.1 + time * 0.14;
+      v[0] = Math.cos(a) * 2.0;
+      v[1] = Math.sin(a * 2 + pt.j) * 0.16 + (si - 1) * -0.42;
+      v[2] = Math.sin(a) * 2.0;
+    }
+    function fLattice(si, pt, time) {
+      const u = pt.t * TAU * 3 + si * (TAU / 3) + time * 0.18;
+      const w = pt.t * TAU * 7 + pt.j;
+      const k = 1.05 + 0.42 * Math.cos(w);
+      v[0] = k * Math.cos(u);
+      v[1] = 0.42 * Math.sin(w);
+      v[2] = k * Math.sin(u);
+    }
 
-      if (heroVisible) renderer.render(scene, camera);
-      if (!prefersReducedMotion) animId = requestAnimationFrame(tick);
+    function evalFormation(name, si, pt, time) {
+      switch (name) {
+        case "cloud":    fCloud(si, pt); break;
+        case "monolith": fMonolith(si, pt, time); break;
+        case "bloom":    fBloom(si, pt, time); break;
+        case "focus0":   si === 0 ? fSignature(si, pt, time) : fOrbit(si, pt, time); break;
+        case "focus1":   si === 1 ? fSignature(si, pt, time) : fOrbit(si, pt, time); break;
+        case "focus2":   si === 2 ? fSignature(si, pt, time) : fOrbit(si, pt, time); break;
+        case "lattice":  fLattice(si, pt, time); break;
+      }
+    }
+
+    function formationAlpha(name, si) {
+      switch (name) {
+        case "cloud":    return 0.45;
+        case "monolith": return 0.95;
+        case "bloom":    return 0.95;
+        case "focus0":   return si === 0 ? 1 : 0.13;
+        case "focus1":   return si === 1 ? 1 : 0.13;
+        case "focus2":   return si === 2 ? 1 : 0.13;
+        case "lattice":  return 0.9;
+      }
+      return 1;
+    }
+
+    const KEYS = [
+      { p: 0.00, f: "cloud"    },
+      { p: 0.07, f: "monolith" },
+      { p: 0.13, f: "monolith" },
+      { p: 0.20, f: "bloom"    },
+      { p: 0.255, f: "bloom"   },
+      { p: 0.31, f: "focus0"   },
+      { p: 0.42, f: "focus0"   },
+      { p: 0.49, f: "focus1"   },
+      { p: 0.60, f: "focus1"   },
+      { p: 0.67, f: "focus2"   },
+      { p: 0.78, f: "focus2"   },
+      { p: 0.88, f: "lattice"  },
+      { p: 1.00, f: "lattice"  },
+    ];
+
+    function segmentAt(p) {
+      let i = 0;
+      while (i < KEYS.length - 2 && p > KEYS[i + 1].p) i++;
+      const a = KEYS[i], b = KEYS[i + 1];
+      const diff = b.p - a.p || 1;
+      const progress = (p - a.p) / diff;
+      const e = progress * progress * (3 - 2 * progress); // smooth clamp01
+      return { from: a.f, to: b.f, e };
+    }
+
+    let W = 0, H = 0, CX = 0, CY = 0, SCALE = 1;
+
+    function measure() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      CX = W / 2;
+      CY = H * 0.48;
+      SCALE = Math.min(W, H) * 0.305;
+    }
+
+    measure();
+
+    const state = { p: 0, target: 0 };
+    const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+
+    const chapters = Array.from(wrapRef.current.querySelectorAll(".neo-hero-chapter")).map((el) => ({
+      el,
+      a: parseFloat(el.dataset.from),
+      b: parseFloat(el.dataset.to),
+      visible: -1,
+    }));
+    const dots = Array.from(wrapRef.current.querySelectorAll(".neo-hero-rail button"));
+    const titleSpans = Array.from(titleRef.current?.querySelectorAll("span") || []);
+
+    function chapterOpacity(p, a, b) {
+      const fade = Math.min(0.045, (b - a) * 0.4);
+      const fin = Math.max(0, Math.min(1, (p - a) / fade));
+      const finS = fin * fin * (3 - 2 * fin);
+      const fout = b >= 0.999 ? 1 : 1 - Math.max(0, Math.min(1, (p - (b - fade)) / fade));
+      const foutS = fout * fout * (3 - 2 * fout);
+      return Math.min(finS, foutS);
+    }
+
+    function updateChapters(p) {
+      let active = 0;
+      chapters.forEach((ch, i) => {
+        const o = ch.a === 0 && p < ch.b
+          ? 1 - (p / ch.b) * (p / ch.b) * (3 - 2 * (p / ch.b))
+          : chapterOpacity(p, ch.a, ch.b);
+        const vis = o > 0.01;
+        if (p >= ch.a) active = i;
+        ch.el.style.opacity = o.toFixed(3);
+        ch.el.style.transform = "translateY(" + ((1 - o) * 26).toFixed(1) + "px)";
+        if (vis !== (ch.visible === 1)) {
+          ch.visible = vis ? 1 : 0;
+          ch.el.style.pointerEvents = vis ? "auto" : "none";
+          ch.el.setAttribute("aria-hidden", vis ? "false" : "true");
+        }
+      });
+
+      dots.forEach((d, i) => d.classList.toggle("is-active", i === active));
+      if (counterNumRef.current) counterNumRef.current.textContent = "0" + (active + 1);
+      if (counterBarRef.current) counterBarRef.current.style.transform = "scaleX(" + p.toFixed(4) + ")";
+      if (scrollCueRef.current) scrollCueRef.current.style.opacity = p > 0.02 ? "0" : "1";
+
+      const spread = Math.max(0, Math.min(1, p / 0.07));
+      const spreadS = spread * spread * (3 - 2 * spread);
+      titleSpans.forEach((s, i) => {
+        const dir = i - (titleSpans.length - 1) / 2;
+        s.style.transform = "translateX(" + (dir * spreadS * 34).toFixed(1) + "px)";
+        s.style.opacity = (1 - spreadS).toFixed(3);
+      });
+    }
+
+    // GSAP ScrollTrigger to coordinate scroll progress
+    const isDesktop = window.innerWidth > 760;
+    let st;
+
+    if (isDesktop && !prefersReducedMotion) {
+      st = ScrollTrigger.create({
+        trigger: wrapRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true,
+        onUpdate: (self) => {
+          state.target = self.progress;
+        }
+      });
+    } else {
+      state.target = 0.95; // Snap to lattice end on mobile or reduced motion
+    }
+
+    // Mouse movement listeners
+    const onMouseMove = (e) => {
+      mouse.tx = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+      mouse.ty = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
     };
+    if (isDesktop) {
+      window.addEventListener("mousemove", onMouseMove, { passive: true });
+    }
+
+    let rafId = 0;
+    let t0 = performance.now();
+
+    function renderLoop(now) {
+      const time = (now - t0) / 1000;
+      state.p += (state.target - state.p) * 0.09;
+      if (Math.abs(state.target - state.p) < 0.0004) state.p = state.target;
+      mouse.x += (mouse.tx - mouse.x) * 0.05;
+      mouse.y += (mouse.ty - mouse.y) * 0.05;
+
+      const p = state.p;
+      updateChapters(p);
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalCompositeOperation = "lighter";
+
+      const seg = segmentAt(p);
+      const ry = p * 4.4 + time * 0.05 + mouse.x * 0.28;
+      const rx = -0.16 + Math.sin(p * Math.PI) * 0.12 + mouse.y * 0.2;
+      const cy_ = Math.cos(ry), sy_ = Math.sin(ry);
+      const cx_ = Math.cos(rx), sx_ = Math.sin(rx);
+
+      // Render strands
+      parts.forEach((strandParts, si) => {
+        const sprite = sprites[si];
+        const alpha = formationAlpha(seg.from, si) * (1 - seg.e) + formationAlpha(seg.to, si) * seg.e;
+        if (alpha <= 0.002) return;
+
+        const pA = [0, 0, 0];
+        const pB = [0, 0, 0];
+
+        strandParts.forEach((pt) => {
+          // Eval shapes and interpolate
+          evalFormation(seg.from, si, pt, time);
+          pA[0] = v[0]; pA[1] = v[1]; pA[2] = v[2];
+
+          evalFormation(seg.to, si, pt, time);
+          pB[0] = v[0]; pB[1] = v[1]; pB[2] = v[2];
+
+          const mx = pA[0] * (1 - seg.e) + pB[0] * seg.e;
+          const my = pA[1] * (1 - seg.e) + pB[1] * seg.e;
+          const mz = pA[2] * (1 - seg.e) + pB[2] * seg.e;
+
+          // 3D rotations
+          const x1 = mx * cy_ - mz * sy_;
+          const z1 = mx * sy_ + mz * cy_;
+          const y2 = my * cx_ - z1 * sx_;
+          const z2 = my * sx_ + z1 * cx_;
+
+          const persp = 3.6 / (3.6 + z2);
+          const px = CX + x1 * persp * SCALE;
+          const py = CY + y2 * persp * SCALE;
+          const d = pt.sz * persp * 2.8 * (W < 760 ? 1.4 : 2.0);
+
+          if (px < -d || px > W + d || py < -d || py > H + d) return;
+
+          ctx.globalAlpha = alpha;
+          ctx.drawImage(sprite, px - d / 2, py - d / 2, d, d);
+        });
+      });
+
+      rafId = requestAnimationFrame(renderLoop);
+    }
 
     let heroVisible = true;
-    const visObs = new IntersectionObserver(([e]) => {
+    const io = new IntersectionObserver(([e]) => {
       heroVisible = e.isIntersecting;
     }, { threshold: 0 });
-    visObs.observe(wrapRef.current);
-    tick();
+    io.observe(wrapRef.current);
 
-    // Resize Handler
-    const handleResize = () => {
-      if (!canvasRef.current) return;
-      const w = canvasRef.current.clientWidth;
-      const h = canvasRef.current.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-      const isMob = window.innerWidth <= 980;
-      state.posOffset = isMob ? (state.progress * 2 - 1.0) : 0;
+    rafId = requestAnimationFrame(renderLoop);
+
+    const onResize = () => {
+      measure();
     };
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", onResize, { passive: true });
+
+    // Rail click handler helper
+    const handleDotClick = (index) => {
+      const ch = chapters[index];
+      const mid = ch.a === 0 ? 0 : (ch.a + ch.b) / 2;
+      const rect = wrapRef.current.getBoundingClientRect();
+      const top = rect.top + window.scrollY + mid * (rect.height - window.innerHeight);
+      window.scrollTo({ top, behavior: "smooth" });
+    };
+    dots.forEach((d, i) => {
+      d.addEventListener("click", () => handleDotClick(i));
+    });
 
     return () => {
-      cancelAnimationFrame(animId);
-      animId = 0;
-      visObs.disconnect();
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("mousemove", onMouseMove);
       if (st) st.kill();
-      tl.kill();
-      
-      geometry.dispose();
-      particleGeom.dispose();
-      particleMaterial.dispose();
-      dustGeom.dispose();
-      dustMaterial.dispose();
-      renderer.dispose();
     };
   }, []);
 
   return (
-    <div ref={wrapRef} className="neo-hero-wrap">
-      <section ref={pinRef} className="neo-hero-sticky">
-        <div className="neo-hero-bg">
-          <div className="neo-hero-grid"></div>
-          <canvas ref={canvasRef} className="hero-3d-canvas" />
-          <div className="scanlines"></div>
-          <Sparkles />
+    <div ref={wrapRef} className="neo-hero-runway">
+      <div className="neo-hero-stage">
+        <canvas ref={canvasRef} className="neo-hero-canvas" aria-hidden="true" />
+        
+        {/* Chapters Overlays */}
+        <div className="neo-hero-chapter" data-from="0" data-to="0.07">
+          <p className="kicker">An engineering company</p>
+          <h1 ref={titleRef} className="neo-hero-title" aria-label="Nexara">
+            <span>N</span><span>E</span><span>X</span><span>A</span><span>R</span><span>A</span>
+          </h1>
+          <p className="hero-sub">Scroll to unravel</p>
         </div>
-        <div className="neo-hud-br neo-hud-tl"></div>
-        <div className="neo-hud-br neo-hud-tr"></div>
-        <div className="neo-hud-br neo-hud-bl"></div>
-        <div className="neo-hud-br neo-hud-brr"></div>
-        <div className="neo-hero-copy hero-copy">
-          <p className="eyebrow">{copy.eyebrow}</p>
-          <h1>{copy.title} <em className="neo-gradient-text">{copy.accent}</em></h1>
-          <p className="hero-body">{copy.body}</p>
+
+        <div className="neo-hero-chapter" data-from="0.125" data-to="0.225" aria-hidden="true">
+          <p className="kicker">The premise</p>
+          <h2 className="h-display">One core.<br /><span className="serif">Three forces.</span></h2>
+          <p className="lede">Every engagement runs through a single operating core — then unravels into three disciplined divisions.</p>
+        </div>
+
+        <div className="neo-hero-chapter ch-left" style={{ '--accent': '#7c5cff' }} data-from="0.27" data-to="0.45" aria-hidden="true">
+          <p className="ch-num">01 / DIVISION</p>
+          <h2 className="ch-name">Academy<br /><span className="serif">we grow engineers.</span></h2>
+          <p className="lede">Cohort-based programmes that turn ambitious learners into working engineers — sprint by sprint, review by review.</p>
+          <button className="ch-link" onClick={() => routeTo('neo', 'academy')}>Enter Academy →</button>
+        </div>
+
+        <div className="neo-hero-chapter ch-right" style={{ '--accent': '#ff5c8a' }} data-from="0.45" data-to="0.63" aria-hidden="true">
+          <p className="ch-num">02 / DIVISION</p>
+          <h2 className="ch-name">Labs<br /><span className="serif">we build intelligence.</span></h2>
+          <p className="lede">Applied AI and automation systems, engineered from prototype to production with written specs and weekly demos.</p>
+          <button className="ch-link" onClick={() => routeTo('neo', 'labs')}>Enter Labs →</button>
+        </div>
+
+        <div className="neo-hero-chapter ch-left" style={{ '--accent': '#00e5a0' }} data-from="0.63" data-to="0.81" aria-hidden="true">
+          <p className="ch-num">03 / DIVISION</p>
+          <h2 className="ch-name">Marketing<br /><span className="serif">we make brands move.</span></h2>
+          <p className="lede">Brand systems, web experiences and performance creative — built like software, measured like engineering.</p>
+          <button className="ch-link" onClick={() => routeTo('neo', 'marketing')}>Enter Marketing →</button>
+        </div>
+
+        <div className="neo-hero-chapter" data-from="0.86" data-to="1" aria-hidden="true">
+          <p className="kicker">The weave</p>
+          <h2 className="h-display">Three disciplines.<br /><span className="serif">One standard.</span></h2>
           <div className="hero-actions">
-            <button onClick={() => routeTo(theme, "academy")}>Start with Academy</button>
-            <button className="secondary" onClick={() => routeTo(theme, "customers")}>View proof</button>
+            <button className="btn btn-solid" onClick={() => routeTo('neo', 'contact')}>Start a brief <span className="arr">→</span></button>
+            <button className="btn" onClick={() => {
+              const el = document.getElementById("divisions");
+              el?.scrollIntoView({ behavior: "smooth" });
+            }}>Explore divisions</button>
           </div>
         </div>
-      </section>
+
+        {/* HUD */}
+        <div className="neo-hero-rail" aria-hidden="true">
+          <button data-label="Nexara"></button>
+          <button data-label="Premise"></button>
+          <button data-label="Academy"></button>
+          <button data-label="Labs"></button>
+          <button data-label="Marketing"></button>
+          <button data-label="Begin"></button>
+        </div>
+        <div className="neo-hero-counter" aria-hidden="true">
+          <strong ref={counterNumRef}>01</strong> / 06
+          <span className="neo-counter-bar"><i ref={counterBarRef}></i></span>
+        </div>
+        <div ref={scrollCueRef} className="neo-scroll-cue" aria-hidden="true">Scroll<i></i></div>
+      </div>
     </div>
+  );
+}
+
+function NeoManifesto() {
+  const wrapRef = React.useRef(null);
+  React.useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const textEl = el.querySelector(".neo-manifesto-text");
+    if (!textEl) return;
+    const text = textEl.textContent.trim();
+    const words = text.split(/\s+/);
+    textEl.innerHTML = words.map(w => {
+      let isAccent = false;
+      let cClass = "";
+      const lower = w.toLowerCase();
+      if (lower.includes("grows") || lower.includes("people")) { isAccent = true; cClass = "c-academy"; }
+      else if (lower.includes("intelligent") || lower.includes("systems")) { isAccent = true; cClass = "c-labs"; }
+      else if (lower.includes("brands") || lower.includes("move")) { isAccent = true; cClass = "c-marketing"; }
+      return "<span class=\"w " + (isAccent ? "accent " + cClass : "") + "\">" + w + "</span>";
+    }).join(" ");
+
+    const spanElements = textEl.querySelectorAll(".w");
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start: "top 72%",
+      end: "bottom 34%",
+      scrub: true,
+      onUpdate: (self) => {
+        const lit = Math.floor(self.progress * (spanElements.length + 2));
+        spanElements.forEach((span, i) => {
+          span.classList.toggle("on", i < lit);
+        });
+      }
+    });
+    return () => st.kill();
+  }, []);
+
+  return (
+    <section className="neo-manifesto" ref={wrapRef}>
+      <div className="section-inner">
+        <p className="kicker">Why Nexara</p>
+        <p className="neo-manifesto-text">
+          We are one engineering company that grows people, builds intelligent systems, and makes brands move — one standard, three disciplines, zero shortcuts.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function NeoDivisionsRail() {
+  const wrapRef = React.useRef(null);
+  const trackRef = React.useRef(null);
+  const progressRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (!wrapRef.current || !trackRef.current) return;
+    const track = trackRef.current;
+    const wrap = wrapRef.current;
+
+    const st = ScrollTrigger.create({
+      trigger: wrap,
+      start: "top top",
+      end: "bottom bottom",
+      scrub: true,
+      onUpdate: (self) => {
+        const max = Math.max(0, track.scrollWidth - window.innerWidth);
+        track.style.transform = "translateX(" + (-max * self.progress) + "px)";
+        if (progressRef.current) {
+          const n = Math.min(3, 1 + Math.floor(self.progress * 2.99));
+          progressRef.current.textContent = "0" + n;
+        }
+      }
+    });
+
+    return () => st.kill();
+  }, []);
+
+  const sections = Object.values(DATA.sections);
+
+  return (
+    <section className="neo-rail-wrap" id="divisions" ref={wrapRef}>
+      <div className="neo-rail-stage">
+        <div className="rail-head">
+          <div>
+            <p className="kicker">The divisions</p>
+            <h2 className="h-section">Choose your force.</h2>
+          </div>
+          <p className="rail-progress"><b ref={progressRef}>01</b> / 03</p>
+        </div>
+        <div className="neo-rail-track" ref={trackRef}>
+          {sections.map((sec, i) => (
+            <button key={sec.id} className="neo-rail-panel" style={{ '--accent': i === 0 ? '#7c5cff' : i === 1 ? '#ff5c8a' : '#00e5a0' }} onClick={() => routeTo('neo', sec.id)}>
+              <span className="neo-panel-idx">0${i + 1} / ${sec.name.toUpperCase()}</span>
+              <span className="neo-panel-orb" />
+              <span className="neo-panel-ring" />
+              <h3>${sec.name}<br /><span className="serif">${sec.headline || (i === 0 ? "we grow engineers" : i === 1 ? "we build intelligence" : "we make brands move")}</span></h3>
+              <p>${sec.short.neo || sec.desc}</p>
+              <span className="panel-tags">
+                ${sec.stack.slice(0, 4).map(tag => "<span key=\"" + tag + "\">" + tag + "</span>").join("")}
+              </span>
+              <span className="btn">Enter ${sec.name} <span className="arr">→</span></span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function NeoFinalCTA() {
+  return (
+    <section className="neo-final-cta">
+      <p className="kicker">Ready when you are</p>
+      <button onClick={() => routeTo('neo', 'contact')} aria-label="Begin — start a brief" style={{ border: 0, background: 'none', padding: 0 }}>
+        <span className="neo-final-cta">
+          <a href="#contact" onClick={(e) => { e.preventDefault(); routeTo('neo', 'contact'); }}>Begin.</a>
+        </span>
+      </button>
+      <p className="lede">Tell us which force you need — or let the brief decide.</p>
+    </section>
   );
 }
 
@@ -1800,18 +2105,47 @@ function Home({ theme }) {
       {!HAS_SCROLL_ANIMATION
         ? <HeroBanner theme={theme} eyebrow={copy.eyebrow} title={copy.title} accent={copy.accent} body={copy.body} />
         : isNeo
-        ? <NeoHero copy={copy} theme={theme} />
+        ? (
+          <>
+            <NeoHeroUnravel copy={copy} theme={theme} />
+            <NeoManifesto />
+            <NeoDivisionsRail />
+            <section className="section standards">
+              <div className="section-inner">
+                <div className="section-head">
+                  <div>
+                    <p className="kicker">The operating standard</p>
+                    <h2 className="h-section">Every division runs<br />on the same spine.</h2>
+                  </div>
+                </div>
+                <div className="neo-standards-grid">
+                  <div className="neo-standard-card">
+                    <span className="neo-std-idx">/01</span>
+                    <h3>Written before built</h3>
+                    <p>Every engagement starts with a written brief and scope. If it isn't written down, it isn't agreed.</p>
+                  </div>
+                  <div className="neo-standard-card">
+                    <span className="neo-std-idx">/02</span>
+                    <h3>Demo every week</h3>
+                    <p>Working software, live cohorts, running campaigns — shown weekly, not described in decks.</p>
+                  </div>
+                  <div className="neo-standard-card">
+                    <span className="neo-std-idx">/03</span>
+                    <h3>One accountable lead</h3>
+                    <p>Every cohort, system and campaign has a single named owner from kickoff to handover.</p>
+                  </div>
+                  <div className="neo-standard-card">
+                    <span className="neo-std-idx">/04</span>
+                    <h3>Handover by design</h3>
+                    <p>Documentation, access and training are part of the deliverable — never an afterthought.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <NeoFinalCTA />
+          </>
+        )
         : <TrustHero copy={copy} theme={theme} />}
-      <NexaraUnbox theme={theme} />
-      <div className="home-group section-reveal">
-        <SectionCards theme={theme} sections={sections} />
-        <SuperSkills theme={theme} />
-      </div>
-      <div className="home-evidence section-reveal">
-        <MarketContext theme={theme} />
-        <HomeProof theme={theme} />
-      </div>
-      <HomeIntakeCTA theme={theme} />
     </main>
   );
 }
@@ -3196,12 +3530,212 @@ function SectionCards({ theme, sections }) {
   );
 }
 
+function NeoSectionHeroUnravel({ theme, section }) {
+  const wrapRef = React.useRef(null);
+  const canvasRef = React.useRef(null);
+  
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    const TAU = Math.PI * 2;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const shape = section.id === "academy" ? "spiral" : section.id === "labs" ? "sphere" : "signal";
+    const rgb = section.id === "academy" ? [124, 92, 255] : section.id === "labs" ? [255, 92, 138] : [0, 229, 160];
+
+    const makeSprite = (cRgb) => {
+      const s = document.createElement("canvas");
+      s.width = s.height = 64;
+      const c = s.getContext("2d");
+      const grad = c.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, "rgba(255,255,255,0.95)");
+      grad.addColorStop(0.18, "rgba(" + cRgb[0] + "," + cRgb[1] + "," + cRgb[2] + ",0.85)");
+      grad.addColorStop(0.5, "rgba(" + cRgb[0] + "," + cRgb[1] + "," + cRgb[2] + ",0.22)");
+      grad.addColorStop(1, "rgba(" + cRgb[0] + "," + cRgb[1] + "," + cRgb[2] + ",0)");
+      c.fillStyle = grad;
+      c.fillRect(0, 0, 64, 64);
+      return s;
+    };
+
+    const sprite = makeSprite(rgb);
+    let COUNT = window.innerWidth < 760 ? 260 : 560;
+    let parts = [];
+
+    function build() {
+      COUNT = window.innerWidth < 760 ? 260 : 560;
+      parts = new Array(COUNT);
+      for (let i = 0; i < COUNT; i++) {
+        parts[i] = {
+          t: i / COUNT,
+          j: Math.random() * TAU,
+          sz: 0.55 + Math.random()
+        };
+      }
+    }
+    build();
+
+    let W = 0, H = 0, CX = 0, CY = 0, SCALE = 1;
+    function measure() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      CX = W / 2;
+      CY = H * 0.48;
+      SCALE = Math.min(W, H) * 0.32;
+    }
+    measure();
+
+    const state = { p: 0, target: 0 };
+    const isDesktop = window.innerWidth > 760;
+
+    let st;
+    if (isDesktop && !prefersReducedMotion) {
+      st = ScrollTrigger.create({
+        trigger: wrapRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true,
+        onUpdate: (self) => {
+          state.target = self.progress;
+        }
+      });
+    } else {
+      state.target = 1;
+    }
+
+    let rafId = 0;
+    let t0 = performance.now();
+
+    function render(now) {
+      const time = (now - t0) / 1000;
+      state.p += (state.target - state.p) * 0.09;
+      if (Math.abs(state.target - state.p) < 0.0004) state.p = state.target;
+
+      const p = state.p;
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalCompositeOperation = "lighter";
+
+      const ry = p * 1.8 + time * 0.08;
+      const rx = -0.15 + p * 0.3;
+      const cy_ = Math.cos(ry), sy_ = Math.sin(ry);
+      const cx_ = Math.cos(rx), sx_ = Math.sin(rx);
+
+      parts.forEach((pt) => {
+        // Line formation
+        const lx = (pt.t - 0.5) * 3.3;
+        const ly = 0;
+        const lz = 0;
+
+        // Shape formation
+        let sx = 0, sy = 0, sz = 0;
+        if (shape === "spiral") {
+          const a = pt.t * TAU * 2.2;
+          const r = 0.35 + pt.t * 0.7;
+          sx = Math.cos(a) * r;
+          sy = (pt.t - 0.5) * 2.1;
+          sz = Math.sin(a) * r;
+        } else if (shape === "sphere") {
+          const ga = pt.t * COUNT * 2.39996323;
+          const y = 1 - pt.t * 2;
+          const rr = Math.sqrt(Math.max(0, 1 - y * y));
+          const R = 1.15;
+          sx = Math.cos(ga) * rr * R;
+          sy = y * R;
+          sz = Math.sin(ga) * rr * R;
+        } else {
+          const a = pt.t * TAU * 3.4;
+          const r = 0.1 + pt.t * 1.3;
+          sx = Math.cos(a) * r;
+          sy = Math.sin(pt.t * TAU * 2) * 0.1;
+          sz = Math.sin(a) * r * 0.6;
+        }
+
+        // Interpolate
+        const mx = lx * (1 - p) + sx * p;
+        const my = ly * (1 - p) + sy * p;
+        const mz = lz * (1 - p) + sz * p;
+
+        // 3D rotations
+        const x1 = mx * cy_ - mz * sy_;
+        const z1 = mx * sy_ + mz * cy_;
+        const y2 = my * cx_ - z1 * sx_;
+        const z2 = my * sx_ + z1 * cx_;
+
+        const persp = 3.6 / (3.6 + z2);
+        const px = CX + x1 * persp * SCALE;
+        const py = CY + y2 * persp * SCALE;
+        const d = pt.sz * persp * 2.8 * (W < 760 ? 1.4 : 2.0);
+
+        if (px < -d || px > W + d || py < -d || py > H + d) return;
+
+        ctx.globalAlpha = 0.95;
+        ctx.drawImage(sprite, px - d / 2, py - d / 2, d, d);
+      });
+
+      rafId = requestAnimationFrame(render);
+    }
+
+    let sectionVisible = true;
+    const io = new IntersectionObserver(([e]) => {
+      sectionVisible = e.isIntersecting;
+    }, { threshold: 0 });
+    io.observe(wrapRef.current);
+
+    rafId = requestAnimationFrame(render);
+
+    const onResize = () => {
+      measure();
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      window.removeEventListener("resize", onResize);
+      if (st) st.kill();
+    };
+  }, [section.id]);
+
+  const copy = section.hero[theme];
+
+  return (
+    <div ref={wrapRef} className="neo-hero-runway" style={{ height: '260vh' }}>
+      <div className="neo-hero-stage">
+        <canvas ref={canvasRef} className="neo-hero-canvas" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
+        <div className="neo-hero-chapter" style={{ opacity: 1, pointerEvents: 'auto' }}>
+          <p className="kicker">{section.id === "academy" ? "01" : section.id === "labs" ? "02" : "03"} / {section.name.toUpperCase()}</p>
+          <h1 className="ch-name" style={{ color: '#fff', fontSize: 'clamp(2rem, 5vw, 4.5rem)', fontWeight: 800, textTransform: 'uppercase' }}>
+            {copy.title}<br />
+            <span className="serif" style={{ color: section.id === "academy" ? '#7c5cff' : section.id === "labs" ? '#ff5c8a' : '#00e5a0' }}>{copy.accent}</span>
+          </h1>
+          <p className="lede" style={{ marginTop: '14px', maxWidth: '34em', color: 'var(--muted)' }}>{copy.body}</p>
+          <div className="hero-actions" style={{ marginTop: '24px' }}>
+            <button className="btn btn-solid" onClick={() => {
+              const subnav = document.querySelector(".subnav");
+              subnav?.scrollIntoView({ behavior: "smooth" });
+            }}>{copy.primary}</button>
+            <button className="btn" onClick={() => routeTo('neo', 'customers', section.id)}>{copy.secondary}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 function SectionPage({ theme, section, detail }) {
   const active = useMemo(() => section.subpages.find((p) => p.slug === detail), [section, detail]);
   if (detail && !active) return <NotFound theme={theme} page={`${section.id}/${detail}`} />;
+  const isNeo = theme === "neo";
   return (
     <main>
-      {section.id === "academy" ? (
+      {isNeo ? (
+        <NeoSectionHeroUnravel theme={theme} section={section} />
+      ) : section.id === "academy" ? (
         <AcademyHero theme={theme} section={section} />
       ) : section.id === "marketing" ? (
         <MarketingHero theme={theme} section={section} />

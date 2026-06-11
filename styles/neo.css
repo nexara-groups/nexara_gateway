@@ -719,3 +719,71 @@
 .neo .module-card:hover .card-visual{border-color:rgba(204,255,0,.3);box-shadow:inset 0 0 26px rgba(204,255,0,.07)}
 .neo .clickable-card .card-click-prompt{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);padding:8px 12px;border-radius:6px;color:var(--accent);width:fit-content;transition:border-color .2s,background .2s,box-shadow .2s,opacity .2s}
 .neo .clickable-card:hover .card-click-prompt{border-color:rgba(204,255,0,.5);background:rgba(204,255,0,.06);box-shadow:0 0 18px rgba(204,255,0,.12);opacity:1!important}
+
+/* ── Prototype Scrolly Integration ── */
+.neo-hero-runway { position: relative; height: 640vh; }
+.neo-hero-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: radial-gradient(ellipse 80% 60% at 50% 45%, rgba(124, 92, 255, 0.08), transparent 60%), #06060a; }
+.neo-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.neo-hero-chapter { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 clamp(20px, 6vw, 80px); opacity: 0; pointer-events: none; will-change: opacity, transform; transition: opacity 0.4s var(--ease), transform 0.4s var(--ease); }
+.neo-hero-chapter.ch-left { align-items: flex-start; text-align: left; padding-left: clamp(24px, 9vw, 140px); padding-right: 46%; }
+.neo-hero-chapter.ch-right { align-items: flex-end; text-align: right; padding-right: clamp(24px, 9vw, 140px); padding-left: 46%; }
+.neo-hero-title { font-family: var(--font-display, "Syne", sans-serif); font-size: clamp(3.4rem, 13vw, 11.5rem); font-weight: 800; line-height: 0.92; letter-spacing: -0.02em; display: flex; text-transform: uppercase; }
+.neo-hero-title span { display: inline-block; will-change: transform, opacity; }
+.neo-hero-rail { position: absolute; right: clamp(18px, 3vw, 44px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 18px; z-index: 5; }
+.neo-hero-rail button { width: 8px; height: 8px; border-radius: 50%; background: rgba(242, 241, 236, 0.18); transition: background 0.3s, transform 0.3s; }
+.neo-hero-rail button.is-active { background: #fff; transform: scale(1.45); box-shadow: 0 0 14px rgba(124, 92, 255, 0.6); }
+.neo-hero-rail button::after { content: attr(data-label); position: absolute; right: 20px; top: 50%; transform: translateY(-50%) translateX(6px); font-family: "JetBrains Mono", monospace; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); white-space: nowrap; opacity: 0; transition: opacity 0.25s, transform 0.25s; pointer-events: none; }
+.neo-hero-rail button:hover::after, .neo-hero-rail button.is-active::after { opacity: 1; transform: translateY(-50%) translateX(0); }
+.neo-hero-counter { position: absolute; left: clamp(20px, 4vw, 56px); bottom: 34px; font-family: "JetBrains Mono", monospace; font-size: 0.72rem; letter-spacing: 0.25em; color: var(--muted); display: flex; align-items: baseline; gap: 10px; z-index: 5; }
+.neo-hero-counter strong { color: #fff; font-weight: 500; font-size: 1rem; }
+.neo-hero-counter .neo-counter-bar { width: 120px; height: 1px; background: var(--line); position: relative; overflow: hidden; align-self: center; }
+.neo-hero-counter .neo-counter-bar i { position: absolute; inset: 0; background: #fff; transform-origin: left; transform: scaleX(0); }
+.neo-scroll-cue { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 0.62rem; letter-spacing: 0.34em; text-transform: uppercase; z-index: 5; transition: opacity 0.5s; }
+.neo-scroll-cue i { width: 1px; height: 44px; background: linear-gradient(#fff, transparent); overflow: hidden; position: relative; }
+.neo-scroll-cue i::after { content: ""; position: absolute; left: 0; top: -100%; width: 100%; height: 100%; background: linear-gradient(transparent, #fff); animation: cueDrop 1.8s ease infinite; }
+@keyframes cueDrop { to { top: 100%; } }
+.neo-manifesto { padding: clamp(90px, 14vh, 170px) clamp(20px, 6vw, 80px); text-align: center; }
+.neo-manifesto-text { font-family: "Syne", sans-serif; font-size: clamp(1.7rem, 4.2vw, 3.4rem); font-weight: 600; line-height: 1.22; max-width: 21em; margin: 28px auto 0; }
+.neo-manifesto-text .w { color: rgba(242, 241, 236, 0.16); transition: color 0.18s linear; }
+.neo-manifesto-text .w.on { color: #fff; }
+.neo-manifesto-text .w.accent.on { font-family: "Space Grotesk", sans-serif; font-style: italic; font-weight: 400; }
+.neo-manifesto-text .w.accent.on.c-academy { color: #7c5cff; }
+.neo-manifesto-text .w.accent.on.c-labs { color: #ff5c8a; }
+.neo-manifesto-text .w.accent.on.c-marketing { color: #00e5a0; }
+.neo-rail-wrap { position: relative; height: 320vh; }
+.neo-rail-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+.neo-rail-track { display: flex; gap: clamp(18px, 3vw, 40px); padding: 5vh clamp(20px, 6vw, 80px); will-change: transform; width: max-content; }
+.neo-rail-panel { position: relative; width: min(66vw, 880px); min-height: 62vh; border: 1px solid var(--line); border-radius: 22px; padding: clamp(28px, 4vw, 56px); display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; background: linear-gradient(160deg, rgba(255, 255, 255, 0.03), transparent 45%), #0d0d14; transition: border-color 0.4s, transform 0.5s; }
+.neo-rail-panel:hover { border-color: var(--accent); transform: translateY(-6px); }
+.neo-panel-idx { position: absolute; top: clamp(20px, 3vw, 40px); left: clamp(24px, 4vw, 52px); font-family: "JetBrains Mono", monospace; font-size: 0.78rem; letter-spacing: 0.3em; color: var(--accent); }
+.neo-panel-orb { position: absolute; top: -18%; right: -12%; width: 30rem; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 35%, rgba(124, 92, 255, 0.15), transparent 65%); filter: blur(6px); pointer-events: none; }
+.neo-panel-ring { position: absolute; top: 8%; right: 6%; width: clamp(120px, 16vw, 220px); aspect-ratio: 1; border-radius: 50%; border: 1px solid rgba(124, 92, 255, 0.3); mask: conic-gradient(#000 0 65%, transparent 65%); animation: ringSpin 14s linear infinite; pointer-events: none; }
+.neo-rail-panel h3 { font-family: "Syne", sans-serif; font-size: clamp(2rem, 4.2vw, 3.6rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1; margin-bottom: 16px; color: #fff; }
+.neo-rail-panel h3 .serif { font-style: italic; font-weight: 400; color: var(--accent); }
+.neo-rail-panel p { color: var(--muted); max-width: 32em; margin-bottom: 26px; }
+.neo-rail-panel .panel-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px; }
+.neo-rail-panel .panel-tags span { font-family: "JetBrains Mono", monospace; font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 100px; padding: 6px 12px; }
+
+.neo-standards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.neo-standard-card { background: #0b0b0d; border: 1px solid var(--line); padding: 28px; min-height: 250px; display: flex; flex-direction: column; transition: border-color 0.3s; }
+.neo-standard-card:hover { border-color: var(--accent); }
+.neo-std-idx { font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 800; color: var(--accent); margin-bottom: 18px; }
+.neo-standard-card h3 { font-family: "Syne", sans-serif; font-size: clamp(1.4rem, 2.4vw, 2.4rem); color: #fff; margin-bottom: 14px; }
+.neo-standard-card p { color: var(--muted); font-size: 15px; line-height: 1.7; }
+
+.neo-final-cta { padding: clamp(90px, 14vh, 170px) clamp(20px, 6vw, 80px); text-align: center; background: #000; }
+.neo-final-cta a { display: inline-block; font-family: "Syne", sans-serif; font-size: clamp(4rem, 12vw, 10rem); font-weight: 800; line-height: 1; letter-spacing: -0.04em; color: #fff; text-transform: uppercase; transition: transform 0.4s, color 0.4s; }
+.neo-final-cta a:hover { transform: scale(1.05); color: var(--accent); }
+.neo-final-cta p { color: var(--muted); margin-top: 24px; font-size: 1.2rem; }
+
+@media (max-width: 760px) {
+  .neo-hero-runway { height: 480vh; }
+  .neo-hero-chapter.ch-left, .neo-hero-chapter.ch-right { align-items: center; text-align: center; padding: 0 24px 18vh; }
+  .neo-hero-rail { display: none; }
+  .neo-hero-counter { display: none; }
+  .neo-rail-wrap { height: auto; }
+  .neo-rail-stage { position: relative; height: auto; padding: 40px 0; }
+  .neo-rail-track { flex-direction: column; width: 100%; padding: 20px; }
+  .neo-rail-panel { width: 100%; min-height: auto; margin-bottom: 20px; }
+  .neo-standards-grid { grid-template-columns: 1fr; }
+}

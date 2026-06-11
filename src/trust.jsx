@@ -476,16 +476,606 @@ function TrustFooter() {
   );
 }
 
+function TrustHeroUnravel() {
+  const wrapRef = React.useRef(null);
+  const canvasRef = React.useRef(null);
+  const titleRef = React.useRef(null);
+  const counterNumRef = React.useRef(null);
+  const counterBarRef = React.useRef(null);
+  const scrollCueRef = React.useRef(null);
+  
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    const TAU = Math.PI * 2;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Monochromatic colors (Classic blue, medium blue, slate)
+    const STRANDS = [
+      { id: "academy",   rgb: [15, 76, 129] },  // var(--tsx-accent)
+      { id: "labs",      rgb: [26, 95, 155] },  // var(--tsx-accent-mid)
+      { id: "marketing", rgb: [100, 116, 139] }, // var(--muted)
+    ];
+
+    const makeSprite = (rgb) => {
+      const s = document.createElement("canvas");
+      s.width = s.height = 64;
+      const c = s.getContext("2d");
+      const grad = c.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, "rgba(255,255,255,0.95)");
+      grad.addColorStop(0.18, "rgba(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ",0.85)");
+      grad.addColorStop(0.5, "rgba(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ",0.22)");
+      grad.addColorStop(1, "rgba(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ",0)");
+      c.fillStyle = grad;
+      c.fillRect(0, 0, 64, 64);
+      return s;
+    };
+
+    const sprites = STRANDS.map(s => makeSprite(s.rgb));
+
+    let parts = [];
+    let COUNT = window.innerWidth < 760 ? 340 : 720;
+
+    function buildParticles() {
+      COUNT = window.innerWidth < 760 ? 340 : 720;
+      parts = STRANDS.map(() => {
+        const arr = new Array(COUNT);
+        for (let i = 0; i < COUNT; i++) {
+          let x = Math.random() * 2 - 1;
+          let y = Math.random() * 2 - 1;
+          let z = Math.random() * 2 - 1;
+          const l = Math.hypot(x, y, z) || 1;
+          const rad = 1.6 + Math.random() * 1.5;
+          arr[i] = {
+            t: i / COUNT,
+            cx: (x / l) * rad, cy: (y / l) * rad, cz: (z / l) * rad,
+            j: Math.random() * TAU,
+            sz: 0.55 + Math.random() * 1.05,
+          };
+        }
+        return arr;
+      });
+    }
+
+    buildParticles();
+
+    const v = [0, 0, 0];
+    function fCloud(si, pt) {
+      v[0] = pt.cx; v[1] = pt.cy; v[2] = pt.cz;
+    }
+    function fMonolith(si, pt, time) {
+      const a = pt.t * TAU * 3 + si * (TAU / 3) + time * 0.3;
+      const r = 0.17 + Math.sin(pt.j + time * 1.4) * 0.022;
+      v[0] = Math.cos(a) * r;
+      v[1] = (pt.t - 0.5) * 2.7;
+      v[2] = Math.sin(a) * r;
+    }
+    function fBloom(si, pt, time) {
+      const A = si * (TAU / 3) + time * 0.12;
+      const ox = Math.cos(A) * 0.9, oz = Math.sin(A) * 0.9;
+      const a = pt.t * TAU * 2.4 + time * 0.5;
+      v[0] = ox + Math.cos(a) * 0.3;
+      v[1] = (pt.t - 0.5) * 2.1;
+      v[2] = oz + Math.sin(a) * 0.3;
+    }
+    function fSignature(si, pt, time) {
+      if (si === 0) {
+        const a = pt.t * TAU * 1.7 + time * 0.32;
+        const r = 0.5 + pt.t * 0.72;
+        v[0] = Math.cos(a) * r;
+        v[1] = (pt.t - 0.5) * 2.35;
+        v[2] = Math.sin(a) * r;
+      } else if (si === 1) {
+        const ga = pt.t * COUNT * 2.39996323;
+        const y = 1 - pt.t * 2;
+        const rr = Math.sqrt(Math.max(0, 1 - y * y));
+        const R = 1.18 + Math.sin(time * 1.3 + pt.j) * 0.05;
+        v[0] = Math.cos(ga) * rr * R;
+        v[1] = y * R;
+        v[2] = Math.sin(ga) * rr * R;
+      } else {
+        const a = pt.t * TAU * 3.4 + time * 0.55;
+        const r = 0.14 + pt.t * 1.55;
+        v[0] = Math.cos(a) * r;
+        v[1] = Math.sin(pt.t * TAU * 2 + time * 1.1) * 0.13;
+        v[2] = Math.sin(a) * r * 0.62;
+      }
+    }
+    function fOrbit(si, pt, time) {
+      const a = pt.t * TAU + si * 2.1 + time * 0.14;
+      v[0] = Math.cos(a) * 2.0;
+      v[1] = Math.sin(a * 2 + pt.j) * 0.16 + (si - 1) * -0.42;
+      v[2] = Math.sin(a) * 2.0;
+    }
+    function fLattice(si, pt, time) {
+      const u = pt.t * TAU * 3 + si * (TAU / 3) + time * 0.18;
+      const w = pt.t * TAU * 7 + pt.j;
+      const k = 1.05 + 0.42 * Math.cos(w);
+      v[0] = k * Math.cos(u);
+      v[1] = 0.42 * Math.sin(w);
+      v[2] = k * Math.sin(u);
+    }
+
+    function evalFormation(name, si, pt, time) {
+      switch (name) {
+        case "cloud":    fCloud(si, pt); break;
+        case "monolith": fMonolith(si, pt, time); break;
+        case "bloom":    fBloom(si, pt, time); break;
+        case "focus0":   si === 0 ? fSignature(si, pt, time) : fOrbit(si, pt, time); break;
+        case "focus1":   si === 1 ? fSignature(si, pt, time) : fOrbit(si, pt, time); break;
+        case "focus2":   si === 2 ? fSignature(si, pt, time) : fOrbit(si, pt, time); break;
+        case "lattice":  fLattice(si, pt, time); break;
+      }
+    }
+
+    function formationAlpha(name, si) {
+      switch (name) {
+        case "cloud":    return 0.45;
+        case "monolith": return 0.95;
+        case "bloom":    return 0.95;
+        case "focus0":   return si === 0 ? 1 : 0.13;
+        case "focus1":   return si === 1 ? 1 : 0.13;
+        case "focus2":   return si === 2 ? 1 : 0.13;
+        case "lattice":  return 0.9;
+      }
+      return 1;
+    }
+
+    const KEYS = [
+      { p: 0.00, f: "cloud"    },
+      { p: 0.07, f: "monolith" },
+      { p: 0.13, f: "monolith" },
+      { p: 0.20, f: "bloom"    },
+      { p: 0.255, f: "bloom"   },
+      { p: 0.31, f: "focus0"   },
+      { p: 0.42, f: "focus0"   },
+      { p: 0.49, f: "focus1"   },
+      { p: 0.60, f: "focus1"   },
+      { p: 0.67, f: "focus2"   },
+      { p: 0.78, f: "focus2"   },
+      { p: 0.88, f: "lattice"  },
+      { p: 1.00, f: "lattice"  },
+    ];
+
+    function segmentAt(p) {
+      let i = 0;
+      while (i < KEYS.length - 2 && p > KEYS[i + 1].p) i++;
+      const a = KEYS[i], b = KEYS[i + 1];
+      const diff = b.p - a.p || 1;
+      const progress = (p - a.p) / diff;
+      const e = progress * progress * (3 - 2 * progress);
+      return { from: a.f, to: b.f, e };
+    }
+
+    let W = 0, H = 0, CX = 0, CY = 0, SCALE = 1;
+
+    function measure() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      CX = W / 2;
+      CY = H * 0.48;
+      SCALE = Math.min(W, H) * 0.305;
+    }
+
+    measure();
+
+    const state = { p: 0, target: 0 };
+    const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+
+    const chapters = Array.from(wrapRef.current.querySelectorAll(".tsx-hero-chapter")).map((el) => ({
+      el,
+      a: parseFloat(el.dataset.from),
+      b: parseFloat(el.dataset.to),
+      visible: -1,
+    }));
+    const dots = Array.from(wrapRef.current.querySelectorAll(".tsx-hero-rail button"));
+    const titleSpans = Array.from(titleRef.current?.querySelectorAll("span") || []);
+
+    function chapterOpacity(p, a, b) {
+      const fade = Math.min(0.045, (b - a) * 0.4);
+      const fin = Math.max(0, Math.min(1, (p - a) / fade));
+      const finS = fin * fin * (3 - 2 * fin);
+      const fout = b >= 0.999 ? 1 : 1 - Math.max(0, Math.min(1, (p - (b - fade)) / fade));
+      const foutS = fout * fout * (3 - 2 * fout);
+      return Math.min(finS, foutS);
+    }
+
+    function updateChapters(p) {
+      let active = 0;
+      chapters.forEach((ch, i) => {
+        const o = ch.a === 0 && p < ch.b
+          ? 1 - (p / ch.b) * (p / ch.b) * (3 - 2 * (p / ch.b))
+          : chapterOpacity(p, ch.a, ch.b);
+        const vis = o > 0.01;
+        if (p >= ch.a) active = i;
+        ch.el.style.opacity = o.toFixed(3);
+        ch.el.style.transform = "translateY(" + ((1 - o) * 26).toFixed(1) + "px)";
+        if (vis !== (ch.visible === 1)) {
+          ch.visible = vis ? 1 : 0;
+          ch.el.style.pointerEvents = vis ? "auto" : "none";
+          ch.el.setAttribute("aria-hidden", vis ? "false" : "true");
+        }
+      });
+
+      dots.forEach((d, i) => d.classList.toggle("is-active", i === active));
+      if (counterNumRef.current) counterNumRef.current.textContent = "0" + (active + 1);
+      if (counterBarRef.current) counterBarRef.current.style.transform = "scaleX(" + p.toFixed(4) + ")";
+      if (scrollCueRef.current) scrollCueRef.current.style.opacity = p > 0.02 ? "0" : "1";
+
+      const spread = Math.max(0, Math.min(1, p / 0.07));
+      const spreadS = spread * spread * (3 - 2 * spread);
+      titleSpans.forEach((s, i) => {
+        const dir = i - (titleSpans.length - 1) / 2;
+        s.style.transform = "translateX(" + (dir * spreadS * 34).toFixed(1) + "px)";
+        s.style.opacity = (1 - spreadS).toFixed(3);
+      });
+    }
+
+    const isDesktop = window.innerWidth > 760;
+    let st;
+
+    if (isDesktop && !prefersReducedMotion) {
+      st = ScrollTrigger.create({
+        trigger: wrapRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true,
+        onUpdate: (self) => {
+          state.target = self.progress;
+        }
+      });
+    } else {
+      state.target = 0.95;
+    }
+
+    const onMouseMove = (e) => {
+      mouse.tx = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+      mouse.ty = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
+    };
+    if (isDesktop) {
+      window.addEventListener("mousemove", onMouseMove, { passive: true });
+    }
+
+    let rafId = 0;
+    let t0 = performance.now();
+
+    function renderLoop(now) {
+      const time = (now - t0) / 1000;
+      state.p += (state.target - state.p) * 0.09;
+      if (Math.abs(state.target - state.p) < 0.0004) state.p = state.target;
+      mouse.x += (mouse.tx - mouse.x) * 0.05;
+      mouse.y += (mouse.ty - mouse.y) * 0.05;
+
+      const p = state.p;
+      updateChapters(p);
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalCompositeOperation = "lighter";
+
+      const seg = segmentAt(p);
+      const ry = p * 4.4 + time * 0.05 + mouse.x * 0.28;
+      const rx = -0.16 + Math.sin(p * Math.PI) * 0.12 + mouse.y * 0.2;
+      const cy_ = Math.cos(ry), sy_ = Math.sin(ry);
+      const cx_ = Math.cos(rx), sx_ = Math.sin(rx);
+
+      parts.forEach((strandParts, si) => {
+        const sprite = sprites[si];
+        const alpha = formationAlpha(seg.from, si) * (1 - seg.e) + formationAlpha(seg.to, si) * seg.e;
+        if (alpha <= 0.002) return;
+
+        const pA = [0, 0, 0];
+        const pB = [0, 0, 0];
+
+        strandParts.forEach((pt) => {
+          evalFormation(seg.from, si, pt, time);
+          pA[0] = v[0]; pA[1] = v[1]; pA[2] = v[2];
+
+          evalFormation(seg.to, si, pt, time);
+          pB[0] = v[0]; pB[1] = v[1]; pB[2] = v[2];
+
+          const mx = pA[0] * (1 - seg.e) + pB[0] * seg.e;
+          const my = pA[1] * (1 - seg.e) + pB[1] * seg.e;
+          const mz = pA[2] * (1 - seg.e) + pB[2] * seg.e;
+
+          const x1 = mx * cy_ - mz * sy_;
+          const z1 = mx * sy_ + mz * cy_;
+          const y2 = my * cx_ - z1 * sx_;
+          const z2 = my * sx_ + z1 * cx_;
+
+          const persp = 3.6 / (3.6 + z2);
+          const px = CX + x1 * persp * SCALE;
+          const py = CY + y2 * persp * SCALE;
+          const d = pt.sz * persp * 2.8 * (W < 760 ? 1.4 : 2.0);
+
+          if (px < -d || px > W + d || py < -d || py > H + d) return;
+
+          ctx.globalAlpha = alpha;
+          ctx.drawImage(sprite, px - d / 2, py - d / 2, d, d);
+        });
+      });
+
+      rafId = requestAnimationFrame(renderLoop);
+    }
+
+    let heroVisible = true;
+    const io = new IntersectionObserver(([e]) => {
+      heroVisible = e.isIntersecting;
+    }, { threshold: 0 });
+    io.observe(wrapRef.current);
+
+    rafId = requestAnimationFrame(renderLoop);
+
+    const onResize = () => {
+      measure();
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+
+    const handleDotClick = (index) => {
+      const ch = chapters[index];
+      const mid = ch.a === 0 ? 0 : (ch.a + ch.b) / 2;
+      const rect = wrapRef.current.getBoundingClientRect();
+      const top = rect.top + window.scrollY + mid * (rect.height - window.innerHeight);
+      window.scrollTo({ top, behavior: "smooth" });
+    };
+    dots.forEach((d, i) => {
+      d.addEventListener("click", () => handleDotClick(i));
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("mousemove", onMouseMove);
+      if (st) st.kill();
+    };
+  }, []);
+
+  return (
+    <div ref={wrapRef} className="tsx-hero-runway">
+      <div className="tsx-hero-stage">
+        <canvas ref={canvasRef} className="tsx-hero-canvas" aria-hidden="true" />
+        
+        <div className="tsx-hero-chapter" data-from="0" data-to="0.07">
+          <p className="tsx-section-eyebrow">Enterprise IT systems</p>
+          <h1 ref={titleRef} className="tsx-hero-title" aria-label="Nexara">
+            <span>N</span><span>E</span><span>X</span><span>A</span><span>R</span><span>A</span>
+          </h1>
+          <p className="tsx-hero-sub">Scroll to unravel</p>
+        </div>
+
+        <div className="tsx-hero-chapter" data-from="0.125" data-to="0.225" aria-hidden="true">
+          <p className="tsx-section-eyebrow">The premise</p>
+          <h2 className="tsx-section-heading">One core.<br /><span className="serif" style={{ color: 'var(--tsx-accent-mid)' }}>Three forces.</span></h2>
+          <p className="tsx-sec-body" style={{ maxWidth: '34em', marginInline: 'auto' }}>Every engagement runs through a single operating core — then unravels into three disciplined divisions.</p>
+        </div>
+
+        <div className="tsx-hero-chapter ch-left" style={{ '--accent': '#0F4C81' }} data-from="0.27" data-to="0.45" aria-hidden="true">
+          <p className="tsx-panel-idx">01 / DIVISION</p>
+          <h2 className="tsx-section-heading" style={{ textAlign: 'left' }}>Academy<br /><span className="serif" style={{ color: '#0F4C81' }}>the talent engine.</span></h2>
+          <p className="tsx-sec-body" style={{ textAlign: 'left' }}>Structured, cohort-based programmes that turn ambitious learners into capable engineers — sprint by sprint, review by review.</p>
+          <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'academy')} style={{ marginTop: '20px' }}>Enter Academy →</button>
+        </div>
+
+        <div className="tsx-hero-chapter ch-right" style={{ '--accent': '#1A5F9B' }} data-from="0.45" data-to="0.63" aria-hidden="true">
+          <p className="tsx-panel-idx" style={{ right: 'clamp(24px, 9vw, 140px)', left: 'auto' }}>02 / DIVISION</p>
+          <h2 className="tsx-section-heading" style={{ textAlign: 'right' }}>Labs<br /><span className="serif" style={{ color: '#1A5F9B' }}>the systems forge.</span></h2>
+          <p className="tsx-sec-body" style={{ textAlign: 'right' }}>Applied AI and automation systems, engineered from prototype to production with written specs and weekly demos.</p>
+          <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'labs')} style={{ marginTop: '20px' }}>Enter Labs →</button>
+        </div>
+
+        <div className="tsx-hero-chapter ch-left" style={{ '--accent': '#64748B' }} data-from="0.63" data-to="0.81" aria-hidden="true">
+          <p className="tsx-panel-idx">03 / DIVISION</p>
+          <h2 className="tsx-section-heading" style={{ textAlign: 'left' }}>Marketing<br /><span className="serif" style={{ color: '#64748B' }}>the growth signal.</span></h2>
+          <p className="tsx-sec-body" style={{ textAlign: 'left' }}>Brand systems, web experiences and performance creative — built like software, measured like engineering.</p>
+          <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'marketing')} style={{ marginTop: '20px' }}>Enter Marketing →</button>
+        </div>
+
+        <div className="tsx-hero-chapter" data-from="0.86" data-to="1" aria-hidden="true">
+          <p className="tsx-section-eyebrow">The weave</p>
+          <h2 className="tsx-section-heading">Three disciplines.<br /><span className="serif" style={{ color: 'var(--tsx-accent-mid)' }}>One standard.</span></h2>
+          <div className="tsx-sec-actions" style={{ display: 'flex', gap: '16px', marginTop: '24px', justifyContent: 'center' }}>
+            <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'contact')}>Start a brief <span className="arr">→</span></button>
+            <button className="tsx-sec-btn-ghost" onClick={() => {
+              const el = document.getElementById("divisions");
+              el?.scrollIntoView({ behavior: "smooth" });
+            }}>Explore divisions</button>
+          </div>
+        </div>
+
+        {/* HUD */}
+        <div className="tsx-hero-rail" aria-hidden="true">
+          <button data-label="Nexara"></button>
+          <button data-label="Premise"></button>
+          <button data-label="Academy"></button>
+          <button data-label="Labs"></button>
+          <button data-label="Marketing"></button>
+          <button data-label="Begin"></button>
+        </div>
+        <div className="tsx-hero-counter" aria-hidden="true">
+          <strong ref={counterNumRef}>01</strong> / 06
+          <span className="tsx-counter-bar"><i ref={counterBarRef}></i></span>
+        </div>
+        <div ref={scrollCueRef} className="tsx-scroll-cue" aria-hidden="true">Scroll<i></i></div>
+      </div>
+    </div>
+  );
+}
+
+function TrustManifesto() {
+  const wrapRef = React.useRef(null);
+  React.useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const textEl = el.querySelector(".tsx-manifesto-text");
+    if (!textEl) return;
+    const text = textEl.textContent.trim();
+    const words = text.split(/\s+/);
+    textEl.innerHTML = words.map(w => {
+      let isAccent = false;
+      let cClass = "";
+      const lower = w.toLowerCase();
+      if (lower.includes("talent") || lower.includes("people") || lower.includes("academy")) { isAccent = true; cClass = "accent"; }
+      else if (lower.includes("intelligent") || lower.includes("systems") || lower.includes("labs") || lower.includes("automation")) { isAccent = true; cClass = "accent"; }
+      else if (lower.includes("brands") || lower.includes("move") || lower.includes("marketing") || lower.includes("growth")) { isAccent = true; cClass = "accent"; }
+      return "<span class=\"w " + (isAccent ? "accent " + cClass : "") + "\">" + w + "</span>";
+    }).join(" ");
+
+    const spanElements = textEl.querySelectorAll(".w");
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start: "top 72%",
+      end: "bottom 34%",
+      scrub: true,
+      onUpdate: (self) => {
+        const lit = Math.floor(self.progress * (spanElements.length + 2));
+        spanElements.forEach((span, i) => {
+          span.classList.toggle("on", i < lit);
+        });
+      }
+    });
+    return () => st.kill();
+  }, []);
+
+  return (
+    <section className="tsx-manifesto" ref={wrapRef}>
+      <div className="tsx-section-inner">
+        <p className="tsx-section-eyebrow">Why Nexara</p>
+        <p className="tsx-manifesto-text">
+          We are one engineering company that grows talent, builds intelligent systems, and secures market growth — one standard, three disciplines, zero shortcuts.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function TrustDivisionsRail() {
+  const wrapRef = React.useRef(null);
+  const trackRef = React.useRef(null);
+  const progressRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (!wrapRef.current || !trackRef.current) return;
+    const track = trackRef.current;
+    const wrap = wrapRef.current;
+
+    const st = ScrollTrigger.create({
+      trigger: wrap,
+      start: "top top",
+      end: "bottom bottom",
+      scrub: true,
+      onUpdate: (self) => {
+        const max = Math.max(0, track.scrollWidth - window.innerWidth);
+        track.style.transform = "translateX(" + (-max * self.progress) + "px)";
+        if (progressRef.current) {
+          const n = Math.min(3, 1 + Math.floor(self.progress * 2.99));
+          progressRef.current.textContent = "0" + n;
+        }
+      }
+    });
+
+    return () => st.kill();
+  }, []);
+
+  const sections = Object.values(DATA.sections);
+
+  return (
+    <section className="tsx-rail-wrap" id="divisions" ref={wrapRef}>
+      <div className="tsx-rail-stage">
+        <div className="rail-head">
+          <div>
+            <p className="tsx-section-eyebrow">The divisions</p>
+            <h2 className="tsx-section-heading">Choose your force.</h2>
+          </div>
+          <p className="rail-progress"><b ref={progressRef}>01</b> / 03</p>
+        </div>
+        <div className="tsx-rail-track" ref={trackRef}>
+          {sections.map((sec, i) => (
+            <button key={sec.id} className="tsx-rail-panel" style={{ '--accent': i === 0 ? '#0F4C81' : i === 1 ? '#1A5F9B' : '#64748B' }} onClick={() => routeTo('trust', sec.id)}>
+              <span className="tsx-panel-idx">0{i + 1} / {getTrustSectionLabel(sec).toUpperCase()}</span>
+              <span className="tsx-panel-orb" />
+              <span className="tsx-panel-ring" />
+              <h3>{getTrustSectionLabel(sec)}<br /><span className="serif">{sec.headline || (i === 0 ? "the talent engine." : i === 1 ? "the systems forge." : "the growth signal.")}</span></h3>
+              <p>{sec.short.trust || sec.desc}</p>
+              <span className="panel-tags">
+                {sec.stack.slice(0, 4).map(tag => <span key={tag}>{tag}</span>)}
+              </span>
+              <span className="btn">Enter {getTrustSectionLabel(sec)} <span className="arr">→</span></span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TrustFinalCTA() {
+  return (
+    <section className="tsx-final-cta">
+      <p className="tsx-section-eyebrow">Ready when you are</p>
+      <button onClick={() => routeTo('trust', 'contact')} aria-label="Begin — start a brief" style={{ border: 0, background: 'none', padding: 0 }}>
+        <span className="tsx-final-cta">
+          <a href="#contact" onClick={(e) => { e.preventDefault(); routeTo('trust', 'contact'); }}>Begin.</a>
+        </span>
+      </button>
+      <p className="tsx-sec-body">Tell us which force you need — or let the brief decide.</p>
+    </section>
+  );
+}
+
 function TrustHome() {
   return (
     <main>
-      <TrustHeroFlat />
-      <TrustProofStrip />
-      <TrustSolutionsGrid />
-      <TrustFeatureStrip />
-      <TrustEnterpriseStacks />
-      <TrustMarketContext />
-      <TrustCTABand />
+      {!HAS_SCROLL_ANIMATION ? (
+        <>
+          <TrustHeroFlat />
+          <TrustProofStrip />
+          <TrustSolutionsGrid />
+          <TrustFeatureStrip />
+          <TrustEnterpriseStacks />
+          <TrustMarketContext />
+          <TrustCTABand />
+        </>
+      ) : (
+        <>
+          <TrustHeroUnravel />
+          <TrustManifesto />
+          <TrustDivisionsRail />
+          <section className="tsx-section-inner" style={{ paddingBlock: 'clamp(60px, 10vh, 120px)' }}>
+            <div className="tsx-sec-header" style={{ marginBottom: '40px', borderBottom: 0 }}>
+              <p className="tsx-section-eyebrow">The operating standard</p>
+              <h2 className="tsx-section-heading">Every division runs<br />on the same spine.</h2>
+            </div>
+            <div className="tsx-standards-grid">
+              <div className="tsx-standard-card">
+                <span className="tsx-std-idx">/01</span>
+                <h3>Written before built</h3>
+                <p>Every engagement starts with a written brief and scope. If it isn't written down, it isn't agreed.</p>
+              </div>
+              <div className="tsx-standard-card">
+                <span className="tsx-std-idx">/02</span>
+                <h3>Demo every week</h3>
+                <p>Working software, live cohorts, running campaigns — shown weekly, not described in decks.</p>
+              </div>
+              <div className="tsx-standard-card">
+                <span className="tsx-std-idx">/03</span>
+                <h3>One accountable lead</h3>
+                <p>Every cohort, system and campaign has a single named owner from kickoff to handover.</p>
+              </div>
+              <div className="tsx-standard-card">
+                <span className="tsx-std-idx">/04</span>
+                <h3>Handover by design</h3>
+                <p>Documentation, access and training are part of the deliverable — never an afterthought.</p>
+              </div>
+            </div>
+          </section>
+          <TrustFinalCTA />
+        </>
+      )}
     </main>
   );
 }
@@ -560,48 +1150,55 @@ function TrustFaqAccordion({ faqs }) {
   );
 }
 
-function TrustProofStrips({ items }) {
+function TrustProofCards({ items }) {
   return (
-    <div className="tsx-proof-strips">
+    <div className="tsx-proof-cards-grid">
       {items.map(p => (
-        <div className="tsx-proof-strip" key={p.name}>
-          <div>
-            <span className="tsx-proof-eng-label">Engagement</span>
-            <p className="tsx-proof-eng-name">{p.name}</p>
+        <div className="tsx-proof-case-card" key={p.name}>
+          <div className="tsx-proof-case-top">
+            <span className="tsx-proof-case-org">{p.org}</span>
           </div>
-          <div>
-            <span className="tsx-proof-result-label">What was delivered</span>
-            <p className="tsx-proof-result-text">{p.result.trust}</p>
-          </div>
-          <span className="tsx-proof-org">{p.org}</span>
+          <p className="tsx-proof-case-headline">{p.name}</p>
+          <p className="tsx-proof-case-body">{p.result.trust}</p>
         </div>
       ))}
     </div>
   );
 }
 
+/* Legacy alias so any future callers still work */
+function TrustProofStrips({ items }) { return <TrustProofCards items={items} />; }
+
+const PKG_THEMES = [
+  { head: 'tsx-pkg-head-slate', badge: null },
+  { head: 'tsx-pkg-head-navy',  badge: 'Most Common' },
+  { head: 'tsx-pkg-head-dark',  badge: null },
+];
+
 function TrustPackageCards({ packages }) {
   return (
-    <div className="tsx-tier-grid">
+    <div className="tsx-pkg-grid">
       {packages.map((pkg, i) => {
+        const theme = PKG_THEMES[i] || PKG_THEMES[0];
         const featured = i === 1;
         return (
-          <div className={`tsx-tier-card${featured ? ' featured' : ''}`} key={pkg.name}>
-            {featured && <span className="tsx-tier-badge">Most Common</span>}
-            <div className={`tsx-tier-head${featured ? ' featured-head' : ''}`}>
-              <span className="tsx-tier-fit">{pkg.fit}</span>
-              <p className="tsx-tier-name">{pkg.name}</p>
-              <span className="tsx-tier-duration">{pkg.duration}</span>
+          <div className={`tsx-pkg-card${featured ? ' featured' : ''}`} key={pkg.name}>
+            <div className={`tsx-pkg-head ${theme.head}`}>
+              {theme.badge && <span className="tsx-pkg-badge">{theme.badge}</span>}
+              <span className="tsx-pkg-fit">{pkg.fit}</span>
+              <p className="tsx-pkg-name">{pkg.name}</p>
+              <span className="tsx-pkg-duration">{pkg.duration}</span>
             </div>
-            <div className="tsx-tier-body">
-              <ul className="tsx-tier-list">
+            <div className="tsx-pkg-body">
+              <ul className="tsx-pkg-list">
                 {pkg.includes.map(item => <li key={item}>{item}</li>)}
               </ul>
             </div>
-            <div className={`tsx-tier-foot${featured ? ' featured-foot' : ''}`}>
-              <p className={`tsx-tier-cta${featured ? ' featured-cta' : ''}`}>
-                {featured ? 'Start here →' : 'Get in touch'}
-              </p>
+            <div className="tsx-pkg-foot">
+              <button className={featured ? 'tsx-pkg-cta-primary' : 'tsx-pkg-cta-ghost'}
+                onClick={() => routeTo('trust', 'contact')}>
+                {featured ? 'Start here' : 'Get in touch'}
+              </button>
             </div>
           </div>
         );
@@ -610,18 +1207,37 @@ function TrustPackageCards({ packages }) {
   );
 }
 
-function TrustProcessTimeline({ steps }) {
+function TrustProcessTrack({ steps }) {
   return (
-    <div className="tsx-timeline">
+    <div className="tsx-process-track">
       {steps.map((step, i) => (
-        <div className="tsx-tl-step" key={step.step}>
-          <div className="tsx-tl-left">
-            <div className={`tsx-tl-badge ${i === 0 ? 'first' : 'rest'}`}>{step.step}</div>
-            {i < steps.length - 1 && <div className="tsx-tl-line" />}
+        <div className="tsx-process-track-step" key={step.step}>
+          <span className="tsx-process-track-num">{step.step}</span>
+          <p className="tsx-process-track-title">{step.title}</p>
+          <p className="tsx-process-track-body">{step.body}</p>
+          {i < steps.length - 1 && <div className="tsx-process-track-arrow" aria-hidden="true">→</div>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* Legacy alias */
+function TrustProcessTimeline({ steps }) { return <TrustProcessTrack steps={steps} />; }
+
+function TrustDeliverableCards({ rows }) {
+  return (
+    <div className="tsx-del-card-grid">
+      {rows.map(row => (
+        <div className="tsx-del-service-card" key={row.title}>
+          <div className="tsx-del-service-top">
+            <span className="tsx-del-service-name">{row.title}</span>
+            <span className="tsx-del-service-outcome">{row.outcome}</span>
           </div>
-          <div className="tsx-tl-content">
-            <p className="tsx-tl-title">{step.title}</p>
-            <p className="tsx-tl-body">{step.body}</p>
+          <div className="tsx-del-service-chips">
+            {row.deliverables.map(d => (
+              <span className="tsx-del-service-chip" key={d}>{d}</span>
+            ))}
           </div>
         </div>
       ))}
@@ -629,32 +1245,26 @@ function TrustProcessTimeline({ steps }) {
   );
 }
 
-function TrustDeliverableRows({ rows }) {
-  return (
-    <div className="tsx-del-rows">
-      {rows.map(row => (
-        <div className="tsx-del-row" key={row.title}>
-          <div>
-            <p className="tsx-del-area-label">Area</p>
-            <p className="tsx-del-area-name">{row.title}</p>
-          </div>
-          <div className="tsx-del-chips">
-            {row.deliverables.map(d => (
-              <span className="tsx-del-chip" key={d}>{d}</span>
-            ))}
-          </div>
-          <span className="tsx-del-outcome">{row.outcome}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
+/* Legacy alias */
+function TrustDeliverableRows({ rows }) { return <TrustDeliverableCards rows={rows} />; }
 
 const TRUST_SECTION_CTA = {
   academy:   'Plan a Talent Programme',
   marketing: 'Scope a Digital Project',
   labs:      'Scope an AI System',
 };
+
+function TrustSectionBlock({ eyebrow, children }) {
+  return (
+    <div className="tsx-section-block">
+      <div className="tsx-section-block-header">
+        <span className="tsx-section-block-eyebrow">{eyebrow}</span>
+        <div className="tsx-section-block-rule" aria-hidden="true" />
+      </div>
+      {children}
+    </div>
+  );
+}
 
 function TrustStatement({ section }) {
   if (!section.statement) return null;
@@ -670,22 +1280,22 @@ function TrustSectionOverview({ section }) {
   return (
     <div className="tsx-overview">
       <div className="tsx-section-inner">
-        <div className="tsx-overview-grid">
-          <div>
+
+        {/* ─── Capabilities + Audience ─────────────────────────── */}
+        <div className="tsx-overview-top">
+          <div className="tsx-cap-col">
             <span className="tsx-overview-label">Capabilities</span>
-            <ul className="tsx-capability-list">
+            <div className="tsx-cap-card-grid">
               {section.modules.map((m, i) => (
-                <li className={`tsx-capability-item tsx-fade tsx-fade-d${Math.min(i + 1, 4)}`} key={m.title}>
-                  <span className="tsx-cap-index">0{i + 1}</span>
-                  <div className="tsx-cap-body">
-                    <strong>{m.title}</strong>
-                    <p>{m.trust}</p>
-                  </div>
-                </li>
+                <div className={`tsx-cap-card tsx-fade tsx-fade-d${Math.min(i + 1, 4)}`} key={m.title}>
+                  <span className="tsx-cap-card-index">{String(i + 1).padStart(2, '0')}</span>
+                  <p className="tsx-cap-card-title">{m.title}</p>
+                  <p className="tsx-cap-card-body">{m.trust}</p>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
-          <div>
+          <div className="tsx-audience-col">
             <div className="tsx-audience-panel tsx-fade tsx-fade-d2">
               <span className="tsx-panel-title">Who this serves</span>
               {section.audiences.map(a => (
@@ -700,30 +1310,30 @@ function TrustSectionOverview({ section }) {
 
         <TrustStatement section={section} />
 
-        <div className="tsx-deliverables">
-          <h2 className="tsx-section-heading tsx-overview-h tsx-fade">What we deliver</h2>
-          <TrustDeliverableRows rows={section.stackDetails} />
-        </div>
+        {/* ─── What We Deliver ─────────────────────────────────── */}
+        <TrustSectionBlock eyebrow="What we deliver">
+          <TrustDeliverableCards rows={section.stackDetails} />
+        </TrustSectionBlock>
 
-        <div className="tsx-process">
-          <h2 className="tsx-section-heading tsx-overview-h tsx-fade">How it works</h2>
-          <TrustProcessTimeline steps={section.process} />
-        </div>
+        {/* ─── How It Works ────────────────────────────────────── */}
+        <TrustSectionBlock eyebrow="How it works">
+          <TrustProcessTrack steps={section.process} />
+        </TrustSectionBlock>
 
-        <div className="tsx-packages">
-          <h2 className="tsx-section-heading tsx-overview-h tsx-fade">Engagement packages</h2>
+        {/* ─── Engagement Packages ─────────────────────────────── */}
+        <TrustSectionBlock eyebrow="Engagement packages">
           <TrustPackageCards packages={section.packages} />
-        </div>
+        </TrustSectionBlock>
 
-        <div className="tsx-deliverables">
-          <h2 className="tsx-section-heading tsx-overview-h tsx-fade">Delivery proof</h2>
-          <TrustProofStrips items={section.proof} />
-        </div>
+        {/* ─── Delivery Proof ──────────────────────────────────── */}
+        <TrustSectionBlock eyebrow="Delivery proof">
+          <TrustProofCards items={section.proof} />
+        </TrustSectionBlock>
 
-        <div className="tsx-faq">
-          <h2 className="tsx-section-heading tsx-overview-h tsx-fade">Common questions</h2>
+        {/* ─── Common Questions ────────────────────────────────── */}
+        <TrustSectionBlock eyebrow="Common questions">
           <TrustFaqAccordion faqs={section.faqs} />
-        </div>
+        </TrustSectionBlock>
 
         <div className="tsx-intake-band">
           <div>
@@ -737,16 +1347,65 @@ function TrustSectionOverview({ section }) {
   );
 }
 
+const SUBPAGE_CARD_ICONS = {
+  'Full-stack sprint':    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="16" height="11" rx="2"/><path d="M7 17h6M10 14v3"/><path d="M6 8l2 2-2 2"/><path d="M10 12h4"/></svg>,
+  'AI/data sprint':       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="10" cy="10" r="3"/><path d="M10 1v3M10 16v3M1 10h3M16 10h3M3.5 3.5l2.1 2.1M14.4 14.4l2.1 2.1M3.5 16.5l2.1-2.1M14.4 5.6l2.1-2.1"/></svg>,
+  'Design studio':        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15l5-5 3 3 4-6 3 3"/><path d="M2 2h16v16H2z" strokeWidth="1"/></svg>,
+  'Cloud operations':     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M16 13a4 4 0 00-4-6.32A5 5 0 104 13"/><path d="M8 17v-4M12 17v-4"/></svg>,
+  'Mentor pods':          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="7" cy="7" r="3"/><circle cx="14" cy="7" r="2"/><path d="M1 17c0-3.31 2.69-6 6-6s6 2.69 6 6"/><path d="M14 12c1.66 0 4 .84 4 2.5V17h-3"/></svg>,
+  'Weekly reviews':       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 8h14M7 2v4M13 2v4"/><path d="M7 12l2 2 4-4"/></svg>,
+  'Client-style projects':<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h12v9H4z"/><path d="M8 13v4M12 13v4M5 17h10"/></svg>,
+  'Completion reports':   <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 2h8l4 4v12H3V2z"/><path d="M13 2v4h4"/><path d="M7 10h6M7 13h4"/></svg>,
+  'Interview prep':       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="10" cy="6" r="3"/><path d="M4 18c0-3.31 2.69-6 6-6s6 2.69 6 6"/><path d="M13 10l2 2-2 2"/></svg>,
+  'Partner matching':     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="8" r="3"/><circle cx="14" cy="8" r="3"/><path d="M1 16c0-2.76 2.24-5 5-5h2M10 11h2c2.76 0 5 2.24 5 5"/></svg>,
+  'Offer tracking':       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h14v3H3zM3 10h14v3H3zM3 16h8v3H3z"/></svg>,
+  'Alumni proof':         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2l2.4 5 5.6.8-4 3.9.9 5.5L10 14.7l-4.9 2.5.9-5.5-4-3.9 5.6-.8z"/></svg>,
+  'Positioning':          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="10" cy="10" r="8"/><path d="M10 2v4M10 14v4M2 10h4M14 10h4"/><circle cx="10" cy="10" r="3"/></svg>,
+  'Visual identity':      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="10" cy="10" r="6"/><path d="M10 4v12M4 10h12"/></svg>,
+  'Messaging':            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6H2v9a2 2 0 002 2h12a2 2 0 002-2V6z"/><path d="M2 6l8 6 8-6"/></svg>,
+  'Launch kits':          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2C6 2 3 7 3 12l3 4h8l3-4c0-5-3-10-7-10z"/><path d="M10 2v8"/><circle cx="10" cy="12" r="2"/></svg>,
+  'Landing pages':        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="16" height="14" rx="2"/><path d="M2 7h16M7 3v4"/><path d="M6 11h8M6 14h5"/></svg>,
+  'Corporate sites':      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="16" height="13" rx="2"/><path d="M2 8h16"/><path d="M6 4V2M14 4V2"/></svg>,
+  'Product pages':        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 3h12l2 5H2z"/><path d="M2 8v9h16V8"/><path d="M7 13h6"/></svg>,
+  'SEO foundations':      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="9" r="6"/><path d="M13.5 13.5L18 18"/><path d="M6 9h6M9 6v6"/></svg>,
+  'Paid acquisition':     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 15l4-4 3 3 4-5 4 4"/><circle cx="17" cy="3" r="2"/></svg>,
+  'Reporting':            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7 13V9M10 13V7M13 13v-2"/></svg>,
+  'Retargeting':          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10a6 6 0 016-6 6 6 0 016 6"/><path d="M10 4V1M4 10H1M16 10h3"/><circle cx="10" cy="10" r="2"/></svg>,
+  'Creative testing':     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3h6v6H3zM11 3h6v6h-6zM3 11h6v6H3z"/><path d="M14 14m-3 0a3 3 0 106 0 3 3 0 00-6 0"/></svg>,
+  'Atlas':                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2C6 6 6 10 10 18c4-8 4-12 0-16z"/><path d="M2 10c8-4 12 0 16 0"/></svg>,
+  'Pulse':                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2 10h4l2-6 4 12 2-6h4"/></svg>,
+  'Forge':                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 17l5-15 5 15"/><path d="M8 11h4"/></svg>,
+  'Vault':                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="14" height="12" rx="2"/><circle cx="10" cy="10" r="3"/><path d="M13 4V2M7 4V2"/></svg>,
+  'Discovery':            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="9" r="6"/><path d="M13.5 13.5L18 18"/></svg>,
+  'Architecture':         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="6" height="6" rx="1"/><rect x="12" y="2" width="6" height="6" rx="1"/><rect x="7" y="12" width="6" height="6" rx="1"/><path d="M5 8v2h10V8M10 10v2"/></svg>,
+  'Build':                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2.5l3 3L8 15H5v-3z"/><path d="M12.5 4.5l3 3"/></svg>,
+  'Operate':              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="10" cy="10" r="3"/><path d="M10 2v3M10 15v3M2 10h3M15 10h3M4.2 4.2l2.1 2.1M13.7 13.7l2.1 2.1M4.2 15.8l2.1-2.1M13.7 6.3l2.1-2.1"/></svg>,
+  'Private hosting':      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="14" height="10" rx="2"/><path d="M7 8V6a3 3 0 016 0v2"/><circle cx="10" cy="13" r="1.5"/></svg>,
+  'RBAC':                 <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="14" cy="14" r="3"/><path d="M9 6h7M4 14H3M9 6v8"/></svg>,
+  'Audit logs':           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 2h8l4 4v12H3V2z"/><path d="M13 2v4h4"/><path d="M7 9h6M7 12h4M7 15h3"/></svg>,
+  'Human review':         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="10" cy="6" r="3"/><path d="M4 18c0-3.31 2.69-6 6-6s6 2.69 6 6"/><path d="M7 12l2 2 4-4"/></svg>,
+};
+
+const DEFAULT_CARD_ICON = (
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="14" height="14" rx="2"/>
+    <path d="M7 10h6M10 7v6"/>
+  </svg>
+);
+
 function TrustSubpageDetail({ section, page }) {
   return (
     <div className="tsx-subpage">
       <div className="tsx-section-inner">
-        <div className="tsx-subpage-header">
+        <div className="tsx-subpage-callout tsx-fade">
           <h2 className="tsx-subpage-h2">{page.callout.trust}</h2>
         </div>
-        <div className="tsx-subpage-cards">
-          {page.cards.map(card => (
-            <div className="tsx-subpage-card" key={card.title}>
+        <div className="tsx-subpage-icon-grid">
+          {page.cards.map((card, i) => (
+            <div className={`tsx-subpage-icon-card tsx-fade tsx-fade-d${Math.min(i + 1, 4)}`} key={card.title}>
+              <div className="tsx-subpage-icon-wrap" aria-hidden="true">
+                {SUBPAGE_CARD_ICONS[card.title] || DEFAULT_CARD_ICON}
+              </div>
               <h3 className="tsx-subpage-card-title">{card.title}</h3>
               <p className="tsx-subpage-card-body">{card.trust}</p>
             </div>
@@ -764,12 +1423,209 @@ function TrustSubpageDetail({ section, page }) {
   );
 }
 
+function TrustSectionHeroUnravel({ theme, section }) {
+  const wrapRef = React.useRef(null);
+  const canvasRef = React.useRef(null);
+  
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    const TAU = Math.PI * 2;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const shape = section.id === "academy" ? "spiral" : section.id === "labs" ? "sphere" : "signal";
+    // Monochromatic strands matching the section
+    const rgb = section.id === "academy" ? [15, 76, 129] : section.id === "labs" ? [26, 95, 155] : [100, 116, 139];
+
+    const makeSprite = (cRgb) => {
+      const s = document.createElement("canvas");
+      s.width = s.height = 64;
+      const c = s.getContext("2d");
+      const grad = c.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, "rgba(255,255,255,0.95)");
+      grad.addColorStop(0.18, "rgba(" + cRgb[0] + "," + cRgb[1] + "," + cRgb[2] + ",0.85)");
+      grad.addColorStop(0.5, "rgba(" + cRgb[0] + "," + cRgb[1] + "," + cRgb[2] + ",0.22)");
+      grad.addColorStop(1, "rgba(" + cRgb[0] + "," + cRgb[1] + "," + cRgb[2] + ",0)");
+      c.fillStyle = grad;
+      c.fillRect(0, 0, 64, 64);
+      return s;
+    };
+
+    const sprite = makeSprite(rgb);
+    let COUNT = window.innerWidth < 760 ? 260 : 560;
+    let parts = [];
+
+    function build() {
+      COUNT = window.innerWidth < 760 ? 260 : 560;
+      parts = new Array(COUNT);
+      for (let i = 0; i < COUNT; i++) {
+        parts[i] = {
+          t: i / COUNT,
+          j: Math.random() * TAU,
+          sz: 0.55 + Math.random()
+        };
+      }
+    }
+    build();
+
+    let W = 0, H = 0, CX = 0, CY = 0, SCALE = 1;
+    function measure() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      CX = W / 2;
+      CY = H * 0.48;
+      SCALE = Math.min(W, H) * 0.32;
+    }
+    measure();
+
+    const state = { p: 0, target: 0 };
+    const isDesktop = window.innerWidth > 760;
+
+    let st;
+    if (isDesktop && !prefersReducedMotion) {
+      st = ScrollTrigger.create({
+        trigger: wrapRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true,
+        onUpdate: (self) => {
+          state.target = self.progress;
+        }
+      });
+    } else {
+      state.target = 1;
+    }
+
+    let rafId = 0;
+    let t0 = performance.now();
+
+    function render(now) {
+      const time = (now - t0) / 1000;
+      state.p += (state.target - state.p) * 0.09;
+      if (Math.abs(state.target - state.p) < 0.0004) state.p = state.target;
+
+      const p = state.p;
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalCompositeOperation = "lighter";
+
+      const ry = p * 1.8 + time * 0.08;
+      const rx = -0.15 + p * 0.3;
+      const cy_ = Math.cos(ry), sy_ = Math.sin(ry);
+      const cx_ = Math.cos(rx), sx_ = Math.sin(rx);
+
+      parts.forEach((pt) => {
+        const lx = (pt.t - 0.5) * 3.3;
+        const ly = 0;
+        const lz = 0;
+
+        let sx = 0, sy = 0, sz = 0;
+        if (shape === "spiral") {
+          const a = pt.t * TAU * 2.2;
+          const r = 0.35 + pt.t * 0.7;
+          sx = Math.cos(a) * r;
+          sy = (pt.t - 0.5) * 2.1;
+          sz = Math.sin(a) * r;
+        } else if (shape === "sphere") {
+          const ga = pt.t * COUNT * 2.39996323;
+          const y = 1 - pt.t * 2;
+          const rr = Math.sqrt(Math.max(0, 1 - y * y));
+          const R = 1.15;
+          sx = Math.cos(ga) * rr * R;
+          sy = y * R;
+          sz = Math.sin(ga) * rr * R;
+        } else {
+          const a = pt.t * TAU * 3.4;
+          const r = 0.1 + pt.t * 1.3;
+          sx = Math.cos(a) * r;
+          sy = Math.sin(pt.t * TAU * 2) * 0.1;
+          sz = Math.sin(a) * r * 0.6;
+        }
+
+        const mx = lx * (1 - p) + sx * p;
+        const my = ly * (1 - p) + sy * p;
+        const mz = lz * (1 - p) + sz * p;
+
+        const x1 = mx * cy_ - mz * sy_;
+        const z1 = mx * sy_ + mz * cy_;
+        const y2 = my * cx_ - z1 * sx_;
+        const z2 = my * sx_ + z1 * cx_;
+
+        const persp = 3.6 / (3.6 + z2);
+        const px = CX + x1 * persp * SCALE;
+        const py = CY + y2 * persp * SCALE;
+        const d = pt.sz * persp * 2.8 * (W < 760 ? 1.4 : 2.0);
+
+        if (px < -d || px > W + d || py < -d || py > H + d) return;
+
+        ctx.globalAlpha = 0.95;
+        ctx.drawImage(sprite, px - d / 2, py - d / 2, d, d);
+      });
+
+      rafId = requestAnimationFrame(render);
+    }
+
+    let sectionVisible = true;
+    const io = new IntersectionObserver(([e]) => {
+      sectionVisible = e.isIntersecting;
+    }, { threshold: 0 });
+    io.observe(wrapRef.current);
+
+    rafId = requestAnimationFrame(render);
+
+    const onResize = () => {
+      measure();
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      window.removeEventListener("resize", onResize);
+      if (st) st.kill();
+    };
+  }, [section.id]);
+
+  const copy = section.hero[theme];
+
+  return (
+    <div ref={wrapRef} className="tsx-hero-runway" style={{ height: '260vh' }}>
+      <div className="tsx-hero-stage">
+        <canvas ref={canvasRef} className="tsx-hero-canvas" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
+        <div className="tsx-hero-chapter" style={{ opacity: 1, pointerEvents: 'auto' }}>
+          <p className="tsx-section-eyebrow">{section.id === "academy" ? "01" : section.id === "labs" ? "02" : "03"} / {getTrustSectionLabel(section).toUpperCase()}</p>
+          <h1 className="tsx-section-heading" style={{ color: '#fff', fontSize: 'clamp(2rem, 5vw, 4.5rem)', fontWeight: 800, textTransform: 'uppercase' }}>
+            {copy.title}<br />
+            <span className="serif" style={{ color: section.id === "academy" ? '#0F4C81' : section.id === "labs" ? '#1A5F9B' : '#64748B' }}>{copy.accent}</span>
+          </h1>
+          <p className="tsx-sec-body" style={{ marginTop: '14px', maxWidth: '34em', color: 'var(--muted)', marginInline: 'auto' }}>{copy.body}</p>
+          <div className="tsx-sec-actions" style={{ marginTop: '24px', display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <button className="tsx-btn-cta" onClick={() => {
+              const subnav = document.querySelector(".tsx-subnav");
+              subnav?.scrollIntoView({ behavior: "smooth" });
+            }}>{copy.primary}</button>
+            <button className="tsx-sec-btn-ghost" onClick={() => routeTo('trust', 'customers', section.id)}>{copy.secondary}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TrustSectionPage({ section, detail }) {
   const active = useMemo(() => detail ? section.subpages.find(p => p.slug === detail) : null, [section, detail]);
   if (detail && !active) return <NotFound theme="trust" page={`${section.id}/${detail}`} />;
   return (
     <main className="tsx-section-page">
-      <TrustSectionHeader section={section} />
+      {HAS_SCROLL_ANIMATION ? (
+        <TrustSectionHeroUnravel theme="trust" section={section} />
+      ) : (
+        <TrustSectionHeader section={section} />
+      )}
       <TrustSubNav section={section} activeSlug={detail} />
       <div key={detail || 'overview'}>
         {active
