@@ -719,7 +719,7 @@ function TrustHeroUnravel() {
     const isDesktop = window.innerWidth > 760;
     let st;
 
-    if (isDesktop && !prefersReducedMotion) {
+    if (!prefersReducedMotion) {
       st = ScrollTrigger.create({
         trigger: wrapRef.current,
         start: "top top",
@@ -731,6 +731,7 @@ function TrustHeroUnravel() {
       });
     } else {
       state.target = 0.95;
+      wrapRef.current.style.height = "100svh";
     }
 
     const onMouseMove = (e) => {
@@ -1487,7 +1488,7 @@ function TrustSectionHeroUnravel({ theme, section }) {
     const isDesktop = window.innerWidth > 760;
 
     let st;
-    if (isDesktop && !prefersReducedMotion) {
+    if (!prefersReducedMotion) {
       st = ScrollTrigger.create({
         trigger: wrapRef.current,
         start: "top top",
@@ -1499,6 +1500,7 @@ function TrustSectionHeroUnravel({ theme, section }) {
       });
     } else {
       state.target = 1;
+      wrapRef.current.style.height = "100svh";
     }
 
     let rafId = 0;

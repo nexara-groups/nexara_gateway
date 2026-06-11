@@ -729,6 +729,21 @@
 .neo-hero-chapter.ch-right { align-items: flex-end; text-align: right; padding-right: clamp(24px, 9vw, 140px); padding-left: 46%; }
 .neo-hero-title { font-family: var(--font-display, "Syne", sans-serif); font-size: clamp(3.4rem, 13vw, 11.5rem); font-weight: 800; line-height: 0.92; letter-spacing: -0.02em; display: flex; text-transform: uppercase; }
 .neo-hero-title span { display: inline-block; will-change: transform, opacity; }
+/* Chapter typography — kicker, display heads, ledes, division links */
+.neo-hero-chapter .kicker { font-family: "JetBrains Mono", monospace; font-size: 0.68rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--accent, #7c5cff); margin-bottom: 18px; }
+.neo-hero-chapter .hero-sub { margin-top: 22px; font-family: "JetBrains Mono", monospace; font-size: 0.66rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); }
+.neo-hero-chapter .h-display { font-family: "Syne", sans-serif; font-size: clamp(2.2rem, 6vw, 4.6rem); font-weight: 800; line-height: 1.02; letter-spacing: -0.02em; text-transform: uppercase; }
+.neo-hero-chapter .ch-num { font-family: "JetBrains Mono", monospace; font-size: 0.66rem; letter-spacing: 0.3em; color: var(--accent, #7c5cff); margin-bottom: 16px; }
+.neo-hero-chapter .ch-name { font-family: "Syne", sans-serif; font-size: clamp(2.4rem, 6.5vw, 5.2rem); font-weight: 800; line-height: 0.98; letter-spacing: -0.02em; text-transform: uppercase; }
+.neo-hero-chapter .serif { font-family: "Libre Baskerville", Georgia, serif; font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -0.01em; color: var(--accent, #7c5cff); }
+.neo-hero-chapter .lede { margin-top: 18px; max-width: 38ch; font-size: clamp(0.95rem, 1.2vw, 1.1rem); line-height: 1.7; color: var(--muted); }
+.neo-hero-chapter .ch-link { margin-top: 26px; font-family: "JetBrains Mono", monospace; font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent, #7c5cff); background: none; border: 1px solid color-mix(in srgb, var(--accent, #7c5cff) 45%, transparent); border-radius: 999px; padding: 12px 22px; cursor: pointer; transition: background .2s, color .2s; }
+.neo-hero-chapter .ch-link:hover { background: var(--accent, #7c5cff); color: #06060a; }
+.neo-hero-chapter .hero-actions { margin-top: 30px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.neo-hero-chapter .btn { font-family: "JetBrains Mono", monospace; font-size: 0.74rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 14px 26px; border-radius: 999px; border: 1px solid rgba(242, 241, 236, 0.3); background: transparent; color: inherit; cursor: pointer; transition: border-color .2s, background .2s, color .2s; }
+.neo-hero-chapter .btn:hover { border-color: #fff; }
+.neo-hero-chapter .btn-solid { background: #ccff00; border-color: #ccff00; color: #06060a; font-weight: 700; }
+.neo-hero-chapter .btn-solid:hover { border-color: #ccff00; filter: brightness(1.08); }
 .neo-hero-rail { position: absolute; right: clamp(18px, 3vw, 44px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 18px; z-index: 5; }
 .neo-hero-rail button { width: 8px; height: 8px; border-radius: 50%; background: rgba(242, 241, 236, 0.18); transition: background 0.3s, transform 0.3s; }
 .neo-hero-rail button.is-active { background: #fff; transform: scale(1.45); box-shadow: 0 0 14px rgba(124, 92, 255, 0.6); }
@@ -937,7 +952,11 @@
   .neo-hero-runway { height: 480vh; }
   .neo-hero-chapter.ch-left, .neo-hero-chapter.ch-right { align-items: center; text-align: center; padding: 0 24px 18vh; }
   .neo-hero-rail { display: none; }
-  .neo-hero-counter { display: none; }
+  .neo-hero-counter { left: 20px; bottom: 22px; font-size: 0.62rem; }
+  .neo-hero-counter .neo-counter-bar { width: 72px; }
+  .neo-hero-chapter .ch-name { font-size: clamp(2.1rem, 11vw, 3rem); }
+  .neo-hero-chapter .h-display { font-size: clamp(1.9rem, 9.5vw, 2.7rem); }
+  .neo-hero-chapter .ch-link, .neo-hero-chapter .btn { min-height: 44px; }
   .neo-rail-wrap { height: auto; }
   .neo-rail-stage { position: relative; height: auto; padding: 40px 0; }
   .neo-rail-track { flex-direction: column; width: 100%; padding: 20px; }

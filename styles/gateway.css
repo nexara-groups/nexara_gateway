@@ -494,10 +494,9 @@
 
 @media (max-width: 760px) {
   .gateway { grid-template-columns: 1fr; overflow: auto; }
-  .gate-aurora { display: none; }
-  .gate-neo::after, .gate-trust::after { display: none; }
   .gate-content { transform: none; }
   .gate-panel { align-items: center; padding: 36px 24px; }
+  .gate-neo { padding-top: 110px; }
   .gate-panel:hover { transform: none; }
   .gate-neo, .gate-trust { clip-path: none; margin: 0; min-height: auto; overflow: hidden; }
   .gate-content { max-width: 100%; min-width: 0; }
@@ -514,9 +513,13 @@
   .gate-trust .gate-mini-stats { justify-content: flex-start; }
   .gate-trust .gate-content button { margin-left: 0; margin-right: auto; }
   
-  .gate-brand { display: none; }
+  /* Brand strip stays — sits above the stacked Neo panel (padding-top clears it) */
+  .gate-brand { top: 24px; }
+  .gate-brand strong { font-size: 1.5rem; }
 
-  .gate-preview { display: none; }
+  /* No hover on touch — previews are always expanded */
+  .gate-preview { max-height: 150px; opacity: 1; transform: none; margin-top: 14px; }
+  .gate-trust .gate-preview { justify-items: start; }
   .gate-neo, .gate-trust { animation-name: gateRise; }
   .gateway.is-neo, .gateway.is-trust,
   .gateway.leave-neo, .gateway.leave-trust { grid-template-columns: 1fr; }

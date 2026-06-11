@@ -1346,7 +1346,7 @@ function NeoHeroUnravel({ copy, theme }) {
     const isDesktop = window.innerWidth > 760;
     let st;
 
-    if (isDesktop && !prefersReducedMotion) {
+    if (!prefersReducedMotion) {
       st = ScrollTrigger.create({
         trigger: wrapRef.current,
         start: "top top",
@@ -1357,7 +1357,8 @@ function NeoHeroUnravel({ copy, theme }) {
         }
       });
     } else {
-      state.target = 0.95; // Snap to lattice end on mobile or reduced motion
+      state.target = 0.95; // Snap to lattice end; collapse runway so there is no dead scroll
+      wrapRef.current.style.height = "100svh";
     }
 
     // Mouse movement listeners
@@ -3628,7 +3629,7 @@ function NeoSectionHeroUnravel({ theme, section }) {
     const isDesktop = window.innerWidth > 760;
 
     let st;
-    if (isDesktop && !prefersReducedMotion) {
+    if (!prefersReducedMotion) {
       st = ScrollTrigger.create({
         trigger: wrapRef.current,
         start: "top top",
@@ -3640,6 +3641,7 @@ function NeoSectionHeroUnravel({ theme, section }) {
       });
     } else {
       state.target = 1;
+      wrapRef.current.style.height = "100svh";
     }
 
     let rafId = 0;

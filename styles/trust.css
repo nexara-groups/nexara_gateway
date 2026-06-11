@@ -3270,8 +3270,13 @@ html.js-reveal-ready .trust .tsx-fade.visible {
 @media (max-width: 760px) {
   .trust .tsx-hero-runway { height: 480vh; }
   .trust .tsx-hero-chapter.ch-left, .trust .tsx-hero-chapter.ch-right { align-items: center; text-align: center; padding: 0 24px 18vh; }
+  /* Inline textAlign on chapter copy must not win over mobile centering */
+  .trust .tsx-hero-chapter h2, .trust .tsx-hero-chapter p { text-align: center !important; }
+  .trust .tsx-hero-chapter .tsx-panel-idx { position: static; right: auto !important; left: auto !important; }
+  .trust .tsx-hero-chapter .tsx-btn-cta, .trust .tsx-hero-chapter .tsx-sec-btn-ghost { min-height: 44px; }
   .trust .tsx-hero-rail { display: none; }
-  .trust .tsx-hero-counter { display: none; }
+  .trust .tsx-hero-counter { left: 20px; bottom: 22px; font-size: 0.62rem; }
+  .trust .tsx-hero-counter .tsx-counter-bar { width: 72px; }
   .trust .tsx-rail-wrap { height: auto; }
   .trust .tsx-rail-stage { position: relative; height: auto; padding: 40px 0; }
   .trust .tsx-rail-track { flex-direction: column; width: 100%; padding: 20px; }
