@@ -172,7 +172,7 @@ function TrustNav({ page, detail }) {
         <button className="tsx-logo" onClick={() => routeTo('trust', 'home')} aria-label="Nexara home">
           <div className="tsx-logo-mark" aria-hidden="true">
             <svg viewBox="0 0 16 16" fill="none">
-              <path d="M3 3L8 8M8 8L13 3M8 8V13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M4 13V3L12 13V3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
           Nexara
@@ -451,7 +451,7 @@ function TrustFooter() {
           <button className="tsx-logo" onClick={() => routeTo('trust', 'home')} aria-label="Nexara home">
             <div className="tsx-logo-mark" aria-hidden="true">
               <svg viewBox="0 0 16 16" fill="none">
-                <path d="M3 3L8 8M8 8L13 3M8 8V13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M4 13V3L12 13V3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
             Nexara

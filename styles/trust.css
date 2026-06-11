@@ -2146,7 +2146,7 @@
   --line-2: rgba(15, 23, 42, .22);
   --accent: #1e3a8a;
   --accent-2: #1e40af;
-  --accent-cta: #b45309;
+  --accent-cta: #1e40af;
   --accent-fg: #eaf1ff;
   --tsx-accent: var(--accent);
   --tsx-accent-mid: var(--accent-2);
@@ -2176,7 +2176,7 @@
 
 .trust.tsx-site .tsx-nav-cta:hover,
 .trust.tsx-site .tsx-btn-cta:hover {
-  background: #92400e;
+  background: #1e3a8a;
   transform: translateY(-1px);
 }
 
