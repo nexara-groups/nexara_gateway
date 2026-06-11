@@ -850,34 +850,34 @@ function TrustHeroUnravel() {
 
         <div className="tsx-hero-chapter" data-from="0.125" data-to="0.225" aria-hidden="true">
           <p className="tsx-section-eyebrow">The premise</p>
-          <h2 className="tsx-section-heading">One core.<br /><span className="serif" style={{ color: 'var(--tsx-accent-mid)' }}>Three forces.</span></h2>
+          <h2 className="tsx-section-heading">One core.<br /><span className="serif" style={{ color: '#93C5FD' }}>Three forces.</span></h2>
           <p className="tsx-sec-body" style={{ maxWidth: '34em', marginInline: 'auto' }}>Every engagement runs through a single operating core — then unravels into three disciplined divisions.</p>
         </div>
 
-        <div className="tsx-hero-chapter ch-left" style={{ '--accent': '#0F4C81' }} data-from="0.27" data-to="0.45" aria-hidden="true">
+        <div className="tsx-hero-chapter ch-left" style={{ '--accent': '#93C5FD' }} data-from="0.27" data-to="0.45" aria-hidden="true">
           <p className="tsx-panel-idx">01 / DIVISION</p>
-          <h2 className="tsx-section-heading" style={{ textAlign: 'left' }}>Academy<br /><span className="serif" style={{ color: '#0F4C81' }}>the talent engine.</span></h2>
+          <h2 className="tsx-section-heading" style={{ textAlign: 'left' }}>Academy<br /><span className="serif" style={{ color: '#93C5FD' }}>the talent engine.</span></h2>
           <p className="tsx-sec-body" style={{ textAlign: 'left' }}>Structured, cohort-based programmes that turn ambitious learners into capable engineers — sprint by sprint, review by review.</p>
           <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'academy')} style={{ marginTop: '20px' }}>Enter Academy →</button>
         </div>
 
-        <div className="tsx-hero-chapter ch-right" style={{ '--accent': '#1A5F9B' }} data-from="0.45" data-to="0.63" aria-hidden="true">
+        <div className="tsx-hero-chapter ch-right" style={{ '--accent': '#7DD3FC' }} data-from="0.45" data-to="0.63" aria-hidden="true">
           <p className="tsx-panel-idx" style={{ right: 'clamp(24px, 9vw, 140px)', left: 'auto' }}>02 / DIVISION</p>
-          <h2 className="tsx-section-heading" style={{ textAlign: 'right' }}>Labs<br /><span className="serif" style={{ color: '#1A5F9B' }}>the systems forge.</span></h2>
+          <h2 className="tsx-section-heading" style={{ textAlign: 'right' }}>Labs<br /><span className="serif" style={{ color: '#7DD3FC' }}>the systems forge.</span></h2>
           <p className="tsx-sec-body" style={{ textAlign: 'right' }}>Applied AI and automation systems, engineered from prototype to production with written specs and weekly demos.</p>
           <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'labs')} style={{ marginTop: '20px' }}>Enter Labs →</button>
         </div>
 
-        <div className="tsx-hero-chapter ch-left" style={{ '--accent': '#64748B' }} data-from="0.63" data-to="0.81" aria-hidden="true">
+        <div className="tsx-hero-chapter ch-left" style={{ '--accent': '#CBD5E1' }} data-from="0.63" data-to="0.81" aria-hidden="true">
           <p className="tsx-panel-idx">03 / DIVISION</p>
-          <h2 className="tsx-section-heading" style={{ textAlign: 'left' }}>Marketing<br /><span className="serif" style={{ color: '#64748B' }}>the growth signal.</span></h2>
+          <h2 className="tsx-section-heading" style={{ textAlign: 'left' }}>Marketing<br /><span className="serif" style={{ color: '#CBD5E1' }}>the growth signal.</span></h2>
           <p className="tsx-sec-body" style={{ textAlign: 'left' }}>Brand systems, web experiences and performance creative — built like software, measured like engineering.</p>
           <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'marketing')} style={{ marginTop: '20px' }}>Enter Marketing →</button>
         </div>
 
         <div className="tsx-hero-chapter" data-from="0.86" data-to="1" aria-hidden="true">
           <p className="tsx-section-eyebrow">The weave</p>
-          <h2 className="tsx-section-heading">Three disciplines.<br /><span className="serif" style={{ color: 'var(--tsx-accent-mid)' }}>One standard.</span></h2>
+          <h2 className="tsx-section-heading">Three disciplines.<br /><span className="serif" style={{ color: '#93C5FD' }}>One standard.</span></h2>
           <div className="tsx-sec-actions" style={{ display: 'flex', gap: '16px', marginTop: '24px', justifyContent: 'center' }}>
             <button className="tsx-btn-cta" onClick={() => routeTo('trust', 'contact')}>Start a brief <span className="arr">→</span></button>
             <button className="tsx-sec-btn-ghost" onClick={() => {
@@ -1046,7 +1046,7 @@ function TrustHome() {
           <TrustManifesto />
           <TrustDivisionsRail />
           <section className="tsx-section-inner" style={{ paddingBlock: 'clamp(60px, 10vh, 120px)' }}>
-            <div className="tsx-sec-header" style={{ marginBottom: '40px', borderBottom: 0 }}>
+            <div className="tsx-standard-head" style={{ marginBottom: '40px' }}>
               <p className="tsx-section-eyebrow">The operating standard</p>
               <h2 className="tsx-section-heading">Every division runs<br />on the same spine.</h2>
             </div>
@@ -1600,9 +1600,9 @@ function TrustSectionHeroUnravel({ theme, section }) {
           <p className="tsx-section-eyebrow">{section.id === "academy" ? "01" : section.id === "labs" ? "02" : "03"} / {getTrustSectionLabel(section).toUpperCase()}</p>
           <h1 className="tsx-section-heading" style={{ color: '#fff', fontSize: 'clamp(2rem, 5vw, 4.5rem)', fontWeight: 800, textTransform: 'uppercase' }}>
             {copy.title}<br />
-            <span className="serif" style={{ color: section.id === "academy" ? '#0F4C81' : section.id === "labs" ? '#1A5F9B' : '#64748B' }}>{copy.accent}</span>
+            <span className="serif" style={{ color: section.id === "academy" ? '#93C5FD' : section.id === "labs" ? '#7DD3FC' : '#CBD5E1' }}>{copy.accent}</span>
           </h1>
-          <p className="tsx-sec-body" style={{ marginTop: '14px', maxWidth: '34em', color: 'var(--muted)', marginInline: 'auto' }}>{copy.body}</p>
+          <p className="tsx-sec-body" style={{ marginTop: '14px', maxWidth: '34em', color: 'rgba(226, 232, 240, 0.86)', marginInline: 'auto' }}>{copy.body}</p>
           <div className="tsx-sec-actions" style={{ marginTop: '24px', display: 'flex', gap: '16px', justifyContent: 'center' }}>
             <button className="tsx-btn-cta" onClick={() => {
               const subnav = document.querySelector(".tsx-subnav");

@@ -2958,6 +2958,166 @@ html.js-reveal-ready .trust .tsx-fade.visible {
   }
 }
 
+/* Trust grid visibility repair */
+.trust.tsx-site {
+  --shad-card-border: rgba(15, 23, 42, .18);
+  --shad-muted: #e8eef6;
+  --shad-muted-fg: #334155;
+  --shad-badge-bg: #eaf1fb;
+  --shad-badge-border: rgba(30, 58, 138, .24);
+  --shad-badge-fg: #1e3a8a;
+}
+
+.trust.tsx-site .tsx-solutions-grid,
+.trust.tsx-site .tsx-gov-grid,
+.trust.tsx-site .tsx-cap-card-grid,
+.trust.tsx-site .tsx-del-card-grid,
+.trust.tsx-site .tsx-process-track,
+.trust.tsx-site .tsx-proof-cards-grid,
+.trust.tsx-site .tsx-pkg-grid,
+.trust.tsx-site .tsx-subpage-icon-grid {
+  gap: 10px;
+  background: transparent;
+  border-color: transparent;
+  overflow: visible;
+}
+
+.trust.tsx-site .tsx-sol-card,
+.trust.tsx-site .tsx-gov-card,
+.trust.tsx-site .tsx-cap-card,
+.trust.tsx-site .tsx-del-service-card,
+.trust.tsx-site .tsx-process-track-step,
+.trust.tsx-site .tsx-proof-case-card,
+.trust.tsx-site .tsx-pkg-card,
+.trust.tsx-site .tsx-subpage-icon-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-color: var(--shad-card-border);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, .055);
+}
+
+.trust.tsx-site .tsx-sol-card:hover,
+.trust.tsx-site .tsx-gov-card:hover,
+.trust.tsx-site .tsx-cap-card:hover,
+.trust.tsx-site .tsx-del-service-card:hover,
+.trust.tsx-site .tsx-process-track-step:hover,
+.trust.tsx-site .tsx-proof-case-card:hover,
+.trust.tsx-site .tsx-pkg-card:hover,
+.trust.tsx-site .tsx-subpage-icon-card:hover {
+  background: #eef4fb;
+  border-color: rgba(30, 58, 138, .28);
+}
+
+.trust.tsx-site .tsx-sol-index,
+.trust.tsx-site .tsx-cap-card-index,
+.trust.tsx-site .tsx-process-track-num,
+.trust.tsx-site .tsx-proof-case-org,
+.trust.tsx-site .tsx-section-block-eyebrow,
+.trust.tsx-site .tsx-pkg-fit,
+.trust.tsx-site .tsx-pkg-duration {
+  color: #1e3a8a;
+  opacity: 1;
+}
+
+.trust.tsx-site .tsx-sol-desc,
+.trust.tsx-site .tsx-cap-card-body,
+.trust.tsx-site .tsx-del-service-chip,
+.trust.tsx-site .tsx-process-track-body,
+.trust.tsx-site .tsx-proof-case-body,
+.trust.tsx-site .tsx-pkg-list li,
+.trust.tsx-site .tsx-subpage-icon-card .tsx-subpage-card-body,
+.trust.tsx-site .tsx-gov-desc {
+  color: #334155;
+}
+
+.trust.tsx-site .tsx-sol-name,
+.trust.tsx-site .tsx-cap-card-title,
+.trust.tsx-site .tsx-del-service-name,
+.trust.tsx-site .tsx-process-track-title,
+.trust.tsx-site .tsx-proof-case-headline,
+.trust.tsx-site .tsx-pkg-name,
+.trust.tsx-site .tsx-subpage-icon-card .tsx-subpage-card-title,
+.trust.tsx-site .tsx-gov-title {
+  color: #0f172a;
+}
+
+.trust.tsx-site .tsx-module-list li,
+.trust.tsx-site .tsx-del-service-chip {
+  background: #eaf1fb;
+  border: 1px solid rgba(30, 58, 138, .16);
+  color: #1f2937;
+}
+
+.trust.tsx-site .tsx-del-service-outcome,
+.trust.tsx-site .tsx-proof-case-org {
+  background: #eaf1fb;
+  border-color: rgba(30, 58, 138, .28);
+  color: #1e3a8a;
+}
+
+.trust.tsx-site .tsx-sol-icon,
+.trust.tsx-site .tsx-subpage-icon-wrap {
+  background: #eaf1fb;
+  border-color: rgba(30, 58, 138, .18);
+}
+
+.trust.tsx-site .tsx-sol-icon svg,
+.trust.tsx-site .tsx-subpage-icon-wrap svg {
+  color: #1e3a8a;
+}
+
+.trust.tsx-site .tsx-gov-num {
+  color: rgba(255, 255, 255, .82);
+}
+
+.trust.tsx-site .tsx-gov-cat,
+.trust.tsx-site .tsx-pkg-badge {
+  color: rgba(255, 255, 255, .92);
+}
+
+.trust.tsx-site .tsx-pkg-head {
+  color: #f8fafc;
+}
+
+.trust.tsx-site .tsx-pkg-head .tsx-pkg-name {
+  color: #f8fafc;
+}
+
+.trust.tsx-site .tsx-pkg-fit,
+.trust.tsx-site .tsx-pkg-duration {
+  color: rgba(248, 250, 252, .86);
+}
+
+.trust.tsx-site .tsx-pkg-list li::before {
+  color: #1e3a8a;
+}
+
+.trust.tsx-site .tsx-enterprise-stacks .tsx-matrix-row {
+  background: rgba(15, 23, 42, .78);
+}
+
+.trust.tsx-site .tsx-enterprise-stacks .tsx-matrix-row:hover {
+  background: rgba(30, 41, 59, .96);
+}
+
+.trust.tsx-site .tsx-enterprise-stacks .tsx-matrix-num {
+  color: #93c5fd;
+}
+
+.trust.tsx-site .tsx-enterprise-stacks .tsx-matrix-title {
+  color: #ffffff;
+}
+
+.trust.tsx-site .tsx-enterprise-stacks .tsx-matrix-desc {
+  color: rgba(226, 232, 240, .88);
+}
+
+.trust.tsx-site .tsx-enterprise-stacks .tsx-matrix-chip,
+.trust.tsx-site .tsx-enterprise-stacks .tsx-matrix-tag {
+  background: rgba(219, 234, 254, .12);
+  border-color: rgba(147, 197, 253, .28);
+  color: #dbeafe;
+}
+
 /* ── Trust Theme Scrolly Integration ── */
 .trust .tsx-hero-runway { position: relative; height: 640vh; }
 .trust .tsx-hero-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--tsx-hero-bg, #0A0F1E); }
@@ -2982,11 +3142,53 @@ html.js-reveal-ready .trust .tsx-fade.visible {
 .trust .tsx-scroll-cue i { width: 1px; height: 44px; background: linear-gradient(#fff, transparent); overflow: hidden; position: relative; }
 .trust .tsx-scroll-cue i::after { content: ""; position: absolute; left: 0; top: -100%; width: 100%; height: 100%; background: linear-gradient(transparent, #fff); animation: cueDrop 1.8s ease infinite; }
 
+.trust.tsx-site .tsx-hero-stage {
+  background:
+    radial-gradient(ellipse at 50% 54%, rgba(30, 64, 175, .18), transparent 44%),
+    linear-gradient(180deg, #070d19 0%, #0a0f1e 48%, #0f172a 100%);
+}
+
+.trust.tsx-site .tsx-hero-chapter .tsx-section-eyebrow,
+.trust.tsx-site .tsx-hero-chapter .tsx-panel-idx {
+  color: #93c5fd;
+}
+
+.trust.tsx-site .tsx-hero-chapter .tsx-section-heading {
+  color: #f8fafc;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, .32);
+}
+
+.trust.tsx-site .tsx-hero-chapter .tsx-sec-body,
+.trust.tsx-site .tsx-hero-sub,
+.trust.tsx-site .tsx-scroll-cue,
+.trust.tsx-site .tsx-hero-counter,
+.trust.tsx-site .tsx-hero-rail button::after {
+  color: rgba(226, 232, 240, .86);
+}
+
 .trust .tsx-manifesto { padding: clamp(90px, 14vh, 170px) clamp(20px, 6vw, 80px); text-align: center; }
 .trust .tsx-manifesto-text { font-family: "Poppins", sans-serif; font-size: clamp(1.7rem, 4.2vw, 3.4rem); font-weight: 700; line-height: 1.22; max-width: 21em; margin: 28px auto 0; }
 .trust .tsx-manifesto-text .w { color: rgba(15, 23, 42, 0.16); transition: color 0.18s linear; }
 .trust .tsx-manifesto-text .w.on { color: var(--text); }
 .trust .tsx-manifesto-text .w.accent.on { font-family: "Poppins", sans-serif; font-weight: 700; color: var(--tsx-accent); }
+
+.trust.tsx-site .tsx-manifesto {
+  background: #f8fafc;
+  border-block: 1px solid rgba(15, 23, 42, .12);
+}
+
+.trust.tsx-site .tsx-manifesto-text .w {
+  color: #334155;
+}
+
+.trust.tsx-site .tsx-manifesto-text .w.on {
+  color: #0f172a;
+}
+
+.trust.tsx-site .tsx-manifesto-text .w.accent,
+.trust.tsx-site .tsx-manifesto-text .w.accent.on {
+  color: #1e3a8a;
+}
 
 .trust .tsx-rail-wrap { position: relative; height: 320vh; }
 .trust .tsx-rail-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
@@ -2999,6 +3201,41 @@ html.js-reveal-ready .trust .tsx-fade.visible {
 .trust .tsx-rail-panel p { color: var(--muted); max-width: 32em; margin-bottom: 26px; }
 .trust .tsx-rail-panel .panel-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px; }
 .trust .tsx-rail-panel .panel-tags span { font-family: "Inter", sans-serif; font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 6px 12px; }
+
+.trust.tsx-site .tsx-rail-stage {
+  background:
+    linear-gradient(rgba(30, 58, 138, .045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 58, 138, .035) 1px, transparent 1px),
+    #eef4fb;
+  background-size: 52px 52px;
+}
+
+.trust.tsx-site .rail-head .tsx-section-heading,
+.trust.tsx-site .rail-progress,
+.trust.tsx-site .tsx-rail-panel h3 {
+  color: #0f172a;
+}
+
+.trust.tsx-site .tsx-rail-panel {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-color: rgba(15, 23, 42, .18);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, .10);
+}
+
+.trust.tsx-site .tsx-panel-idx,
+.trust.tsx-site .tsx-rail-panel h3 .serif {
+  color: #1e3a8a;
+}
+
+.trust.tsx-site .tsx-rail-panel p,
+.trust.tsx-site .tsx-rail-panel .panel-tags span {
+  color: #334155;
+}
+
+.trust.tsx-site .tsx-rail-panel .panel-tags span {
+  background: #eaf1fb;
+  border-color: rgba(30, 58, 138, .18);
+}
 
 .trust .tsx-standards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
 .trust .tsx-standard-card { background: var(--paper); border: 1px solid var(--line); padding: 28px; min-height: 250px; display: flex; flex-direction: column; transition: border-color 0.3s; border-radius: 4px; }
