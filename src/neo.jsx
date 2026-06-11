@@ -1969,9 +1969,32 @@ function TrustHero({ copy, theme }) {
 function Gateway() {
   const [hover, setHover] = useState(null);
   const [leaving, setLeaving] = useState(null);
+  const rootRef = React.useRef(null);
   const neo = DATA.gateway.neo;
   const trust = DATA.gateway.trust;
   const sections = DATA.nav.filter(item => item.page !== "contact");
+  React.useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    let raf = 0;
+    const onMove = (e) => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = 0;
+        const mx = (e.clientX / window.innerWidth) * 2 - 1;
+        const my = (e.clientY / window.innerHeight) * 2 - 1;
+        el.style.setProperty("--mx", mx.toFixed(3));
+        el.style.setProperty("--my", my.toFixed(3));
+      });
+    };
+    el.addEventListener("mousemove", onMove);
+    return () => {
+      el.removeEventListener("mousemove", onMove);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, []);
   const enter = (theme) => {
     if (leaving) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1983,14 +2006,20 @@ function Gateway() {
     (hover && !leaving ? " is-" + hover : "") +
     (leaving ? " is-leaving leave-" + leaving : "");
   return (
-    <main className={cls}>
+    <main className={cls} ref={rootRef}>
       <section
         className="gate-panel gate-neo"
         onMouseEnter={() => setHover("neo")}
         onMouseLeave={() => setHover(null)}
         onClick={() => enter("neo")}
       >
+        <div className="gate-aurora" aria-hidden="true">
+          <span className="aurora-blob b1"></span>
+          <span className="aurora-blob b2"></span>
+          <span className="aurora-blob b3"></span>
+        </div>
         <div className="gate-motion-grid"></div>
+        <div className="grain-layer" aria-hidden="true"></div>
         <div className="gate-content">
           <p className="gate-kicker">{neo.kicker}</p>
           <h1>{neo.title}</h1>
@@ -2012,6 +2041,12 @@ function Gateway() {
         onMouseLeave={() => setHover(null)}
         onClick={() => enter("trust")}
       >
+        <div className="gate-aurora" aria-hidden="true">
+          <span className="aurora-blob b1"></span>
+          <span className="aurora-blob b2"></span>
+          <span className="aurora-blob b3"></span>
+        </div>
+        <div className="grain-layer" aria-hidden="true"></div>
         <div className="gate-content">
           <p className="gate-kicker">{trust.kicker}</p>
           <h1>{trust.title}</h1>
